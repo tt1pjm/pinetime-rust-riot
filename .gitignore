@@ -58,3 +58,7 @@ dkms.conf
 
 # Ctags
 tags
+
+# OpenOCD
+openocd
+
