@@ -58,10 +58,10 @@ void hal_display_on(void)
 {
     ili9341_sleep_mode(hal_display_get_context(), false);
     display_on = true;
-    /* Low brightness for now */
-    gpio_clear(LCD_BACKLIGHT_LOW);
+    /* High brightness for now */
+    gpio_set(LCD_BACKLIGHT_LOW);
     gpio_set(LCD_BACKLIGHT_MID);
-    gpio_set(LCD_BACKLIGHT_HIGH);
+    gpio_clear(LCD_BACKLIGHT_HIGH);
 }
 
 void hal_display_scroll(uint16_t lines)
