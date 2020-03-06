@@ -5,8 +5,10 @@ set -e  #  Exit when any command fails
 
 set -x  #  Echo commands
 
-cd apps/pinetime
-make
+cd apps/terminal_display
+# cd apps/pinetime
+
+make --jobs=10
 exit
 
 mynewt_build_app=nrf52_my_sensor

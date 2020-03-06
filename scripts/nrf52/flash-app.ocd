@@ -22,7 +22,8 @@ echo ""
 
 # Application address must sync with hw/bsp/nrf52/bsp.yml
 echo "Flashing Application..."
-program apps/pinetime/bin/pinetime/PineTime.elf verify 0x00000000
+program apps/terminal_display/bin/pinetime/terminal.elf verify 0x00000000
+# program apps/pinetime/bin/pinetime/PineTime.elf verify 0x00000000
 echo ""
 
 # Restart the device and start the bootloader.
