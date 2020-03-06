@@ -4,6 +4,11 @@
 set -e  #  Exit when any command fails
 
 set -x  #  Echo commands
+
+cd apps/pinetime
+make
+exit
+
 mynewt_build_app=nrf52_my_sensor
 rust_build_target=thumbv7em-none-eabihf
 launch_config=launch-nrf52-pi.json

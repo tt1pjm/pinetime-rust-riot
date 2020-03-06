@@ -42,7 +42,7 @@
                 "command": "cmd",
                 "args": [
                     "/c",
-                    " scripts\\build-app.cmd && echo ✅ ◾ ️Done! "
+                    " scripts\\build-app.cmd && copy .vscode/launch-nrf52.json .vscode/launch.json && echo ✅ ◾ ️Done! "
                 ]
             },
             "osx": {
