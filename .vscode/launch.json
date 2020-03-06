@@ -11,8 +11,8 @@
             "servertype": "openocd",
             "cwd": "${workspaceRoot}",
             //  Application Executable to be flashed before debugging.
-            "executable": "apps/terminal_display/bin/pinetime/terminal.elf",
-            //  "executable": "apps/pinetime/bin/pinetime/PineTime.elf",
+            "executable": "apps/pinetime/bin/pinetime/PineTime.elf",
+            //  "executable": "apps/terminal_display/bin/pinetime/terminal.elf",
             "device": "nRF52832",
             //  Arm System View Description, from apache-mynewt-core/hw/mcu/nordic/src/ext/nrfx/mdk
             "svdFile": "scripts/nrf52/nrf52.svd",

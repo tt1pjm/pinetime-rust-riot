@@ -5,8 +5,8 @@ set -e  #  Exit when any command fails
 
 set -x  #  Echo commands
 
-cd apps/terminal_display
-# cd apps/pinetime
+cd apps/pinetime
+#  cd apps/terminal_display
 
 make --jobs=10
 exit
