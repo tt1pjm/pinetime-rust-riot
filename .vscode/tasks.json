@@ -3,6 +3,7 @@
     // for the documentation about the tasks.json format
     "version": "2.0.0",
     "tasks": [
+        /*
         {
             //  Build the Bootloader.
             "label": "1️⃣ Build Bootloader",
@@ -32,9 +33,10 @@
                 "clear": true
             }
         },
+        */
         {
             //  Build the Application.
-            "label": "2️⃣ Build Application",
+            "label": "1️⃣ Build Application",
             "type": "shell",
             "windows": {
                 "command": "cmd",
@@ -79,6 +81,7 @@
                 "clear": true
             }
         },
+        /*
         {
             //  Create the Application ROM Image.
             "label": "3️⃣ Image Application",
@@ -109,6 +112,8 @@
                 "clear": true
             }
         },
+        */
+        /*
         {
             //  Flash the Bootloader.  We use custom scripts instead of "newt load" because "newt" runs in Ubuntu while the ST Link driver runs under Windows.
             "label": "4️⃣ Flash Bootloader",
@@ -141,9 +146,10 @@
                 "clear": true
             }
         },
+        */
         {
             //  Flash the Application.  We use custom scripts instead of "newt load" because "newt" runs in Ubuntu while the ST Link driver runs under Windows.
-            "label": "5️⃣ Flash Application",
+            "label": "2️⃣ Flash Application",
             "type": "shell",
             "windows": {
                 "command": "cmd",
@@ -173,6 +179,7 @@
                 "clear": true
             }
         },
+        /*
         {
             //  Erase the Flash ROM
             "label": "⚡️ Erase Flash",
@@ -203,6 +210,7 @@
                 "clear": true
             }
         },
+        */
         {
             //  Generate Rust bindings for C libraries.
             "label": "⛓ Generate Rust Bindings",
@@ -293,6 +301,7 @@
                 "clear": true
             }
         },
+        /*
         {
             //  Install Mynewt source, build tools, sample.
             "label": "Install Mynewt",
