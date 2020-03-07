@@ -8,6 +8,24 @@ set -e  #  Exit when any command fails.
 set -x  #  Echo all commands.
 export RUST_BACKTRACE=1  #  Show Rust errors.
 
+pushd apps/pinetime/bin/pkg/pinetime/
+
+#  Types from https://github.com/lupyuen/pinetime-rust-mynewt/blob/master/logs/kernel/os-expanded.h#L39
+bindgen --verbose lvgl/src/lv_objx/lv_label.h -- \
+    -I . \
+    -I lvgl \
+    -D int8_t="signed char" \
+    -D int16_t="short int" \
+    -D int32_t="long int" \
+    -D int64_t="long long int" \
+    -D uint8_t="unsigned char" \
+    -D uint16_t="short unsigned int" \
+    -D uint32_t="long unsigned int" \
+    -D uint64_t="long long unsigned int"
+
+popd
+exit
+
 function generate_bindings() {
     #  Generate bindings for the module.
     local libname=$1
