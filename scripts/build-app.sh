@@ -5,10 +5,14 @@ set -e  #  Exit when any command fails
 
 set -x  #  Echo commands
 
-cd apps/pinetime
-#  cd apps/terminal_display
+pushd apps/pinetime
+#  pushd apps/terminal_display
 
 make --jobs=10
+
+popd
+scripts/nrf52/flash-app.sh
+
 exit
 
 mynewt_build_app=nrf52_my_sensor
