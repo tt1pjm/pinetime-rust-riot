@@ -8,7 +8,8 @@ set -x  #  Echo commands
 pushd apps/pinetime
 #  pushd apps/terminal_display
 
-make --trace --jobs=10
+make --jobs=10
+#  make --trace --jobs=1
 
 popd
 scripts/nrf52/flash-app.sh
