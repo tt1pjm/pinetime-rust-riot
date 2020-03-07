@@ -12,8 +12,6 @@ bindgen --verbose apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_objx/lv_label.h -- 
     -Ibaselibc/include/ \
     -Iapps/pinetime/bin/pkg/pinetime/ \
     -Iapps/pinetime/bin/pkg/pinetime/lvgl \
-    -DRIOT_FILE_RELATIVE="/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_objx/lv_label.c" \
-    -DRIOT_FILE_NOPATH="lv_label.c" \
     -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime  \
     -DDEVELHELP -Werror  \
     -DCPU_FAM_NRF52 \
