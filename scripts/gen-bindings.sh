@@ -122,27 +122,9 @@ bindgen --verbose apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_objx/lv_label.h -- 
     -I/Users/Luppy/PineTime/PineTime-apps/RIOT/sys/posix/include  \
     -I/Users/Luppy/PineTime/PineTime-apps/RIOT/drivers/cst816s/include  \
     -I/Users/Luppy/PineTime/PineTime-apps/RIOT/drivers/ili9341/include  \
+    -DEND_OF_OPTIONS
 
 exit
-
-pushd apps/pinetime/bin/pkg/pinetime/
-bindgen --verbose lvgl/src/lv_objx/lv_label.h -- \
-    -include '/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pinetime/riotbuild/riotbuild.h'  \
-    -isystem /usr/local/Cellar/arm-none-eabi-gcc/7-2018-q2-update/gcc/arm-none-eabi/include/newlib-nano \
-    -I . \
-    -I lvgl \
-
-popd
-
-#  Types from https://github.com/lupyuen/pinetime-rust-mynewt/blob/master/logs/kernel/os-expanded.h#L39
-    -D int8_t="signed char" \
-    -D int16_t="short int" \
-    -D int32_t="long int" \
-    -D int64_t="long long int" \
-    -D uint8_t="unsigned char" \
-    -D uint16_t="short unsigned int" \
-    -D uint32_t="long unsigned int" \
-    -D uint64_t="long long unsigned int"
 
 #  Sample gcc command from `make --trace --jobs=1`
 arm-none-eabi-gcc \        
