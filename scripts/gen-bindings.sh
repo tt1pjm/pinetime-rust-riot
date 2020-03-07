@@ -8,297 +8,25 @@ set -e  #  Exit when any command fails.
 set -x  #  Echo all commands.
 export RUST_BACKTRACE=1  #  Show Rust errors.
 
-bindgen --verbose apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_objx/lv_label.h -- \
-    -Ibaselibc/include/ \
-    -Iapps/pinetime/bin/pkg/pinetime/ \
-    -Iapps/pinetime/bin/pkg/pinetime/lvgl \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime  \
-    -DDEVELHELP -Werror  \
-    -DCPU_FAM_NRF52 \
-    -mlittle-endian -ffunction-sections -fdata-sections -fno-builtin -fshort-enums -ggdb -g3 -Os  \
-    -DCPU_MODEL_NRF52832XXAA  \
-    -DCPU_ARCH_CORTEX_M4F  \
-    -DRIOT_BOARD=BOARD_PINETIME  \
-    -DRIOT_CPU=CPU_NRF52  \
-    -DRIOT_MCU=MCU_NRF52 -std=c99 -fno-common \
-    -fno-delete-null-pointer-checks \
-    -DLV_CONF_INCLUDE_SIMPLE  \
-    -DLV_LVGL_H_INCLUDE_SIMPLE  \
-    -DNIMBLE_CFG_CONTROLLER=1  \
-    -DMYNEWT_VAL_OS_CPUTIME_FREQ=32768  \
-    -DMYNEWT_VAL_BLE_SM_LEGACY=0  \
-    -DMYNEWT_VAL_BLE_SM_SC=1  \
-    -DMYNEWT_VAL_BLE_SM_MITM=1  \
-    -DMYNEWT_VAL_BLE_SM_BONDING=1  \
-    -DMYNEWT_VAL_BLE_SM_MAX_PROCS=1  \
-    -DMYNEWT_VAL_BLE_GATT_MAX_PROCS=8  \
-    -DMYNEWT_VAL_BLE_L2CAP_MAX_CHANS=8  \
-    -DMYNEWT_VAL_BLE_L2CAP_COC_MAX_NUM=1  \
-    -DMYNEWT_VAL_BLE_STORE_MAX_BONDS=5 \
-    -DMYNEWT_VAL_BLE_SM_OUR_KEY_DIST=0x6  \
-    -DMYNEWT_VAL_BLE_SM_THEIR_KEY_DIST=0x6  \
-    -DMYNEWT_VAL_MSYS_1_BLOCK_COUNT=32  \
-    -DMYNEWT_VAL_MSYS_1_BLOCK_SIZE=292  \
-    -DMYNEWT_VAL_BLE_EXT_ADV_MAX_SIZE=31  \
-    -DMYNEWT_VAL_BLE_MAX_CONNECTIONS=1  \
-    -DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 \
-    -DMYNEWT_VAL_BLE_MULTI_ADV_INSTANCES=5  \
-    -DMYNEWT_VAL_BLE_STORE_MAX_CCCDS=8  \
-    -DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 \
-    -DMYNEWT_VAL_BLE_MULTI_ADV_INSTANCES=5  \
-    -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LE_ENCRYPTION=1  \
-    -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LL_PRIVACY=1  \
-    -DMYNEWT_VAL_BLE_LL_CFG_FEAT_DATA_LEN_EXT=1  \
-    -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LL_EXT_ADV=1  \
-    -DMYNEWT_VAL_BLE_LL_SCHED_SCAN_AUX_PDU_LEN=41  \
-    -DMYNEWT_VAL_BLE_LL_SCHED_SCAN_SYNC_PDU_LEN=32  \
-    -DMYNEWT_VAL_BLE_SM_IO_CAP=BLE_HS_IO_DISPLAY_YESNO  \
-    -DNIMBLE_HOST_STACKSIZE=3072  \
-    -DVFS_FILE_BUFFER_SIZE=84  \
-    -DVFS_DIR_BUFFER_SIZE=52  \
-    -include '/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pinetime/riotbuild/riotbuild.h'   \
-    -isystem /usr/local/Cellar/arm-none-eabi-gcc/7-2018-q2-update/gcc/arm-none-eabi/include/newlib-nano  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/bleman/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/gui/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/controller/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/fonts/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/hal/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/storage/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/util/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/widget/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/home_time/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/menu_tiles/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/sysinfo/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/face_notification/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/face_sports/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/core/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/drivers/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/sys/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/boards/pinetime/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/boards/common/nrf52/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/cpu/nrf52/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/cpu/nrf5x_common/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/cpu/cortexm_common/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/cpu/cortexm_common/include/vendor  \
-    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/sys/libc/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/littlefs  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/lvgl  \
-    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/pkg/nimble/contrib/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/porting/npl/riot/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/porting/nimble/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/controller/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/drivers/nrf52/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/store/ram/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/util/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/ext/tinycrypt/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/transport/ram/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gap/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gatt/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/bleman/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/gui/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/controller/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/fonts/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/hal/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/storage/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/util/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/widget/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/home_time/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/menu_tiles/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/sysinfo/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/face_notification/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/face_sports/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/bleman/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/gui/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/controller/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/fonts/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/hal/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/storage/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/util/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/widget/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/sys/posix/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/drivers/cst816s/include  \
-    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/drivers/ili9341/include  \
-    -DEND_OF_OPTIONS
-
-exit
-
-#  Sample gcc command from `make --trace --jobs=1`
-arm-none-eabi-gcc \        
-        -DRIOT_FILE_RELATIVE=\"/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_objx/lv_label.c\" \        
-        -DRIOT_FILE_NOPATH=\"lv_label.c\" \        
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime 
-        -DPINETIME_VERSION=\"6145f3d\" 
-        -DDEVELHELP -Werror 
-        -DCPU_FAM_NRF52 -mno-thumb
-        -interwork -mcpu=cortex-m4 -mlittle-endian -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -ffunction-sections -fdata-sections -fno-builtin -fshort-enums -ggdb -g3 -Os 
-        -DCPU_MODEL_NRF52832XXAA 
-        -DCPU_ARCH_CORTEX_M4F 
-        -DRIOT_APPLICATION=\"PineTime\" 
-        -DBOARD_PINETIME=\"pinetime\" 
-        -DRIOT_BOARD=BOARD_PINETIME 
-        -DCPU_NRF52=\"nrf52\" 
-        -DRIOT_CPU=CPU_NRF52 
-        -DMCU_NRF52=\"nrf52\" 
-        -DRIOT_MCU=MCU_NRF52 -std=c99 -fno-common -Wall -Wextra -Wmissing
-        -include-dirs -fno-delete-null-pointer-checks -fdiagnostics-color -Wstrict-prototypes -Wold-style-definition -gz -Wformat=2 -Wformat-overflow -Wformat-truncation -Wno-pedantic -Wno-unused-parameter -Wno-sign-compare -Wno-cast-function-type 
-        -DLV_CONF_INCLUDE_SIMPLE 
-        -DLV_LVGL_H_INCLUDE_SIMPLE 
-        -DNIMBLE_CFG_CONTROLLER=1 
-        -DMYNEWT_VAL_OS_CPUTIME_FREQ=32768 
-        -DMYNEWT_VAL_BLE_SM_LEGACY=0 
-        -DMYNEWT_VAL_BLE_SM_SC=1 
-        -DMYNEWT_VAL_BLE_SM_MITM=1 
-        -DMYNEWT_VAL_BLE_SM_BONDING=1 
-        -DMYNEWT_VAL_BLE_SM_MAX_PROCS=1 
-        -DMYNEWT_VAL_BLE_GATT_MAX_PROCS=8 
-        -DMYNEWT_VAL_BLE_L2CAP_MAX_CHANS=8 
-        -DMYNEWT_VAL_BLE_L2CAP_COC_MAX_NUM=1 
-        -DMYNEWT_VAL_BLE_STORE_MAX_BONDS=5 
-        -DMYNEWT_VAL_BLE_SM_OUR_KEY_DIST=0x6 
-        -DMYNEWT_VAL_BLE_SM_THEIR_KEY_DIST=0x6 
-        -DMYNEWT_VAL_MSYS_1_BLOCK_COUNT=32 
-        -DMYNEWT_VAL_MSYS_1_BLOCK_SIZE=292 
-        -DMYNEWT_VAL_BLE_EXT_ADV_MAX_SIZE=31 
-        -DMYNEWT_VAL_BLE_MAX_CONNECTIONS=1 
-        -DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 
-        -DMYNEWT_VAL_BLE_MULTI_ADV_INSTANCES=5 
-        -DMYNEWT_VAL_BLE_STORE_MAX_CCCDS=8 
-        -DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 
-        -DMYNEWT_VAL_BLE_MULTI_ADV_INSTANCES=5 
-        -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LE_ENCRYPTION=1 
-        -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LL_PRIVACY=1 
-        -DMYNEWT_VAL_BLE_LL_CFG_FEAT_DATA_LEN_EXT=1 
-        -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LL_EXT_ADV=1 
-        -DMYNEWT_VAL_BLE_LL_SCHED_SCAN_AUX_PDU_LEN=41 
-        -DMYNEWT_VAL_BLE_LL_SCHED_SCAN_SYNC_PDU_LEN=32 
-        -DMYNEWT_VAL_BLE_SM_IO_CAP=BLE_HS_IO_DISPLAY_YESNO 
-        -DNIMBLE_HOST_STACKSIZE=3072 
-        -DVFS_FILE_BUFFER_SIZE=84 
-        -DVFS_DIR_BUFFER_SIZE=52 
-        -include '/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pinetime/riotbuild/riotbuild.h'  
-        -isystem /usr/local/Cellar/arm-none-eabi-gcc/7-2018-q2-update/gcc/arm-none-eabi/include/newlib-nano 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/bleman/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/gui/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/controller/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/fonts/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/hal/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/storage/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/util/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/widget/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/home_time/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/menu_tiles/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/sysinfo/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/face_notification/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/face_sports/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/core/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/drivers/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/sys/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/boards/pinetime/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/boards/common/nrf52/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/cpu/nrf52/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/cpu/nrf5x_common/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/cpu/cortexm_common/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/cpu/cortexm_common/include/vendor 
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/sys/libc/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/littlefs 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/lvgl 
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/pkg/nimble/contrib/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/porting/npl/riot/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/porting/nimble/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/controller/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/drivers/nrf52/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/store/ram/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/util/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/ext/tinycrypt/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/transport/ram/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gap/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gatt/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/bleman/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/gui/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/controller/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/fonts/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/hal/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/storage/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/util/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/widget/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/home_time/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/menu_tiles/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/sysinfo/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/face_notification/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/face_sports/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/bleman/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/gui/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/controller/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/fonts/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/hal/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/storage/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/util/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/widget/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/sys/posix/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/drivers/cst816s/include 
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/drivers/ili9341/include 
-        -MQ '/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pinetime/lvgl_objx/lv_label.o' 
-        -MD -MP -c 
-        -o /Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pinetime/lvgl_objx/lv_label.o 
-        /Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_objx/lv_label.c
-
 function generate_bindings() {
     #  Generate bindings for the module.
     local libname=$1
     local modname=$2
     local libdir=$3
-    # libcmd looks like bin/targets/bluepill_my_sensor/app/libs/sensor_network/libs/sensor_network/src/sensor_network.o.cmd
-    local libcmd=$4
+    # headerfile looks like apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_core/lv_obj.h
+    local headerfile=apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_core/lv_obj.h
+    # local headerfile=$4
     shift 4
     local whitelist="$@"
     echo "whitelist=$whitelist"
 
-    local expandcmd=logs/gen-bindings.txt
-    local expandfile=logs/$modname-expanded.h
-    local expandpath=rust/mynewt/src/$modname.rs
-    local tmpexpandpath=rust/mynewt/src/$modname.tmp
-
-    #  Remove first line: arm-none-eabi-gcc
-    tail +2 $libcmd \
-        | sed "/^-o/,$ d" \
-        > $expandcmd
-
-    #  Append gcc options to expand macros.
-    #  -CC:    Keep comments (for generating Rust doc)
-    #  -E -dD: Expand macros
-    #  -o:     Output to file
-    cat \
-        >> $expandcmd \
-        << "EOF"
-        -CC
-        -E
-        -dD
-        -o
-EOF
-
-    #  Expand macros to sensor_network-expanded.h
-    echo $expandfile >>$expandcmd
-
-    #  Append the last line containing the source filename e.g. libs/sensor_network/src/sensor_network.c
-    tail -1 \
-        $libcmd \
-        >> $expandcmd
-
-    #  Run gcc to expand macros.
-    #  TODO: Ensure that output folder has been created.
-    arm-none-eabi-gcc @$expandcmd
+    local expandpath=rust/lvgl/src/$modname.rs
+    local tmpexpandpath=rust/lvgl/src/$modname.tmp
 
     #  Generate Rust bindings for the expanded macros.
-    #  TODO: Ensure that output folder has been created.
+    #  TODO: Ensure that output folder has been created.        
     bindgen \
+        --verbose \
         --use-core \
         --ctypes-prefix "::cty" \
         --with-derive-default \
@@ -307,7 +35,122 @@ EOF
         --no-layout-tests \
         $whitelist \
         -o $tmpexpandpath \
-        $expandfile
+        $headerfile \
+        -- \
+        -Ibaselibc/include/ \
+        -Iapps/pinetime/bin/pkg/pinetime/ \
+        -Iapps/pinetime/bin/pkg/pinetime/lvgl \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime  \
+        -DDEVELHELP -Werror  \
+        -DCPU_FAM_NRF52 \
+        -mlittle-endian -ffunction-sections -fdata-sections -fno-builtin -fshort-enums -ggdb -g3 -Os  \
+        -DCPU_MODEL_NRF52832XXAA  \
+        -DCPU_ARCH_CORTEX_M4F  \
+        -DRIOT_BOARD=BOARD_PINETIME  \
+        -DRIOT_CPU=CPU_NRF52  \
+        -DRIOT_MCU=MCU_NRF52 -std=c99 -fno-common \
+        -fno-delete-null-pointer-checks \
+        -DLV_CONF_INCLUDE_SIMPLE  \
+        -DLV_LVGL_H_INCLUDE_SIMPLE  \
+        -DNIMBLE_CFG_CONTROLLER=1  \
+        -DMYNEWT_VAL_OS_CPUTIME_FREQ=32768  \
+        -DMYNEWT_VAL_BLE_SM_LEGACY=0  \
+        -DMYNEWT_VAL_BLE_SM_SC=1  \
+        -DMYNEWT_VAL_BLE_SM_MITM=1  \
+        -DMYNEWT_VAL_BLE_SM_BONDING=1  \
+        -DMYNEWT_VAL_BLE_SM_MAX_PROCS=1  \
+        -DMYNEWT_VAL_BLE_GATT_MAX_PROCS=8  \
+        -DMYNEWT_VAL_BLE_L2CAP_MAX_CHANS=8  \
+        -DMYNEWT_VAL_BLE_L2CAP_COC_MAX_NUM=1  \
+        -DMYNEWT_VAL_BLE_STORE_MAX_BONDS=5 \
+        -DMYNEWT_VAL_BLE_SM_OUR_KEY_DIST=0x6  \
+        -DMYNEWT_VAL_BLE_SM_THEIR_KEY_DIST=0x6  \
+        -DMYNEWT_VAL_MSYS_1_BLOCK_COUNT=32  \
+        -DMYNEWT_VAL_MSYS_1_BLOCK_SIZE=292  \
+        -DMYNEWT_VAL_BLE_EXT_ADV_MAX_SIZE=31  \
+        -DMYNEWT_VAL_BLE_MAX_CONNECTIONS=1  \
+        -DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 \
+        -DMYNEWT_VAL_BLE_MULTI_ADV_INSTANCES=5  \
+        -DMYNEWT_VAL_BLE_STORE_MAX_CCCDS=8  \
+        -DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 \
+        -DMYNEWT_VAL_BLE_MULTI_ADV_INSTANCES=5  \
+        -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LE_ENCRYPTION=1  \
+        -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LL_PRIVACY=1  \
+        -DMYNEWT_VAL_BLE_LL_CFG_FEAT_DATA_LEN_EXT=1  \
+        -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LL_EXT_ADV=1  \
+        -DMYNEWT_VAL_BLE_LL_SCHED_SCAN_AUX_PDU_LEN=41  \
+        -DMYNEWT_VAL_BLE_LL_SCHED_SCAN_SYNC_PDU_LEN=32  \
+        -DMYNEWT_VAL_BLE_SM_IO_CAP=BLE_HS_IO_DISPLAY_YESNO  \
+        -DNIMBLE_HOST_STACKSIZE=3072  \
+        -DVFS_FILE_BUFFER_SIZE=84  \
+        -DVFS_DIR_BUFFER_SIZE=52  \
+        -include '/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pinetime/riotbuild/riotbuild.h'   \
+        -isystem /usr/local/Cellar/arm-none-eabi-gcc/7-2018-q2-update/gcc/arm-none-eabi/include/newlib-nano  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/bleman/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/gui/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/controller/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/fonts/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/hal/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/storage/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/util/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/widget/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/home_time/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/menu_tiles/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/sysinfo/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/face_notification/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/face_sports/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/core/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/drivers/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/sys/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/boards/pinetime/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/boards/common/nrf52/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/cpu/nrf52/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/cpu/nrf5x_common/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/cpu/cortexm_common/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/cpu/cortexm_common/include/vendor  \
+        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/sys/libc/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/littlefs  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/lvgl  \
+        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/pkg/nimble/contrib/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/porting/npl/riot/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/porting/nimble/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/controller/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/drivers/nrf52/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/store/ram/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/util/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/ext/tinycrypt/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/transport/ram/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gap/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gatt/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/bleman/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/gui/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/controller/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/fonts/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/hal/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/storage/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/util/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/widget/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/home_time/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/menu_tiles/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/sysinfo/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/face_notification/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/face_sports/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/bleman/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/gui/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/controller/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/fonts/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/hal/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/storage/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/util/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/widget/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/sys/posix/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/drivers/cst816s/include  \
+        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/drivers/ili9341/include  \
+        -DEND_OF_OPTIONS
 
     # Change extern "C"
     # to     #[mynewt_macros::safe_wrap(attr)] extern "C"
@@ -582,18 +425,253 @@ EOF
 
 # Generate the bindings.
 generate_bindings_encoding json           json_encode    json  #  Generate bindings for encoding/json
-generate_bindings_encoding tinycbor       cborencoder    cbor  #  Generate bindings for encoding/tinycbor
-# TODO: generate_bindings_kernel   os             os             os    #  Generate bindings for kernel/os
-# TODO: generate_bindings_hw       sensor         sensor         sensor         #  Generate bindings for hw/sensor
-generate_bindings_hw       hal            hal            hal            #  Generate bindings for hw/hal
-generate_bindings_libs     mynewt_rust    mynewt_rust    mynewt_rust    #  Generate bindings for libs/mynewt_rust
-generate_bindings_libs     sensor_network sensor_network sensor_network #  Generate bindings for libs/sensor_network
-generate_bindings_libs     sensor_coap    sensor_coap    sensor_coap    #  Generate bindings for libs/sensor_coap
-
-# For testing only:
-# generate_bindings_apps my_sensor_app send_coap  #  Generate bindings for my_sensor_app/send_coap.c
 
 exit
+
+
+# bindgen --verbose apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_objx/lv_label.h -- \
+
+bindgen --verbose apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_core/lv_obj.h -- \
+    -Ibaselibc/include/ \
+    -Iapps/pinetime/bin/pkg/pinetime/ \
+    -Iapps/pinetime/bin/pkg/pinetime/lvgl \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime  \
+    -DDEVELHELP -Werror  \
+    -DCPU_FAM_NRF52 \
+    -mlittle-endian -ffunction-sections -fdata-sections -fno-builtin -fshort-enums -ggdb -g3 -Os  \
+    -DCPU_MODEL_NRF52832XXAA  \
+    -DCPU_ARCH_CORTEX_M4F  \
+    -DRIOT_BOARD=BOARD_PINETIME  \
+    -DRIOT_CPU=CPU_NRF52  \
+    -DRIOT_MCU=MCU_NRF52 -std=c99 -fno-common \
+    -fno-delete-null-pointer-checks \
+    -DLV_CONF_INCLUDE_SIMPLE  \
+    -DLV_LVGL_H_INCLUDE_SIMPLE  \
+    -DNIMBLE_CFG_CONTROLLER=1  \
+    -DMYNEWT_VAL_OS_CPUTIME_FREQ=32768  \
+    -DMYNEWT_VAL_BLE_SM_LEGACY=0  \
+    -DMYNEWT_VAL_BLE_SM_SC=1  \
+    -DMYNEWT_VAL_BLE_SM_MITM=1  \
+    -DMYNEWT_VAL_BLE_SM_BONDING=1  \
+    -DMYNEWT_VAL_BLE_SM_MAX_PROCS=1  \
+    -DMYNEWT_VAL_BLE_GATT_MAX_PROCS=8  \
+    -DMYNEWT_VAL_BLE_L2CAP_MAX_CHANS=8  \
+    -DMYNEWT_VAL_BLE_L2CAP_COC_MAX_NUM=1  \
+    -DMYNEWT_VAL_BLE_STORE_MAX_BONDS=5 \
+    -DMYNEWT_VAL_BLE_SM_OUR_KEY_DIST=0x6  \
+    -DMYNEWT_VAL_BLE_SM_THEIR_KEY_DIST=0x6  \
+    -DMYNEWT_VAL_MSYS_1_BLOCK_COUNT=32  \
+    -DMYNEWT_VAL_MSYS_1_BLOCK_SIZE=292  \
+    -DMYNEWT_VAL_BLE_EXT_ADV_MAX_SIZE=31  \
+    -DMYNEWT_VAL_BLE_MAX_CONNECTIONS=1  \
+    -DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 \
+    -DMYNEWT_VAL_BLE_MULTI_ADV_INSTANCES=5  \
+    -DMYNEWT_VAL_BLE_STORE_MAX_CCCDS=8  \
+    -DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 \
+    -DMYNEWT_VAL_BLE_MULTI_ADV_INSTANCES=5  \
+    -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LE_ENCRYPTION=1  \
+    -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LL_PRIVACY=1  \
+    -DMYNEWT_VAL_BLE_LL_CFG_FEAT_DATA_LEN_EXT=1  \
+    -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LL_EXT_ADV=1  \
+    -DMYNEWT_VAL_BLE_LL_SCHED_SCAN_AUX_PDU_LEN=41  \
+    -DMYNEWT_VAL_BLE_LL_SCHED_SCAN_SYNC_PDU_LEN=32  \
+    -DMYNEWT_VAL_BLE_SM_IO_CAP=BLE_HS_IO_DISPLAY_YESNO  \
+    -DNIMBLE_HOST_STACKSIZE=3072  \
+    -DVFS_FILE_BUFFER_SIZE=84  \
+    -DVFS_DIR_BUFFER_SIZE=52  \
+    -include '/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pinetime/riotbuild/riotbuild.h'   \
+    -isystem /usr/local/Cellar/arm-none-eabi-gcc/7-2018-q2-update/gcc/arm-none-eabi/include/newlib-nano  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/bleman/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/gui/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/controller/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/fonts/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/hal/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/storage/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/util/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/widget/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/home_time/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/menu_tiles/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/sysinfo/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/face_notification/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/face_sports/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/core/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/drivers/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/sys/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/boards/pinetime/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/boards/common/nrf52/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/cpu/nrf52/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/cpu/nrf5x_common/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/cpu/cortexm_common/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/cpu/cortexm_common/include/vendor  \
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/sys/libc/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/littlefs  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/lvgl  \
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/pkg/nimble/contrib/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/porting/npl/riot/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/porting/nimble/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/controller/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/drivers/nrf52/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/store/ram/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/util/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/ext/tinycrypt/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/transport/ram/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gap/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gatt/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/bleman/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/gui/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/controller/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/fonts/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/hal/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/storage/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/util/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/widget/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/home_time/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/menu_tiles/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/sysinfo/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/face_notification/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/face_sports/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/bleman/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/gui/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/controller/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/fonts/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/hal/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/storage/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/util/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/widget/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/sys/posix/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/drivers/cst816s/include  \
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/drivers/ili9341/include  \
+    -DEND_OF_OPTIONS
+
+exit
+
+#  Sample gcc command from `make --trace --jobs=1`
+arm-none-eabi-gcc \
+    -DRIOT_FILE_RELATIVE=\"/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_objx/lv_label.c\" \
+    -DRIOT_FILE_NOPATH=\"lv_label.c\" \
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime 
+    -DPINETIME_VERSION=\"6145f3d\" 
+    -DDEVELHELP -Werror 
+    -DCPU_FAM_NRF52 -mno-thumb
+    -interwork -mcpu=cortex-m4 -mlittle-endian -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -ffunction-sections -fdata-sections -fno-builtin -fshort-enums -ggdb -g3 -Os 
+    -DCPU_MODEL_NRF52832XXAA 
+    -DCPU_ARCH_CORTEX_M4F 
+    -DRIOT_APPLICATION=\"PineTime\" 
+    -DBOARD_PINETIME=\"pinetime\" 
+    -DRIOT_BOARD=BOARD_PINETIME 
+    -DCPU_NRF52=\"nrf52\" 
+    -DRIOT_CPU=CPU_NRF52 
+    -DMCU_NRF52=\"nrf52\" 
+    -DRIOT_MCU=MCU_NRF52 -std=c99 -fno-common -Wall -Wextra -Wmissing
+    -include-dirs -fno-delete-null-pointer-checks -fdiagnostics-color -Wstrict-prototypes -Wold-style-definition -gz -Wformat=2 -Wformat-overflow -Wformat-truncation -Wno-pedantic -Wno-unused-parameter -Wno-sign-compare -Wno-cast-function-type 
+    -DLV_CONF_INCLUDE_SIMPLE 
+    -DLV_LVGL_H_INCLUDE_SIMPLE 
+    -DNIMBLE_CFG_CONTROLLER=1 
+    -DMYNEWT_VAL_OS_CPUTIME_FREQ=32768 
+    -DMYNEWT_VAL_BLE_SM_LEGACY=0 
+    -DMYNEWT_VAL_BLE_SM_SC=1 
+    -DMYNEWT_VAL_BLE_SM_MITM=1 
+    -DMYNEWT_VAL_BLE_SM_BONDING=1 
+    -DMYNEWT_VAL_BLE_SM_MAX_PROCS=1 
+    -DMYNEWT_VAL_BLE_GATT_MAX_PROCS=8 
+    -DMYNEWT_VAL_BLE_L2CAP_MAX_CHANS=8 
+    -DMYNEWT_VAL_BLE_L2CAP_COC_MAX_NUM=1 
+    -DMYNEWT_VAL_BLE_STORE_MAX_BONDS=5 
+    -DMYNEWT_VAL_BLE_SM_OUR_KEY_DIST=0x6 
+    -DMYNEWT_VAL_BLE_SM_THEIR_KEY_DIST=0x6 
+    -DMYNEWT_VAL_MSYS_1_BLOCK_COUNT=32 
+    -DMYNEWT_VAL_MSYS_1_BLOCK_SIZE=292 
+    -DMYNEWT_VAL_BLE_EXT_ADV_MAX_SIZE=31 
+    -DMYNEWT_VAL_BLE_MAX_CONNECTIONS=1 
+    -DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 
+    -DMYNEWT_VAL_BLE_MULTI_ADV_INSTANCES=5 
+    -DMYNEWT_VAL_BLE_STORE_MAX_CCCDS=8 
+    -DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 
+    -DMYNEWT_VAL_BLE_MULTI_ADV_INSTANCES=5 
+    -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LE_ENCRYPTION=1 
+    -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LL_PRIVACY=1 
+    -DMYNEWT_VAL_BLE_LL_CFG_FEAT_DATA_LEN_EXT=1 
+    -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LL_EXT_ADV=1 
+    -DMYNEWT_VAL_BLE_LL_SCHED_SCAN_AUX_PDU_LEN=41 
+    -DMYNEWT_VAL_BLE_LL_SCHED_SCAN_SYNC_PDU_LEN=32 
+    -DMYNEWT_VAL_BLE_SM_IO_CAP=BLE_HS_IO_DISPLAY_YESNO 
+    -DNIMBLE_HOST_STACKSIZE=3072 
+    -DVFS_FILE_BUFFER_SIZE=84 
+    -DVFS_DIR_BUFFER_SIZE=52 
+    -include '/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pinetime/riotbuild/riotbuild.h'  
+    -isystem /usr/local/Cellar/arm-none-eabi-gcc/7-2018-q2-update/gcc/arm-none-eabi/include/newlib-nano 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/bleman/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/gui/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/controller/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/fonts/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/hal/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/storage/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/util/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/widget/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/home_time/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/menu_tiles/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/sysinfo/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/face_notification/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/face_sports/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/core/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/drivers/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/sys/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/boards/pinetime/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/boards/common/nrf52/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/cpu/nrf52/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/cpu/nrf5x_common/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/cpu/cortexm_common/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/cpu/cortexm_common/include/vendor 
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/sys/libc/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/littlefs 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/lvgl 
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/pkg/nimble/contrib/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/porting/npl/riot/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/porting/nimble/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/controller/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/drivers/nrf52/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/store/ram/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/util/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/ext/tinycrypt/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/transport/ram/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gap/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gatt/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/bleman/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/gui/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/controller/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/fonts/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/hal/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/storage/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/util/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/widget/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/home_time/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/menu_tiles/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/sysinfo/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/face_notification/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/face_sports/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/bleman/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/gui/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/controller/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/fonts/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/hal/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/storage/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/util/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/widget/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/sys/posix/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/drivers/cst816s/include 
+    -I/Users/Luppy/PineTime/PineTime-apps/RIOT/drivers/ili9341/include 
+    -MQ '/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pinetime/lvgl_objx/lv_label.o' 
+    -MD -MP -c 
+    -o /Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pinetime/lvgl_objx/lv_label.o 
+    /Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_objx/lv_label.c
 
 → bindgen --help
 bindgen 0.49.2
