@@ -9,25 +9,21 @@ set -x  #  Echo all commands.
 export RUST_BACKTRACE=1  #  Show Rust errors.
 
 bindgen --verbose apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_objx/lv_label.h -- \
+    -Ibaselibc/include/ \
     -Iapps/pinetime/bin/pkg/pinetime/ \
     -Iapps/pinetime/bin/pkg/pinetime/lvgl \
-    -DRIOT_FILE_RELATIVE=\"/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_objx/lv_label.c\" \        
-    -DRIOT_FILE_NOPATH=\"lv_label.c\" \        
+    -DRIOT_FILE_RELATIVE="/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_objx/lv_label.c" \
+    -DRIOT_FILE_NOPATH="lv_label.c" \
     -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime  \
-    -DPINETIME_VERSION=\"6145f3d\"  \
     -DDEVELHELP -Werror  \
-    -DCPU_FAM_NRF52 -mno-thumb \
-    -interwork -mcpu=cortex-m4 -mlittle-endian -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -ffunction-sections -fdata-sections -fno-builtin -fshort-enums -ggdb -g3 -Os  \
+    -DCPU_FAM_NRF52 \
+    -mlittle-endian -ffunction-sections -fdata-sections -fno-builtin -fshort-enums -ggdb -g3 -Os  \
     -DCPU_MODEL_NRF52832XXAA  \
     -DCPU_ARCH_CORTEX_M4F  \
-    -DRIOT_APPLICATION=\"PineTime\"  \
-    -DBOARD_PINETIME=\"pinetime\"  \
     -DRIOT_BOARD=BOARD_PINETIME  \
-    -DCPU_NRF52=\"nrf52\"  \
     -DRIOT_CPU=CPU_NRF52  \
-    -DMCU_NRF52=\"nrf52\"  \
-    -DRIOT_MCU=MCU_NRF52 -std=c99 -fno-common -Wall -Wextra -Wmissing \
-    -include-dirs -fno-delete-null-pointer-checks -fdiagnostics-color -Wstrict-prototypes -Wold-style-definition -gz -Wformat=2 -Wformat-overflow -Wformat-truncation -Wno-pedantic -Wno-unused-parameter -Wno-sign-compare -Wno-cast-function-type  \
+    -DRIOT_MCU=MCU_NRF52 -std=c99 -fno-common \
+    -fno-delete-null-pointer-checks \
     -DLV_CONF_INCLUDE_SIMPLE  \
     -DLV_LVGL_H_INCLUDE_SIMPLE  \
     -DNIMBLE_CFG_CONTROLLER=1  \
@@ -47,10 +43,10 @@ bindgen --verbose apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_objx/lv_label.h -- 
     -DMYNEWT_VAL_MSYS_1_BLOCK_SIZE=292  \
     -DMYNEWT_VAL_BLE_EXT_ADV_MAX_SIZE=31  \
     -DMYNEWT_VAL_BLE_MAX_CONNECTIONS=1  \
-    -DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 \ 
+    -DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 \
     -DMYNEWT_VAL_BLE_MULTI_ADV_INSTANCES=5  \
     -DMYNEWT_VAL_BLE_STORE_MAX_CCCDS=8  \
-    -DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 \ 
+    -DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 \
     -DMYNEWT_VAL_BLE_MULTI_ADV_INSTANCES=5  \
     -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LE_ENCRYPTION=1  \
     -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LL_PRIVACY=1  \
