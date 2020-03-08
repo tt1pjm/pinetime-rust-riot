@@ -7,7 +7,10 @@ use lvgl::{
     objx::{
         label,
     },
+    fill_zero,
 };
+
+static mut style_time: obj::lv_style_t = fill_zero!(obj::lv_style_t);
 
 #[no_mangle]  //  Don't mangle the function name
 extern "C" fn screen_time_create(ht: &home_time_widget_t) -> &obj::lv_obj_t {  //  Declare extern "C" because it will be called by RIOT OS firmware
@@ -60,4 +63,23 @@ extern "C" fn screen_time_create(ht: &home_time_widget_t) -> &obj::lv_obj_t {  /
     _screen_time_update_screen(&ht.widget);
 
     scr  //  Return the screen
+}
+
+
+//  TODO
+#[repr(C)]
+struct home_time_widget_t {
+    widget: widget_t,
+    control_event_handler_t: handler,
+    screen: &lv_obj_t,
+    lv_time: &lv_obj_t,
+    lv_date: &lv_obj_t,
+    lv_ble: &lv_obj_t,
+    lv_power: &lv_obj_t,
+    ble_state: bleman_ble_state_t,
+    /* Shared storage between gui and control */
+    time: controller_time_spec_t,
+    millivolts: u32,
+    charging: bool,
+    powered: bool,
 }

@@ -21,7 +21,8 @@ function generate_bindings() {
     local expandpath=rust/$libname/src/$modname/$submodname.rs
     local tmpexpandpath=rust/$libname/src/$modname/$submodname.tmp
 
-    #  Generate Rust bindings for the expanded macros, based on `make --trace --jobs=1`
+    #  Generate Rust bindings for the expanded macros, based on `make --trace --jobs=1`.
+    #  To generate Rust bindings for `static inline` functions: `-Dstatic="" -Dinline=""`.
     #  TODO: Ensure that output folder has been created
     bindgen \
         --verbose \
@@ -40,9 +41,16 @@ function generate_bindings() {
         -Ibaselibc/include/ \
         -Iapps/pinetime/bin/pkg/pinetime/ \
         -Iapps/pinetime  \
-        -DDEVELHELP -Werror  \
+        -DDEVELHELP \
+        -Werror  \
         -DCPU_FAM_NRF52 \
-        -mlittle-endian -ffunction-sections -fdata-sections -fno-builtin -fshort-enums -ggdb -g3 \
+        -mlittle-endian \
+        -ffunction-sections \
+        -fdata-sections \
+        -fno-builtin \
+        -fshort-enums \
+        -ggdb \
+        -g3 \
         -DCPU_MODEL_NRF52832XXAA  \
         -DCPU_ARCH_CORTEX_M4F  \
         -DRIOT_BOARD=BOARD_PINETIME  \

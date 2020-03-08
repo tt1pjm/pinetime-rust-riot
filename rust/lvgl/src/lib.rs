@@ -23,6 +23,9 @@ pub mod objx;                     //  Lvgl Objx API. Export folder `objx` as Rus
 
 //  TODO: pub mod themes;         //  Lvgl Themes API. Export folder `themes` as Rust module `lvgl::themes`
 
+#[macro_use]                      //  Allow macros from Rust module `util`
+pub mod util;                     //  Lvgl Utility API. Export folder `util` as Rust module `lvgl::util`
+
 pub mod console;                  //  Lvgl Console API. Export `console.rs` as Rust module `lvgl::console`
 
 /// Return type and error codes for Lvgl API
