@@ -6,16 +6,21 @@
 #![feature(trace_macros)]         //  Enable tracing of macros
 #![feature(proc_macro_hygiene)]   //  Allow proc macros to be unhygienic
 
-extern crate macros as Lvgl_macros;  //  Import Procedural Macros from `macros` library
+extern crate macros as lvgl_macros;  //  Import Procedural Macros from `macros` library
 
 #[allow(non_camel_case_types)]    //  Allow type names to have non-camel case
 #[allow(non_upper_case_globals)]  //  Allow globals to have lowercase letters
 pub mod core;                     //  Lvgl Core API. Export folder `core` as Rust module `lvgl::core`
+
 //  TODO: pub mod draw;           //  Lvgl Draw API. Export folder `draw` as Rust module `lvgl::draw`
 //  TODO: pub mod font;           //  Lvgl Font API. Export folder `font` as Rust module `lvgl::font`
 //  TODO: pub mod hal;            //  Lvgl HAL API. Export folder `hal` as Rust module `lvgl::hal`
 //  TODO: pub mod misc;           //  Lvgl Misc API. Export folder `misc` as Rust module `lvgl::misc`
+
+#[allow(non_camel_case_types)]    //  Allow type names to have non-camel case
+#[allow(non_upper_case_globals)]  //  Allow globals to have lowercase letters
 pub mod objx;                     //  Lvgl Objx API. Export folder `objx` as Rust module `lvgl::objx`
+
 //  TODO: pub mod themes;         //  Lvgl Themes API. Export folder `themes` as Rust module `lvgl::themes`
 
 /// Return type and error codes for Lvgl API
@@ -30,28 +35,8 @@ pub mod result {
     #[allow(non_camel_case_types)]    //  Allow type names to have non-camel case
     pub enum LvglError {
         /// Error code 0 means no error.
-        SYS_EOK         = os::SYS_EOK as i32,
-        SYS_ENOMEM      = os::SYS_ENOMEM,
-        SYS_EINVAL      = os::SYS_EINVAL,
-        SYS_ETIMEOUT    = os::SYS_ETIMEOUT,
-        SYS_ENOENT      = os::SYS_ENOENT,
-        SYS_EIO         = os::SYS_EIO,
-        SYS_EAGAIN      = os::SYS_EAGAIN,
-        SYS_EACCES      = os::SYS_EACCES,
-        SYS_EBUSY       = os::SYS_EBUSY,
-        SYS_ENODEV      = os::SYS_ENODEV,
-        SYS_ERANGE      = os::SYS_ERANGE,
-        SYS_EALREADY    = os::SYS_EALREADY,
-        SYS_ENOTSUP     = os::SYS_ENOTSUP,
-        SYS_EUNKNOWN    = os::SYS_EUNKNOWN,
-        SYS_EREMOTEIO   = os::SYS_EREMOTEIO,
-        SYS_EDONE       = os::SYS_EDONE,
-        SYS_EPERUSER    = os::SYS_EPERUSER,
-        HAL_I2C_ERR_UNKNOWN,
-        HAL_I2C_ERR_INVAL,
-        HAL_I2C_ERR_TIMEOUT,
-        HAL_I2C_ERR_ADDR_NACK,
-        HAL_I2C_ERR_DATA_NACK,
+        SYS_EOK         = 0,
+        SYS_EUNKNOWN    = 1,
     }
 
     /// Cast `LvglError` to `i32`
@@ -219,4 +204,4 @@ pub type Out<T> = &'static mut T;
 pub type Ptr = *mut ::cty::c_void;
 
 ///  Declare a `NULL` pointer that will be passed to C functions
-pub const NULL: Ptr = core::ptr::null_mut();
+pub const NULL: Ptr = ::core::ptr::null_mut();

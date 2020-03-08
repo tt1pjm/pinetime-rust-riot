@@ -988,26 +988,26 @@ pub const LV_LABEL_STYLE_MAIN: _bindgen_ty_24 = 0;
 #[doc = " Label styles"]
 pub type _bindgen_ty_24 = u8;
 pub type lv_label_style_t = u8;
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Create a label objects"]
     #[doc = " - __`par`__: pointer to an object, it will be the parent of the new label"]
     #[doc = " - __`copy`__: pointer to a button object, if not NULL then the new object will be copied from it"]
     #[doc = " Return: pointer to the created button"]
     pub fn lv_label_create(par: *mut lv_obj_t, copy: *const lv_obj_t) -> *mut lv_obj_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set a new text for a label. Memory will be allocated to store the text by the label."]
     #[doc = " - __`label`__: pointer to a label object"]
     #[doc = " - __`text`__: '\\0' terminated character string. NULL to refresh with the current text."]
     pub fn lv_label_set_text(label: *mut lv_obj_t, text: *const ::cty::c_char);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set a new formatted text for a label. Memory will be allocated to store the text by the label."]
     #[doc = " - __`label`__: pointer to a label object"]
     #[doc = " - __`fmt`__: `printf`-like format"]
     pub fn lv_label_set_text_fmt(label: *mut lv_obj_t, fmt: *const ::cty::c_char, ...);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set a new text for a label from a character array. The array don't has to be '\\0' terminated."]
     #[doc = " Memory will be allocated to store the array by the label."]
     #[doc = " - __`label`__: pointer to a label object"]
@@ -1015,14 +1015,14 @@ pub type lv_label_style_t = u8;
     #[doc = " - __`size`__: the size of 'array' in bytes"]
     pub fn lv_label_set_array_text(label: *mut lv_obj_t, array: *const ::cty::c_char, size: u16);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set a static text. It will not be saved by the label so the 'text' variable"]
     #[doc = " has to be 'alive' while the label exist."]
     #[doc = " - __`label`__: pointer to a label object"]
     #[doc = " - __`text`__: pointer to a text. NULL to refresh with the current text."]
     pub fn lv_label_set_static_text(label: *mut lv_obj_t, text: *const ::cty::c_char);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set the behavior of the label with longer text then the object size"]
     #[doc = " - __`label`__: pointer to a label object"]
     #[doc = " - __`long_mode`__: the new mode from 'lv_label_long_mode' enum."]
@@ -1030,79 +1030,79 @@ pub type lv_label_style_t = u8;
     #[doc = " function"]
     pub fn lv_label_set_long_mode(label: *mut lv_obj_t, long_mode: lv_label_long_mode_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set the align of the label (left or center)"]
     #[doc = " - __`label`__: pointer to a label object"]
     #[doc = " - __`align`__: 'LV_LABEL_ALIGN_LEFT' or 'LV_LABEL_ALIGN_LEFT'"]
     pub fn lv_label_set_align(label: *mut lv_obj_t, align: lv_label_align_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Enable the recoloring by in-line commands"]
     #[doc = " - __`label`__: pointer to a label object"]
     #[doc = " - __`en`__: true: enable recoloring, false: disable"]
     pub fn lv_label_set_recolor(label: *mut lv_obj_t, en: bool);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set the label to draw (or not draw) background specified in its style's body"]
     #[doc = " - __`label`__: pointer to a label object"]
     #[doc = " - __`en`__: true: draw body; false: don't draw body"]
     pub fn lv_label_set_body_draw(label: *mut lv_obj_t, en: bool);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set the label's animation speed in LV_LABEL_LONG_SROLL/SCROLL_CIRC modes"]
     #[doc = " - __`label`__: pointer to a label object"]
     #[doc = " - __`anim_speed`__: speed of animation in px/sec unit"]
     pub fn lv_label_set_anim_speed(label: *mut lv_obj_t, anim_speed: u16);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " @brief Set the selection start index."]
     #[doc = " - __`label`__: pointer to a label object."]
     #[doc = " - __`index`__: index to set. `LV_LABEL_TXT_SEL_OFF` to select nothing."]
     pub fn lv_label_set_text_sel_start(label: *mut lv_obj_t, index: u16);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " @brief Set the selection end index."]
     #[doc = " - __`label`__: pointer to a label object."]
     #[doc = " - __`index`__: index to set. `LV_LABEL_TXT_SEL_OFF` to select nothing."]
     pub fn lv_label_set_text_sel_end(label: *mut lv_obj_t, index: u16);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the text of a label"]
     #[doc = " - __`label`__: pointer to a label object"]
     #[doc = " Return: the text of the label"]
     pub fn lv_label_get_text(label: *const lv_obj_t) -> *mut ::cty::c_char;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the long mode of a label"]
     #[doc = " - __`label`__: pointer to a label object"]
     #[doc = " Return: the long mode"]
     pub fn lv_label_get_long_mode(label: *const lv_obj_t) -> lv_label_long_mode_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the align attribute"]
     #[doc = " - __`label`__: pointer to a label object"]
     #[doc = " Return: LV_LABEL_ALIGN_LEFT or LV_LABEL_ALIGN_CENTER"]
     pub fn lv_label_get_align(label: *const lv_obj_t) -> lv_label_align_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the recoloring attribute"]
     #[doc = " - __`label`__: pointer to a label object"]
     #[doc = " Return: true: recoloring is enabled, false: disable"]
     pub fn lv_label_get_recolor(label: *const lv_obj_t) -> bool;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the body draw attribute"]
     #[doc = " - __`label`__: pointer to a label object"]
     #[doc = " Return: true: draw body; false: don't draw body"]
     pub fn lv_label_get_body_draw(label: *const lv_obj_t) -> bool;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the label's animation speed in LV_LABEL_LONG_ROLL and SCROLL modes"]
     #[doc = " - __`label`__: pointer to a label object"]
     #[doc = " Return: speed of animation in px/sec unit"]
     pub fn lv_label_get_anim_speed(label: *const lv_obj_t) -> u16;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the relative x and y coordinates of a letter"]
     #[doc = " - __`label`__: pointer to a label object"]
     #[doc = " - __`index`__: index of the letter [0 ... text length]. Expressed in character index, not byte"]
@@ -1110,7 +1110,7 @@ pub type lv_label_style_t = u8;
     #[doc = " - __`pos`__: store the result here (E.g. index = 0 gives 0;0 coordinates)"]
     pub fn lv_label_get_letter_pos(label: *const lv_obj_t, index: u16, pos: *mut lv_point_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the index of letter on a relative point of a label"]
     #[doc = " - __`label`__: pointer to label object"]
     #[doc = " - __`pos`__: pointer to point with coordinates on a the label"]
@@ -1118,26 +1118,26 @@ pub type lv_label_style_t = u8;
     #[doc = " Expressed in character index and not byte index (different in UTF-8)"]
     pub fn lv_label_get_letter_on(label: *const lv_obj_t, pos: *mut lv_point_t) -> u16;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Check if a character is drawn under a point."]
     #[doc = " - __`label`__: Label object"]
     #[doc = " - __`pos`__: Point to check for characte under"]
     #[doc = " Return: whether a character is drawn under the point"]
     pub fn lv_label_is_char_under_pos(label: *const lv_obj_t, pos: *mut lv_point_t) -> bool;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " @brief Get the selection start index."]
     #[doc = " - __`label`__: pointer to a label object."]
     #[doc = " Return: selection start index. `LV_LABEL_TXT_SEL_OFF` if nothing is selected."]
     pub fn lv_label_get_text_sel_start(label: *const lv_obj_t) -> u16;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " @brief Get the selection end index."]
     #[doc = " - __`label`__: pointer to a label object."]
     #[doc = " Return: selection end index. `LV_LABEL_TXT_SEL_OFF` if nothing is selected."]
     pub fn lv_label_get_text_sel_end(label: *const lv_obj_t) -> u16;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Insert a text to the label. The label text can not be static."]
     #[doc = " - __`label`__: pointer to a label object"]
     #[doc = " - __`pos`__: character index to insert. Expressed in character index and not byte index (Different"]
@@ -1145,7 +1145,7 @@ pub type lv_label_style_t = u8;
     #[doc = " - __`txt`__: pointer to the text to insert"]
     pub fn lv_label_ins_text(label: *mut lv_obj_t, pos: u32, txt: *const ::cty::c_char);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Delete characters from a label. The label text can not be static."]
     #[doc = " - __`label`__: pointer to a label object"]
     #[doc = " - __`pos`__: character index to insert. Expressed in character index and not byte index (Different"]

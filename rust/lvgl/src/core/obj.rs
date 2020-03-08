@@ -403,14 +403,14 @@ impl _lv_font_struct {
     }
 }
 pub type lv_font_t = _lv_font_struct;
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Return with the bitmap of a font."]
     #[doc = " - __`font_p`__: pointer to a font"]
     #[doc = " - __`letter`__: an UNICODE character code"]
     #[doc = " Return:  pointer to the bitmap of the letter"]
     pub fn lv_font_get_glyph_bitmap(font_p: *const lv_font_t, letter: u32) -> *const u8;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the descriptor of a glyph"]
     #[doc = " - __`font_p`__: pointer to font"]
     #[doc = " - __`dsc_out`__: store the result descriptor here"]
@@ -424,7 +424,7 @@ pub type lv_font_t = _lv_font_struct;
         letter_next: u32,
     ) -> bool;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the width of a glyph with kerning"]
     #[doc = " - __`font`__: pointer to a font"]
     #[doc = " - __`letter`__: an UNICODE letter"]
@@ -432,7 +432,7 @@ pub type lv_font_t = _lv_font_struct;
     #[doc = " Return: the width of the glyph"]
     pub fn lv_font_get_glyph_width(font: *const lv_font_t, letter: u32, letter_next: u32) -> u16;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     pub static mut lv_font_roboto_28: lv_font_t;
 }
 pub const LV_OPA_TRANSP: _bindgen_ty_3 = 0;
@@ -708,7 +708,7 @@ pub struct lv_color_hsv_t {
     pub s: u8,
     pub v: u8,
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Convert a HSV color to RGB"]
     #[doc = " - __`h`__: hue [0..359]"]
     #[doc = " - __`s`__: saturation [0..100]"]
@@ -716,7 +716,7 @@ pub struct lv_color_hsv_t {
     #[doc = " Return: the given RGB color in RGB (with LV_COLOR_DEPTH depth)"]
     pub fn lv_color_hsv_to_rgb(h: u16, s: u8, v: u8) -> lv_color_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Convert a 32-bit RGB color to HSV"]
     #[doc = " - __`r8`__: 8-bit red"]
     #[doc = " - __`g8`__: 8-bit green"]
@@ -724,7 +724,7 @@ pub struct lv_color_hsv_t {
     #[doc = " Return: the given RGB color in HSV"]
     pub fn lv_color_rgb_to_hsv(r8: u8, g8: u8, b8: u8) -> lv_color_hsv_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Convert a color to HSV"]
     #[doc = " - __`color`__: color"]
     #[doc = " Return: the given color in HSV"]
@@ -746,7 +746,7 @@ pub struct lv_area_t {
     pub x2: lv_coord_t,
     pub y2: lv_coord_t,
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Initialize an area"]
     #[doc = " - __`area_p`__: pointer to an area"]
     #[doc = " - __`x1`__: left coordinate of the area"]
@@ -761,32 +761,32 @@ pub struct lv_area_t {
         y2: lv_coord_t,
     );
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set the width of an area"]
     #[doc = " - __`area_p`__: pointer to an area"]
     #[doc = " - __`w`__: the new width of the area (w == 1 makes x1 == x2)"]
     pub fn lv_area_set_width(area_p: *mut lv_area_t, w: lv_coord_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set the height of an area"]
     #[doc = " - __`area_p`__: pointer to an area"]
     #[doc = " - __`h`__: the new height of the area (h == 1 makes y1 == y2)"]
     pub fn lv_area_set_height(area_p: *mut lv_area_t, h: lv_coord_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set the position of an area (width and height will be kept)"]
     #[doc = " - __`area_p`__: pointer to an area"]
     #[doc = " - __`x`__: the new x coordinate of the area"]
     #[doc = " - __`y`__: the new y coordinate of the area"]
     pub fn lv_area_set_pos(area_p: *mut lv_area_t, x: lv_coord_t, y: lv_coord_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Return with area of an area (x * y)"]
     #[doc = " - __`area_p`__: pointer to an area"]
     #[doc = " Return: size of area"]
     pub fn lv_area_get_size(area_p: *const lv_area_t) -> u32;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the common parts of two areas"]
     #[doc = " - __`res_p`__: pointer to an area, the result will be stored her"]
     #[doc = " - __`a1_p`__: pointer to the first area"]
@@ -798,35 +798,35 @@ pub struct lv_area_t {
         a2_p: *const lv_area_t,
     ) -> bool;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Join two areas into a third which involves the other two"]
     #[doc = " - __`res_p`__: pointer to an area, the result will be stored here"]
     #[doc = " - __`a1_p`__: pointer to the first area"]
     #[doc = " - __`a2_p`__: pointer to the second area"]
     pub fn lv_area_join(a_res_p: *mut lv_area_t, a1_p: *const lv_area_t, a2_p: *const lv_area_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Check if a point is on an area"]
     #[doc = " - __`a_p`__: pointer to an area"]
     #[doc = " - __`p_p`__: pointer to a point"]
     #[doc = " Return: false:the point is out of the area"]
     pub fn lv_area_is_point_on(a_p: *const lv_area_t, p_p: *const lv_point_t) -> bool;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Check if two area has common parts"]
     #[doc = " - __`a1_p`__: pointer to an area."]
     #[doc = " - __`a2_p`__: pointer to an other area"]
     #[doc = " Return: false: a1_p and a2_p has no common parts"]
     pub fn lv_area_is_on(a1_p: *const lv_area_t, a2_p: *const lv_area_t) -> bool;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Check if an area is fully on an other"]
     #[doc = " - __`ain_p`__: pointer to an area which could be on aholder_p"]
     #[doc = " - __`aholder`__: pointer to an area which could involve ain_p"]
     #[doc = " @return"]
     pub fn lv_area_is_in(ain_p: *const lv_area_t, aholder_p: *const lv_area_t) -> bool;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Increment or decrement an area's size by a single amount"]
     #[doc = " - __`a_p`__: pointer to an area to grow"]
     #[doc = " - __`amount`__: amount to increment the area, or negative to decrement"]
@@ -963,11 +963,11 @@ impl _lv_anim_t {
     }
 }
 pub type lv_anim_t = _lv_anim_t;
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Init. the animation module"]
     pub fn lv_anim_core_init();
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Initialize an animation variable."]
     #[doc = " E.g.:"]
     #[doc = " lv_anim_t a;"]
@@ -977,12 +977,12 @@ pub type lv_anim_t = _lv_anim_t;
     #[doc = " - __`a`__: pointer to an `lv_anim_t` variable to initialize"]
     pub fn lv_anim_init(a: *mut lv_anim_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Create an animation"]
     #[doc = " - __`a`__: an initialized 'anim_t' variable. Not required after call."]
     pub fn lv_anim_create(a: *mut lv_anim_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Delete an animation of a variable with a given animator function"]
     #[doc = " - __`var`__: pointer to variable"]
     #[doc = " - __`exec_cb`__: a function pointer which is animating 'var',"]
@@ -990,12 +990,12 @@ pub type lv_anim_t = _lv_anim_t;
     #[doc = " Return: true: at least 1 animation is deleted, false: no animation is deleted"]
     pub fn lv_anim_del(var: *mut ::cty::c_void, exec_cb: lv_anim_exec_xcb_t) -> bool;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the number of currently running animations"]
     #[doc = " Return: the number of running animations"]
     pub fn lv_anim_count_running() -> u16;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Calculate the time of an animation with a given speed and the start and end values"]
     #[doc = " - __`speed`__: speed of animation in unit/sec"]
     #[doc = " - __`start`__: start value of the animation"]
@@ -1003,43 +1003,43 @@ pub type lv_anim_t = _lv_anim_t;
     #[doc = " Return: the required time [ms] for the animation with the given parameters"]
     pub fn lv_anim_speed_to_time(speed: u16, start: lv_anim_value_t, end: lv_anim_value_t) -> u16;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Calculate the current value of an animation applying linear characteristic"]
     #[doc = " - __`a`__: pointer to an animation"]
     #[doc = " Return: the current value to set"]
     pub fn lv_anim_path_linear(a: *const lv_anim_t) -> lv_anim_value_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Calculate the current value of an animation slowing down the start phase"]
     #[doc = " - __`a`__: pointer to an animation"]
     #[doc = " Return: the current value to set"]
     pub fn lv_anim_path_ease_in(a: *const lv_anim_t) -> lv_anim_value_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Calculate the current value of an animation slowing down the end phase"]
     #[doc = " - __`a`__: pointer to an animation"]
     #[doc = " Return: the current value to set"]
     pub fn lv_anim_path_ease_out(a: *const lv_anim_t) -> lv_anim_value_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Calculate the current value of an animation applying an \"S\" characteristic (cosine)"]
     #[doc = " - __`a`__: pointer to an animation"]
     #[doc = " Return: the current value to set"]
     pub fn lv_anim_path_ease_in_out(a: *const lv_anim_t) -> lv_anim_value_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Calculate the current value of an animation with overshoot at the end"]
     #[doc = " - __`a`__: pointer to an animation"]
     #[doc = " Return: the current value to set"]
     pub fn lv_anim_path_overshoot(a: *const lv_anim_t) -> lv_anim_value_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Calculate the current value of an animation with 3 bounces"]
     #[doc = " - __`a`__: pointer to an animation"]
     #[doc = " Return: the current value to set"]
     pub fn lv_anim_path_bounce(a: *const lv_anim_t) -> lv_anim_value_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Calculate the current value of an animation applying step characteristic."]
     #[doc = " (Set end value on the end of the animation)"]
     #[doc = " - __`a`__: pointer to an animation"]
@@ -1243,17 +1243,17 @@ impl Default for lv_style_anim_dsc_t {
         unsafe { ::core::mem::zeroed() }
     }
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = "  Init the basic styles"]
     pub fn lv_style_init();
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Copy a style to an other"]
     #[doc = " - __`dest`__: pointer to the destination style"]
     #[doc = " - __`src`__: pointer to the source style"]
     pub fn lv_style_copy(dest: *mut lv_style_t, src: *const lv_style_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Mix two styles according to a given ratio"]
     #[doc = " - __`start`__: start style"]
     #[doc = " - __`end`__: end style"]
@@ -1266,7 +1266,7 @@ impl Default for lv_style_anim_dsc_t {
         ratio: u16,
     );
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Initialize an animation variable."]
     #[doc = " E.g.:"]
     #[doc = " lv_anim_t a;"]
@@ -1276,7 +1276,7 @@ impl Default for lv_style_anim_dsc_t {
     #[doc = " - __`a`__: pointer to an `lv_anim_t` variable to initialize"]
     pub fn lv_style_anim_init(a: *mut lv_anim_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
     #[doc = " - __`to_anim`__: pointer to the style to animate"]
     #[doc = " - __`start`__: pointer to a style to animate from (start value)"]
@@ -1288,43 +1288,43 @@ impl Default for lv_style_anim_dsc_t {
         end: *const lv_style_t,
     );
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     pub static mut lv_style_scr: lv_style_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     pub static mut lv_style_transp: lv_style_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     pub static mut lv_style_transp_fit: lv_style_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     pub static mut lv_style_transp_tight: lv_style_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     pub static mut lv_style_plain: lv_style_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     pub static mut lv_style_plain_color: lv_style_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     pub static mut lv_style_pretty: lv_style_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     pub static mut lv_style_pretty_color: lv_style_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     pub static mut lv_style_btn_rel: lv_style_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     pub static mut lv_style_btn_pr: lv_style_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     pub static mut lv_style_btn_tgl_rel: lv_style_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     pub static mut lv_style_btn_tgl_pr: lv_style_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     pub static mut lv_style_btn_ina: lv_style_t;
 }
 pub const LV_RES_INV: _bindgen_ty_7 = 0;
@@ -1350,22 +1350,22 @@ pub struct lv_mem_monitor_t {
     #[doc = "< Amount of fragmentation"]
     pub frag_pct: u8,
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Initiaize the dyn_mem module (work memory and other variables)"]
     pub fn lv_mem_init();
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Allocate a memory dynamically"]
     #[doc = " - __`size`__: size of the memory to allocate in bytes"]
     #[doc = " Return: pointer to the allocated memory"]
     pub fn lv_mem_alloc(size: usize) -> *mut ::cty::c_void;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Free an allocated data"]
     #[doc = " - __`data`__: pointer to an allocated memory"]
     pub fn lv_mem_free(data: *const ::cty::c_void);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Reallocate a memory with a new size. The old content will be kept."]
     #[doc = " - __`data`__: pointer to an allocated memory."]
     #[doc = " Its content will be copied to the new memory block and freed"]
@@ -1373,17 +1373,17 @@ pub struct lv_mem_monitor_t {
     #[doc = " Return: pointer to the new memory"]
     pub fn lv_mem_realloc(data_p: *mut ::cty::c_void, new_size: usize) -> *mut ::cty::c_void;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Join the adjacent free memory blocks"]
     pub fn lv_mem_defrag();
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Give information about the work memory of dynamic allocation"]
     #[doc = " - __`mon_p`__: pointer to a dm_mon_p variable,"]
     #[doc = "              the result of the analysis will be stored here"]
     pub fn lv_mem_monitor(mon_p: *mut lv_mem_monitor_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Give the size of an allocated memory"]
     #[doc = " - __`data`__: pointer to an allocated memory"]
     #[doc = " Return: the size of data memory in bytes"]
@@ -1403,44 +1403,44 @@ impl Default for lv_ll_t {
         unsafe { ::core::mem::zeroed() }
     }
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Initialize linked list"]
     #[doc = " - __`ll_dsc`__: pointer to ll_dsc variable"]
     #[doc = " - __`node_size`__: the size of 1 node in bytes"]
     pub fn lv_ll_init(ll_p: *mut lv_ll_t, node_size: u32);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Add a new head to a linked list"]
     #[doc = " - __`ll_p`__: pointer to linked list"]
     #[doc = " Return: pointer to the new head"]
     pub fn lv_ll_ins_head(ll_p: *mut lv_ll_t) -> *mut ::cty::c_void;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Insert a new node in front of the n_act node"]
     #[doc = " - __`ll_p`__: pointer to linked list"]
     #[doc = " - __`n_act`__: pointer a node"]
     #[doc = " Return: pointer to the new head"]
     pub fn lv_ll_ins_prev(ll_p: *mut lv_ll_t, n_act: *mut ::cty::c_void) -> *mut ::cty::c_void;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Add a new tail to a linked list"]
     #[doc = " - __`ll_p`__: pointer to linked list"]
     #[doc = " Return: pointer to the new tail"]
     pub fn lv_ll_ins_tail(ll_p: *mut lv_ll_t) -> *mut ::cty::c_void;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Remove the node 'node_p' from 'll_p' linked list."]
     #[doc = " It does not free the the memory of node."]
     #[doc = " - __`ll_p`__: pointer to the linked list of 'node_p'"]
     #[doc = " - __`node_p`__: pointer to node in 'll_p' linked list"]
     pub fn lv_ll_rem(ll_p: *mut lv_ll_t, node_p: *mut ::cty::c_void);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Remove and free all elements from a linked list. The list remain valid but become empty."]
     #[doc = " - __`ll_p`__: pointer to linked list"]
     pub fn lv_ll_clear(ll_p: *mut lv_ll_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Move a node to a new linked list"]
     #[doc = " - __`ll_ori_p`__: pointer to the original (old) linked list"]
     #[doc = " - __`ll_new_p`__: pointer to the new linked list"]
@@ -1454,39 +1454,39 @@ impl Default for lv_ll_t {
         head: bool,
     );
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Return with head node of the linked list"]
     #[doc = " - __`ll_p`__: pointer to linked list"]
     #[doc = " Return: pointer to the head of 'll_p'"]
     pub fn lv_ll_get_head(ll_p: *const lv_ll_t) -> *mut ::cty::c_void;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Return with tail node of the linked list"]
     #[doc = " - __`ll_p`__: pointer to linked list"]
     #[doc = " Return: pointer to the head of 'll_p'"]
     pub fn lv_ll_get_tail(ll_p: *const lv_ll_t) -> *mut ::cty::c_void;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Return with the pointer of the next node after 'n_act'"]
     #[doc = " - __`ll_p`__: pointer to linked list"]
     #[doc = " - __`n_act`__: pointer a node"]
     #[doc = " Return: pointer to the next node"]
     pub fn lv_ll_get_next(ll_p: *const lv_ll_t, n_act: *const ::cty::c_void) -> *mut ::cty::c_void;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Return with the pointer of the previous node after 'n_act'"]
     #[doc = " - __`ll_p`__: pointer to linked list"]
     #[doc = " - __`n_act`__: pointer a node"]
     #[doc = " Return: pointer to the previous node"]
     pub fn lv_ll_get_prev(ll_p: *const lv_ll_t, n_act: *const ::cty::c_void) -> *mut ::cty::c_void;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Return the length of the linked list."]
     #[doc = " - __`ll_p`__: pointer to linked list"]
     #[doc = " Return: length of the linked list"]
     pub fn lv_ll_get_len(ll_p: *const lv_ll_t) -> u32;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Move a nodw before an other node in the same linked list"]
     #[doc = " - __`ll_p`__: pointer to a linked list"]
     #[doc = " - __`n_act`__: pointer to node to move"]
@@ -1497,7 +1497,7 @@ impl Default for lv_ll_t {
         n_after: *mut ::cty::c_void,
     );
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Check if a linked list is empty"]
     #[doc = " - __`ll_p`__: pointer to a linked list"]
     #[doc = " Return: true: the linked list is empty; false: not empty"]
@@ -1582,21 +1582,21 @@ impl _lv_task_t {
     }
 }
 pub type lv_task_t = _lv_task_t;
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Init the lv_task module"]
     pub fn lv_task_core_init();
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Call it  periodically to handle lv_tasks."]
     pub fn lv_task_handler();
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Create an \"empty\" task. It needs to initialzed with at least"]
     #[doc = " `lv_task_set_cb` and `lv_task_set_period`"]
     #[doc = " Return: pointer to the craeted task"]
     pub fn lv_task_create_basic() -> *mut lv_task_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Create a new lv_task"]
     #[doc = " - __`task_xcb`__: a callback which is the task itself. It will be called periodically."]
     #[doc = "                 (the 'x' in the argument name indicates that its not a fully generic function because it not follows"]
@@ -1612,51 +1612,51 @@ pub type lv_task_t = _lv_task_t;
         user_data: *mut ::cty::c_void,
     ) -> *mut lv_task_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Delete a lv_task"]
     #[doc = " - __`task`__: pointer to task_cb created by task"]
     pub fn lv_task_del(task: *mut lv_task_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set the callback the task (the function to call periodically)"]
     #[doc = " - __`task`__: pointer to a task"]
     #[doc = " - __`task_cb`__: the function to call periodically"]
     pub fn lv_task_set_cb(task: *mut lv_task_t, task_cb: lv_task_cb_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set new priority for a lv_task"]
     #[doc = " - __`task`__: pointer to a lv_task"]
     #[doc = " - __`prio`__: the new priority"]
     pub fn lv_task_set_prio(task: *mut lv_task_t, prio: lv_task_prio_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set new period for a lv_task"]
     #[doc = " - __`task`__: pointer to a lv_task"]
     #[doc = " - __`period`__: the new period"]
     pub fn lv_task_set_period(task: *mut lv_task_t, period: u32);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Make a lv_task ready. It will not wait its period."]
     #[doc = " - __`task`__: pointer to a lv_task."]
     pub fn lv_task_ready(task: *mut lv_task_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Delete the lv_task after one call"]
     #[doc = " - __`task`__: pointer to a lv_task."]
     pub fn lv_task_once(task: *mut lv_task_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Reset a lv_task."]
     #[doc = " It will be called the previously set period milliseconds later."]
     #[doc = " - __`task`__: pointer to a lv_task."]
     pub fn lv_task_reset(task: *mut lv_task_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Enable or disable the whole  lv_task handling"]
     #[doc = " - __`en:`__: true: lv_task handling is running, false: lv_task handling is suspended"]
     pub fn lv_task_enable(en: bool);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get idle percentage"]
     #[doc = " Return: the lv_task idle in percentage"]
     pub fn lv_task_get_idle() -> u8;
@@ -1850,14 +1850,14 @@ impl _disp_t {
     }
 }
 pub type lv_disp_t = _disp_t;
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Initialize a display driver with default values."]
     #[doc = " It is used to have known values in the fields and not junk in memory."]
     #[doc = " After it you can safely set only the fields you need."]
     #[doc = " - __`driver`__: pointer to driver variable to initialize"]
     pub fn lv_disp_drv_init(driver: *mut lv_disp_drv_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Initialize a display buffer"]
     #[doc = " - __`disp_buf`__: pointer `lv_disp_buf_t` variable to initialize"]
     #[doc = " - __`buf1`__: A buffer to be used by LittlevGL to draw the image."]
@@ -1878,86 +1878,86 @@ pub type lv_disp_t = _disp_t;
         size_in_px_cnt: u32,
     );
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Register an initialized display driver."]
     #[doc = " Automatically set the first display as active."]
     #[doc = " - __`driver`__: pointer to an initialized 'lv_disp_drv_t' variable (can be local variable)"]
     #[doc = " Return: pointer to the new display or NULL on error"]
     pub fn lv_disp_drv_register(driver: *mut lv_disp_drv_t) -> *mut lv_disp_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Update the driver in run time."]
     #[doc = " - __`disp`__: pointer to a display. (return value of `lv_disp_drv_register`)"]
     #[doc = " - __`new_drv`__: pointer to the new driver"]
     pub fn lv_disp_drv_update(disp: *mut lv_disp_t, new_drv: *mut lv_disp_drv_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Remove a display"]
     #[doc = " - __`disp`__: pointer to display"]
     pub fn lv_disp_remove(disp: *mut lv_disp_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set a default screen. The new screens will be created on it by default."]
     #[doc = " - __`disp`__: pointer to a display"]
     pub fn lv_disp_set_default(disp: *mut lv_disp_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the default display"]
     #[doc = " Return: pointer to the default display"]
     pub fn lv_disp_get_default() -> *mut lv_disp_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the horizontal resolution of a display"]
     #[doc = " - __`disp`__: pointer to a display (NULL to use the default display)"]
     #[doc = " Return: the horizontal resolution of the display"]
     pub fn lv_disp_get_hor_res(disp: *mut lv_disp_t) -> lv_coord_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the vertical resolution of a display"]
     #[doc = " - __`disp`__: pointer to a display (NULL to use the default display)"]
     #[doc = " Return: the vertical resolution of the display"]
     pub fn lv_disp_get_ver_res(disp: *mut lv_disp_t) -> lv_coord_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get if anti-aliasing is enabled for a display or not"]
     #[doc = " - __`disp`__: pointer to a display (NULL to use the default display)"]
     #[doc = " Return: true: anti-aliasing is enabled; false: disabled"]
     pub fn lv_disp_get_antialiasing(disp: *mut lv_disp_t) -> bool;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Call in the display driver's `flush_cb` function when the flushing is finished"]
     #[doc = " - __`disp_drv`__: pointer to display driver in `flush_cb` where this function is called"]
     pub fn lv_disp_flush_ready(disp_drv: *mut lv_disp_drv_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the next display."]
     #[doc = " - __`disp`__: pointer to the current display. NULL to initialize."]
     #[doc = " Return: the next display or NULL if no more. Give the first display when the parameter is NULL"]
     pub fn lv_disp_get_next(disp: *mut lv_disp_t) -> *mut lv_disp_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the internal buffer of a display"]
     #[doc = " - __`disp`__: pointer to a display"]
     #[doc = " Return: pointer to the internal buffers"]
     pub fn lv_disp_get_buf(disp: *mut lv_disp_t) -> *mut lv_disp_buf_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the number of areas in the buffer"]
     #[doc = " Return: number of invalid areas"]
     pub fn lv_disp_get_inv_buf_size(disp: *mut lv_disp_t) -> u16;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Pop (delete) the last 'num' invalidated areas from the buffer"]
     #[doc = " - __`num`__: number of areas to delete"]
     pub fn lv_disp_pop_from_inv_buf(disp: *mut lv_disp_t, num: u16);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Check the driver configuration if it's double buffered (both `buf1` and `buf2` are set)"]
     #[doc = " - __`disp`__: pointer to to display to check"]
     #[doc = " Return: true: double buffered; false: not double buffered"]
     pub fn lv_disp_is_double_buf(disp: *mut lv_disp_t) -> bool;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Check the driver configuration if it's TRUE double buffered (both `buf1` and `buf2` are set and"]
     #[doc = " `size` is screen sized)"]
     #[doc = " - __`disp`__: pointer to to display to check"]
@@ -2219,50 +2219,50 @@ impl Default for _lv_indev_t {
     }
 }
 pub type lv_indev_t = _lv_indev_t;
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Initialize an input device driver with default values."]
     #[doc = " It is used to surly have known values in the fields ant not memory junk."]
     #[doc = " After it you can set the fields."]
     #[doc = " - __`driver`__: pointer to driver variable to initialize"]
     pub fn lv_indev_drv_init(driver: *mut lv_indev_drv_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Register an initialized input device driver."]
     #[doc = " - __`driver`__: pointer to an initialized 'lv_indev_drv_t' variable (can be local variable)"]
     #[doc = " Return: pointer to the new input device or NULL on error"]
     pub fn lv_indev_drv_register(driver: *mut lv_indev_drv_t) -> *mut lv_indev_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Update the driver in run time."]
     #[doc = " - __`indev`__: pointer to a input device. (return value of `lv_indev_drv_register`)"]
     #[doc = " - __`new_drv`__: pointer to the new driver"]
     pub fn lv_indev_drv_update(indev: *mut lv_indev_t, new_drv: *mut lv_indev_drv_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the next input device."]
     #[doc = " - __`indev`__: pointer to the current input device. NULL to initialize."]
     #[doc = " Return: the next input devise or NULL if no more. Give the first input device when the parameter"]
     #[doc = " is NULL"]
     pub fn lv_indev_get_next(indev: *mut lv_indev_t) -> *mut lv_indev_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Read data from an input device."]
     #[doc = " - __`indev`__: pointer to an input device"]
     #[doc = " - __`data`__: input device will write its data here"]
     #[doc = " Return: false: no more data; true: there more data to read (buffered)"]
     pub fn lv_indev_read(indev: *mut lv_indev_t, data: *mut lv_indev_data_t) -> bool;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " You have to call this function periodically"]
     #[doc = " - __`tick_period`__: the call period of this function in milliseconds"]
     pub fn lv_tick_inc(tick_period: u32);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the elapsed milliseconds since start up"]
     #[doc = " Return: the elapsed milliseconds"]
     pub fn lv_tick_get() -> u32;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the elapsed milliseconds since a previous time stamp"]
     #[doc = " - __`prev_tick`__: a previous time stamp (return value of systick_get() )"]
     #[doc = " Return: the elapsed milliseconds since 'prev_tick'"]
@@ -2713,11 +2713,11 @@ impl Default for lv_obj_type_t {
         unsafe { ::core::mem::zeroed() }
     }
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Init. the 'lv' library."]
     pub fn lv_init();
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Create a basic object"]
     #[doc = " - __`parent`__: pointer to a parent object."]
     #[doc = "                  If NULL then a screen will be created"]
@@ -2725,84 +2725,84 @@ impl Default for lv_obj_type_t {
     #[doc = " Return: pointer to the new object"]
     pub fn lv_obj_create(parent: *mut lv_obj_t, copy: *const lv_obj_t) -> *mut lv_obj_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Delete 'obj' and all of its children"]
     #[doc = " - __`obj`__: pointer to an object to delete"]
     #[doc = " Return: LV_RES_INV because the object is deleted"]
     pub fn lv_obj_del(obj: *mut lv_obj_t) -> lv_res_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Helper function for asynchronously deleting objects."]
     #[doc = " Useful for cases where you can't delete an object directly in an `LV_EVENT_DELETE` handler (i.e. parent)."]
     #[doc = " - __`obj`__: object to delete"]
     #[doc = " @see lv_async_call"]
     pub fn lv_obj_del_async(obj: *mut _lv_obj_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Delete all children of an object"]
     #[doc = " - __`obj`__: pointer to an object"]
     pub fn lv_obj_clean(obj: *mut lv_obj_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Mark the object as invalid therefore its current position will be redrawn by 'lv_refr_task'"]
     #[doc = " - __`obj`__: pointer to an object"]
     pub fn lv_obj_invalidate(obj: *const lv_obj_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set a new parent for an object. Its relative position will be the same."]
     #[doc = " - __`obj`__: pointer to an object. Can't be a screen."]
     #[doc = " - __`parent`__: pointer to the new parent object. (Can't be NULL)"]
     pub fn lv_obj_set_parent(obj: *mut lv_obj_t, parent: *mut lv_obj_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Move and object to the foreground"]
     #[doc = " - __`obj`__: pointer to an object"]
     pub fn lv_obj_move_foreground(obj: *mut lv_obj_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Move and object to the background"]
     #[doc = " - __`obj`__: pointer to an object"]
     pub fn lv_obj_move_background(obj: *mut lv_obj_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set relative the position of an object (relative to the parent)"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`x`__: new distance from the left side of the parent"]
     #[doc = " - __`y`__: new distance from the top of the parent"]
     pub fn lv_obj_set_pos(obj: *mut lv_obj_t, x: lv_coord_t, y: lv_coord_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set the x coordinate of a object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`x`__: new distance from the left side from the parent"]
     pub fn lv_obj_set_x(obj: *mut lv_obj_t, x: lv_coord_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set the y coordinate of a object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`y`__: new distance from the top of the parent"]
     pub fn lv_obj_set_y(obj: *mut lv_obj_t, y: lv_coord_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set the size of an object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`w`__: new width"]
     #[doc = " - __`h`__: new height"]
     pub fn lv_obj_set_size(obj: *mut lv_obj_t, w: lv_coord_t, h: lv_coord_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set the width of an object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`w`__: new width"]
     pub fn lv_obj_set_width(obj: *mut lv_obj_t, w: lv_coord_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set the height of an object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`h`__: new height"]
     pub fn lv_obj_set_height(obj: *mut lv_obj_t, h: lv_coord_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Align an object to an other object."]
     #[doc = " - __`obj`__: pointer to an object to align"]
     #[doc = " - __`base`__: pointer to an object (if NULL the parent is used). 'obj' will be aligned to it."]
@@ -2817,7 +2817,7 @@ impl Default for lv_obj_type_t {
         y_mod: lv_coord_t,
     );
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Align an object to an other object."]
     #[doc = " - __`obj`__: pointer to an object to align"]
     #[doc = " - __`base`__: pointer to an object (if NULL the parent is used). 'obj' will be aligned to it."]
@@ -2832,19 +2832,19 @@ impl Default for lv_obj_type_t {
         y_mod: lv_coord_t,
     );
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Realign the object based on the last `lv_obj_align` parameters."]
     #[doc = " - __`obj`__: pointer to an object"]
     pub fn lv_obj_realign(obj: *mut lv_obj_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Enable the automatic realign of the object when its size has changed based on the last"]
     #[doc = " `lv_obj_align` parameters."]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`en`__: true: enable auto realign; false: disable auto realign"]
     pub fn lv_obj_set_auto_realign(obj: *mut lv_obj_t, en: bool);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set the size of an extended clickable area"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`left`__: extended clickable are on the left [px]"]
@@ -2859,83 +2859,83 @@ impl Default for lv_obj_type_t {
         bottom: lv_coord_t,
     );
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set a new style for an object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`style_p`__: pointer to the new style"]
     pub fn lv_obj_set_style(obj: *mut lv_obj_t, style: *const lv_style_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Notify an object about its style is modified"]
     #[doc = " - __`obj`__: pointer to an object"]
     pub fn lv_obj_refresh_style(obj: *mut lv_obj_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Notify all object if a style is modified"]
     #[doc = " - __`style`__: pointer to a style. Only the objects with this style will be notified"]
     #[doc = "               (NULL to notify all objects)"]
     pub fn lv_obj_report_style_mod(style: *mut lv_style_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Hide an object. It won't be visible and clickable."]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`en`__: true: hide the object"]
     pub fn lv_obj_set_hidden(obj: *mut lv_obj_t, en: bool);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Enable or disable the clicking of an object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`en`__: true: make the object clickable"]
     pub fn lv_obj_set_click(obj: *mut lv_obj_t, en: bool);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Enable to bring this object to the foreground if it"]
     #[doc = " or any of its children is clicked"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`en`__: true: enable the auto top feature"]
     pub fn lv_obj_set_top(obj: *mut lv_obj_t, en: bool);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Enable the dragging of an object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`en`__: true: make the object dragable"]
     pub fn lv_obj_set_drag(obj: *mut lv_obj_t, en: bool);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set the directions an object can be dragged in"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`drag_dir`__: bitwise OR of allowed drag directions"]
     pub fn lv_obj_set_drag_dir(obj: *mut lv_obj_t, drag_dir: lv_drag_dir_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Enable the throwing of an object after is is dragged"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`en`__: true: enable the drag throw"]
     pub fn lv_obj_set_drag_throw(obj: *mut lv_obj_t, en: bool);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Enable to use parent for drag related operations."]
     #[doc = " If trying to drag the object the parent will be moved instead"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`en`__: true: enable the 'drag parent' for the object"]
     pub fn lv_obj_set_drag_parent(obj: *mut lv_obj_t, en: bool);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Propagate the events to the parent too"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`en`__: true: enable the event propagation"]
     pub fn lv_obj_set_parent_event(obj: *mut lv_obj_t, en: bool);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     pub fn lv_obj_set_base_dir(obj: *mut lv_obj_t, dir: lv_bidi_dir_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set the opa scale enable parameter (required to set opa_scale with `lv_obj_set_opa_scale()`)"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`en`__: true: opa scaling is enabled for this object and all children; false: no opa scaling"]
     pub fn lv_obj_set_opa_scale_enable(obj: *mut lv_obj_t, en: bool);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set the opa scale of an object."]
     #[doc = " The opacity of this object and all it's children will be scaled down with this factor."]
     #[doc = " `lv_obj_set_opa_scale_enable(obj, true)` needs to be called to enable it."]
@@ -2944,26 +2944,26 @@ impl Default for lv_obj_type_t {
     #[doc = " - __`opa_scale`__: a factor to scale down opacity [0..255]"]
     pub fn lv_obj_set_opa_scale(obj: *mut lv_obj_t, opa_scale: lv_opa_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set a bit or bits in the protect filed"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`prot`__: 'OR'-ed values from `lv_protect_t`"]
     pub fn lv_obj_set_protect(obj: *mut lv_obj_t, prot: u8);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Clear a bit or bits in the protect filed"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`prot`__: 'OR'-ed values from `lv_protect_t`"]
     pub fn lv_obj_clear_protect(obj: *mut lv_obj_t, prot: u8);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set a an event handler function for an object."]
     #[doc = " Used by the user to react on event which happens with the object."]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`event_cb`__: the new event function"]
     pub fn lv_obj_set_event_cb(obj: *mut lv_obj_t, event_cb: lv_event_cb_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Send an event to the object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`event`__: the type of the event from `lv_event_t`."]
@@ -2975,7 +2975,7 @@ impl Default for lv_obj_type_t {
         data: *const ::cty::c_void,
     ) -> lv_res_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Call an event function with an object, event, and data."]
     #[doc = " - __`event_xcb`__: an event callback function. If `NULL` `LV_RES_OK` will return without any actions."]
     #[doc = "        (the 'x' in the argument name indicates that its not a fully generic function because it not follows"]
@@ -2991,61 +2991,61 @@ impl Default for lv_obj_type_t {
         data: *const ::cty::c_void,
     ) -> lv_res_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the `data` parameter of the current event"]
     #[doc = " Return: the `data` parameter"]
     pub fn lv_event_get_data() -> *const ::cty::c_void;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set the a signal function of an object. Used internally by the library."]
     #[doc = " Always call the previous signal function in the new."]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`signal_cb`__: the new signal function"]
     pub fn lv_obj_set_signal_cb(obj: *mut lv_obj_t, signal_cb: lv_signal_cb_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Send an event to the object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`event`__: the type of the event from `lv_event_t`."]
     pub fn lv_signal_send(obj: *mut lv_obj_t, signal: lv_signal_t, param: *mut ::cty::c_void);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set a new design function for an object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`design_cb`__: the new design function"]
     pub fn lv_obj_set_design_cb(obj: *mut lv_obj_t, design_cb: lv_design_cb_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Allocate a new ext. data for an object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`ext_size`__: the size of the new ext. data"]
     #[doc = " Return: pointer to the allocated ext"]
     pub fn lv_obj_allocate_ext_attr(obj: *mut lv_obj_t, ext_size: u16) -> *mut ::cty::c_void;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Send a 'LV_SIGNAL_REFR_EXT_SIZE' signal to the object"]
     #[doc = " - __`obj`__: pointer to an object"]
     pub fn lv_obj_refresh_ext_draw_pad(obj: *mut lv_obj_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Return with the screen of an object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: pointer to a screen"]
     pub fn lv_obj_get_screen(obj: *const lv_obj_t) -> *mut lv_obj_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the display of an object"]
     #[doc = " - __`scr`__: pointer to an object"]
     #[doc = " Return: pointer the object's display"]
     pub fn lv_obj_get_disp(obj: *const lv_obj_t) -> *mut lv_disp_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Returns with the parent of an object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: pointer to the parent of  'obj'"]
     pub fn lv_obj_get_parent(obj: *const lv_obj_t) -> *mut lv_obj_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Iterate through the children of an object (start from the \"youngest, lastly created\")"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`child`__: NULL at first call to get the next children"]
@@ -3053,7 +3053,7 @@ impl Default for lv_obj_type_t {
     #[doc = " Return: the child after 'act_child' or NULL if no more child"]
     pub fn lv_obj_get_child(obj: *const lv_obj_t, child: *const lv_obj_t) -> *mut lv_obj_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Iterate through the children of an object (start from the \"oldest\", firstly created)"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`child`__: NULL at first call to get the next children"]
@@ -3061,247 +3061,247 @@ impl Default for lv_obj_type_t {
     #[doc = " Return: the child after 'act_child' or NULL if no more child"]
     pub fn lv_obj_get_child_back(obj: *const lv_obj_t, child: *const lv_obj_t) -> *mut lv_obj_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Count the children of an object (only children directly on 'obj')"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: children number of 'obj'"]
     pub fn lv_obj_count_children(obj: *const lv_obj_t) -> u16;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Recursively count the children of an object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: children number of 'obj'"]
     pub fn lv_obj_count_children_recursive(obj: *const lv_obj_t) -> u16;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Copy the coordinates of an object to an area"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`cords_p`__: pointer to an area to store the coordinates"]
     pub fn lv_obj_get_coords(obj: *const lv_obj_t, cords_p: *mut lv_area_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Reduce area retried by `lv_obj_get_coords()` the get graphically usable area of an object."]
     #[doc = " (Without the size of the border or other extra graphical elements)"]
     #[doc = " - __`coords_p`__: store the result area here"]
     pub fn lv_obj_get_inner_coords(obj: *const lv_obj_t, coords_p: *mut lv_area_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the x coordinate of object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: distance of 'obj' from the left side of its parent"]
     pub fn lv_obj_get_x(obj: *const lv_obj_t) -> lv_coord_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the y coordinate of object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: distance of 'obj' from the top of its parent"]
     pub fn lv_obj_get_y(obj: *const lv_obj_t) -> lv_coord_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the width of an object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: the width"]
     pub fn lv_obj_get_width(obj: *const lv_obj_t) -> lv_coord_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the height of an object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: the height"]
     pub fn lv_obj_get_height(obj: *const lv_obj_t) -> lv_coord_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get that width reduced by the left and right padding."]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: the width which still fits into the container"]
     pub fn lv_obj_get_width_fit(obj: *const lv_obj_t) -> lv_coord_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get that height reduced by the top an bottom padding."]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: the height which still fits into the container"]
     pub fn lv_obj_get_height_fit(obj: *const lv_obj_t) -> lv_coord_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the automatic realign property of the object."]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return:  true: auto realign is enabled; false: auto realign is disabled"]
     pub fn lv_obj_get_auto_realign(obj: *const lv_obj_t) -> bool;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the left padding of extended clickable area"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: the extended left padding"]
     pub fn lv_obj_get_ext_click_pad_left(obj: *const lv_obj_t) -> lv_coord_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the right padding of extended clickable area"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: the extended right padding"]
     pub fn lv_obj_get_ext_click_pad_right(obj: *const lv_obj_t) -> lv_coord_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the top padding of extended clickable area"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: the extended top padding"]
     pub fn lv_obj_get_ext_click_pad_top(obj: *const lv_obj_t) -> lv_coord_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the bottom padding of extended clickable area"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: the extended bottom padding"]
     pub fn lv_obj_get_ext_click_pad_bottom(obj: *const lv_obj_t) -> lv_coord_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the extended size attribute of an object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: the extended size attribute"]
     pub fn lv_obj_get_ext_draw_pad(obj: *const lv_obj_t) -> lv_coord_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the style pointer of an object (if NULL get style of the parent)"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: pointer to a style"]
     pub fn lv_obj_get_style(obj: *const lv_obj_t) -> *const lv_style_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the hidden attribute of an object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: true: the object is hidden"]
     pub fn lv_obj_get_hidden(obj: *const lv_obj_t) -> bool;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the click enable attribute of an object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: true: the object is clickable"]
     pub fn lv_obj_get_click(obj: *const lv_obj_t) -> bool;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the top enable attribute of an object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: true: the auto top feature is enabled"]
     pub fn lv_obj_get_top(obj: *const lv_obj_t) -> bool;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the drag enable attribute of an object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: true: the object is dragable"]
     pub fn lv_obj_get_drag(obj: *const lv_obj_t) -> bool;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the directions an object can be dragged"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: bitwise OR of allowed directions an object can be dragged in"]
     pub fn lv_obj_get_drag_dir(obj: *const lv_obj_t) -> lv_drag_dir_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the drag throw enable attribute of an object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: true: drag throw is enabled"]
     pub fn lv_obj_get_drag_throw(obj: *const lv_obj_t) -> bool;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the drag parent attribute of an object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: true: drag parent is enabled"]
     pub fn lv_obj_get_drag_parent(obj: *const lv_obj_t) -> bool;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the drag parent attribute of an object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: true: drag parent is enabled"]
     pub fn lv_obj_get_parent_event(obj: *const lv_obj_t) -> bool;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     pub fn lv_obj_get_base_dir(obj: *const lv_obj_t) -> lv_bidi_dir_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the opa scale enable parameter"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: true: opa scaling is enabled for this object and all children; false: no opa scaling"]
     pub fn lv_obj_get_opa_scale_enable(obj: *const lv_obj_t) -> lv_opa_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the opa scale parameter of an object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: opa scale [0..255]"]
     pub fn lv_obj_get_opa_scale(obj: *const lv_obj_t) -> lv_opa_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the protect field of an object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: protect field ('OR'ed values of `lv_protect_t`)"]
     pub fn lv_obj_get_protect(obj: *const lv_obj_t) -> u8;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Check at least one bit of a given protect bitfield is set"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`prot`__: protect bits to test ('OR'ed values of `lv_protect_t`)"]
     #[doc = " Return: false: none of the given bits are set, true: at least one bit is set"]
     pub fn lv_obj_is_protected(obj: *const lv_obj_t, prot: u8) -> bool;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the signal function of an object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: the signal function"]
     pub fn lv_obj_get_signal_cb(obj: *const lv_obj_t) -> lv_signal_cb_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the design function of an object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: the design function"]
     pub fn lv_obj_get_design_cb(obj: *const lv_obj_t) -> lv_design_cb_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the event function of an object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: the event function"]
     pub fn lv_obj_get_event_cb(obj: *const lv_obj_t) -> lv_event_cb_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the ext pointer"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: the ext pointer but not the dynamic version"]
     #[doc = "         Use it as ext->data1, and NOT da(ext)->data1"]
     pub fn lv_obj_get_ext_attr(obj: *const lv_obj_t) -> *mut ::cty::c_void;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get object's and its ancestors type. Put their name in `type_buf` starting with the current type."]
     #[doc = " E.g. buf.type[0]=\"lv_btn\", buf.type[1]=\"lv_cont\", buf.type[2]=\"lv_obj\""]
     #[doc = " - __`obj`__: pointer to an object which type should be get"]
     #[doc = " - __`buf`__: pointer to an `lv_obj_type_t` buffer to store the types"]
     pub fn lv_obj_get_type(obj: *const lv_obj_t, buf: *mut lv_obj_type_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the object's user data"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: user data"]
     pub fn lv_obj_get_user_data(obj: *const lv_obj_t) -> lv_obj_user_data_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get a pointer to the object's user data"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: pointer to the user data"]
     pub fn lv_obj_get_user_data_ptr(obj: *const lv_obj_t) -> *mut lv_obj_user_data_t;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set the object's user data. The data will be copied."]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " - __`data`__: user data"]
     pub fn lv_obj_set_user_data(obj: *mut lv_obj_t, data: lv_obj_user_data_t);
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the group of the object"]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: the pointer to group of the object"]
     pub fn lv_obj_get_group(obj: *const lv_obj_t) -> *mut ::cty::c_void;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Tell whether the object is the focused object of a group or not."]
     #[doc = " - __`obj`__: pointer to an object"]
     #[doc = " Return: true: the object is focused, false: the object is not focused or not in a group"]
     pub fn lv_obj_is_focused(obj: *const lv_obj_t) -> bool;
 }
-#[mynewt_macros::safe_wrap(attr)] extern "C" {
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Used in the signal callback to handle `LV_SIGNAL_GET_TYPE` signal"]
     #[doc = " - __`buf`__: pointer to `lv_obj_type_t`. (`param` in the signal callback)"]
     #[doc = " - __`name`__: name of the object. E.g. \"lv_btn\". (Only the pointer is saved)"]

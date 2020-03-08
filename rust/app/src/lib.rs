@@ -36,15 +36,11 @@ extern crate macros as mynewt_macros;   //  Declare the Mynewt Procedural Macros
 //  Declare the system modules
 use core::panic::PanicInfo; //  Import `PanicInfo` type which is used by `panic()` below
 use cortex_m::asm::bkpt;    //  Import cortex_m assembly function to inject breakpoint
-use mynewt::{
-    kernel::os,             //  Import Mynewt OS API
-    sys::console,           //  Import Mynewt Console API
-};
 
 ///  Main program that initialises the sensor, network driver and starts reading and sending sensor data in the background.
 ///  Will be called at startup.
-#[no_mangle]                      //  Don't mangle the function name
-extern "C" fn rust_main() -> ! {  //  Declare extern "C" because it will be called by firmware
+#[no_mangle]                 //  Don't mangle the function name
+extern "C" fn rust_main() {  //  Declare extern "C" because it will be called by firmware
 }
 
 ///  This function is called on panic, like an assertion failure. We display the filename and line number and pause in the debugger. From https://os.phil-opp.com/freestanding-rust-binary/

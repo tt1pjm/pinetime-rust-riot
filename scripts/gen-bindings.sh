@@ -150,7 +150,7 @@ function generate_bindings() {
         -DEND_OF_OPTIONS
 
     # Change extern "C"
-    # to     #[mynewt_macros::safe_wrap(attr)] extern "C"
+    # to     #[lvgl_macros::safe_wrap(attr)] extern "C"
     # Change #[doc = " @param dev The device to open"]
     # to     #[doc = " - __`dev`__: The device to open"]
     # Change @return to Return
@@ -159,7 +159,7 @@ function generate_bindings() {
     # Change @endcode to ```
     # Change @note to __Note:__
     cat $tmpexpandpath \
-        | sed 's/^extern "C" /#[mynewt_macros::safe_wrap(attr)] extern "C" /' \
+        | sed 's/^extern "C" /#[lvgl_macros::safe_wrap(attr)] extern "C" /' \
         | sed 's/@param \([^ ][^ ]*\) /- __`\1`__: /' \
         | sed 's/@return /Return: /' \
         | sed 's/@code{.c}/```c/' \
