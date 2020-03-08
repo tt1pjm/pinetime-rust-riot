@@ -37,8 +37,7 @@ function generate_bindings() {
         -- \
         -Ibaselibc/include/ \
         -Iapps/pinetime/bin/pkg/pinetime/ \
-        -Iapps/pinetime/bin/pkg/pinetime/lvgl \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime  \
+        -Iapps/pinetime  \
         -DDEVELHELP -Werror  \
         -DCPU_FAM_NRF52 \
         -mlittle-endian -ffunction-sections -fdata-sections -fno-builtin -fshort-enums -ggdb -g3 -Os  \
@@ -82,72 +81,72 @@ function generate_bindings() {
         -DNIMBLE_HOST_STACKSIZE=3072  \
         -DVFS_FILE_BUFFER_SIZE=84  \
         -DVFS_DIR_BUFFER_SIZE=52  \
-        -include '/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pinetime/riotbuild/riotbuild.h'   \
+        -include 'apps/pinetime/bin/pinetime/riotbuild/riotbuild.h'   \
         -isystem /usr/local/Cellar/arm-none-eabi-gcc/7-2018-q2-update/gcc/arm-none-eabi/include/newlib-nano  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/bleman/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/gui/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/controller/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/fonts/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/hal/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/storage/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/util/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/widget/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/home_time/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/menu_tiles/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/sysinfo/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/face_notification/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/face_sports/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/core/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/drivers/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/sys/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/boards/pinetime/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/boards/common/nrf52/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/cpu/nrf52/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/cpu/nrf5x_common/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/cpu/cortexm_common/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/cpu/cortexm_common/include/vendor  \
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/sys/libc/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/littlefs  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/lvgl  \
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/pkg/nimble/contrib/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/porting/npl/riot/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/porting/nimble/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/controller/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/drivers/nrf52/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/store/ram/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/util/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/ext/tinycrypt/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/transport/ram/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gap/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gatt/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/bleman/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/gui/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/controller/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/fonts/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/hal/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/storage/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/util/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/widget/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/home_time/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/menu_tiles/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/sysinfo/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/face_notification/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../widgets/face_sports/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/bleman/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/gui/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/controller/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/fonts/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/hal/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/storage/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/util/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/apps/pinetime/../../modules/widget/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/sys/posix/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/drivers/cst816s/include  \
-        -I/Users/Luppy/PineTime/PineTime-apps/RIOT/drivers/ili9341/include  \
+        -Iapps/pinetime/../../modules/include  \
+        -Iapps/pinetime/../../modules/bleman/include  \
+        -Iapps/pinetime/../../modules/gui/include  \
+        -Iapps/pinetime/../../modules/controller/include  \
+        -Iapps/pinetime/../../modules/fonts/include  \
+        -Iapps/pinetime/../../modules/hal/include  \
+        -Iapps/pinetime/../../modules/storage/include  \
+        -Iapps/pinetime/../../modules/util/include  \
+        -Iapps/pinetime/../../modules/widget/include  \
+        -Iapps/pinetime/../../widgets/home_time/include  \
+        -Iapps/pinetime/../../widgets/menu_tiles/include  \
+        -Iapps/pinetime/../../widgets/sysinfo/include  \
+        -Iapps/pinetime/../../widgets/face_notification/include  \
+        -Iapps/pinetime/../../widgets/face_sports/include  \
+        -IRIOT/core/include  \
+        -IRIOT/drivers/include  \
+        -IRIOT/sys/include  \
+        -IRIOT/boards/pinetime/include  \
+        -IRIOT/boards/common/nrf52/include  \
+        -IRIOT/cpu/nrf52/include  \
+        -IRIOT/cpu/nrf5x_common/include  \
+        -IRIOT/cpu/cortexm_common/include  \
+        -IRIOT/cpu/cortexm_common/include/vendor  \
+        -IRIOT/sys/libc/include  \
+        -Iapps/pinetime/bin/pkg/pinetime/littlefs  \
+        -Iapps/pinetime/bin/pkg/pinetime/lvgl  \
+        -IRIOT/pkg/nimble/contrib/include  \
+        -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/include  \
+        -Iapps/pinetime/bin/pkg/pinetime/nimble/porting/npl/riot/include  \
+        -Iapps/pinetime/bin/pkg/pinetime/nimble/porting/nimble/include  \
+        -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/controller/include  \
+        -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/drivers/nrf52/include  \
+        -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/include  \
+        -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/store/ram/include  \
+        -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/util/include  \
+        -Iapps/pinetime/bin/pkg/pinetime/nimble/ext/tinycrypt/include  \
+        -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/transport/ram/include  \
+        -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gap/include  \
+        -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gatt/include  \
+        -Iapps/pinetime/../../modules/include  \
+        -Iapps/pinetime/../../modules/bleman/include  \
+        -Iapps/pinetime/../../modules/gui/include  \
+        -Iapps/pinetime/../../modules/controller/include  \
+        -Iapps/pinetime/../../modules/fonts/include  \
+        -Iapps/pinetime/../../modules/hal/include  \
+        -Iapps/pinetime/../../modules/storage/include  \
+        -Iapps/pinetime/../../modules/util/include  \
+        -Iapps/pinetime/../../modules/widget/include  \
+        -Iapps/pinetime/../../widgets/home_time/include  \
+        -Iapps/pinetime/../../widgets/menu_tiles/include  \
+        -Iapps/pinetime/../../widgets/sysinfo/include  \
+        -Iapps/pinetime/../../widgets/face_notification/include  \
+        -Iapps/pinetime/../../widgets/face_sports/include  \
+        -Iapps/pinetime/../../modules/bleman/include  \
+        -Iapps/pinetime/../../modules/gui/include  \
+        -Iapps/pinetime/../../modules/controller/include  \
+        -Iapps/pinetime/../../modules/fonts/include  \
+        -Iapps/pinetime/../../modules/hal/include  \
+        -Iapps/pinetime/../../modules/storage/include  \
+        -Iapps/pinetime/../../modules/util/include  \
+        -Iapps/pinetime/../../modules/widget/include  \
+        -IRIOT/sys/posix/include  \
+        -IRIOT/drivers/cst816s/include  \
+        -IRIOT/drivers/ili9341/include  \
         -DEND_OF_OPTIONS
 
     # Change extern "C"
@@ -171,87 +170,7 @@ function generate_bindings() {
     rm $tmpexpandpath
 }
 
-function generate_bindings_kernel() {
-    #  Generate bindings for kernel/*
-    #  libname: os
-    local libname=$1
-    #  srcname: os
-    local srcname=$2
-    #  prefixname: os
-    local prefixname=$3
-    #  libdir looks like kernel/os
-    local modname=kernel/$libname
-    local libdir=kernel/$libname
-    #  libcmd looks like
-    #  bin/targets/bluepill_my_sensor/app/kernel/os/repos/apache-mynewt-core/kernel/os/src/os.o.cmd
-    local libcmd=bin/targets/*_my_sensor/app/$libdir/repos/apache-mynewt-core/$libdir/src/$srcname.o.cmd
-    local whitelist=`cat << EOF
-        --raw-line use \
-        --raw-line super::*; \
-        --whitelist-var      (?i)SYS_E.* \
-        --whitelist-function (?i)${prefixname}_.* \
-        --whitelist-type     (?i)${prefixname}_.* \
-        --whitelist-var      (?i)${prefixname}_.*
-EOF
-`
-    generate_bindings $libname $modname $libdir $libcmd $whitelist
-}
-
-function generate_bindings_apps() {
-    #  Generate bindings for apps/$1 e.g. my_sensor_app.
-    local libname=$1
-    local modname=$2
-    local libdir=apps/$libname
-    local libcmd=bin/targets/*_my_sensor/app/$libdir/$libdir/src/$modname.o.cmd
-    local whitelist=
-    generate_bindings $libname $modname $libdir $libcmd $whitelist
-}
-
-function generate_bindings_encoding() {
-    #  Generate bindings for encoding/*
-    #  libname: tinycbor, json
-    local libname=$1
-    #  srcname looks like cborencoder, json_encode
-    local srcname=$2
-    #  prefixname looks like cbor, json
-    local prefixname=$3
-    #  libdir looks like encoding/tinycbor, encoding/json_encode
-    local modname=encoding/$libname
-    local libdir=encoding/$libname
-    #  libcmd looks like
-    #  bin/targets/bluepill_my_sensor/app/encoding/tinycbor/repos/apache-mynewt-core/encoding/tinycbor/src/cborencoder.o.cmd
-    #  bin/targets/bluepill_my_sensor/app/encoding/json/repos/apache-mynewt-core/encoding/json/src/json_encode.o.cmd
-    local libcmd=bin/targets/*_my_sensor/app/$libdir/repos/apache-mynewt-core/$libdir/src/$srcname.o.cmd
-    if [ "$libname" == 'tinycbor' ]; then
-        #  Skip incorrect binding "pub static CborIndefiniteLength: usize", replace by const:
-        #  static const size_t CborIndefiniteLength = (0xffffffffU)
-        local whitelist=`cat << EOF
-            --raw-line use \
-            --raw-line super::*; \
-            --raw-line pub \
-            --raw-line const \
-            --raw-line CborIndefiniteLength:usize=0xffffffffusize; \
-            --blacklist-item     CborIndefiniteLength \
-            --whitelist-function (?i)${prefixname}.* \
-            --whitelist-type     (?i)${prefixname}.* \
-            --whitelist-var      (?i)${prefixname}.*
-EOF
-`
-    else
-        #  Add whitelist only.
-        local whitelist=`cat << EOF
-            --raw-line use \
-            --raw-line super::*; \
-            --whitelist-function (?i)${prefixname}.* \
-            --whitelist-type     (?i)${prefixname}.* \
-            --whitelist-var      (?i)${prefixname}.*
-EOF
-`
-    fi
-    generate_bindings $libname $modname $libdir $libcmd $whitelist
-}
-
-function generate_bindings_hw() {
+function NOTUSED_generate_bindings_hw() {
     #  Generate bindings for hw/*
     #  libname: sensor
     local libname=$1
@@ -305,119 +224,6 @@ function generate_bindings_hw() {
         --whitelist-var      (?i)${prefixname}.*
 EOF
 `
-    generate_bindings $libname $modname $libdir $libcmd $whitelist
-}
-
-function generate_bindings_libs() {
-    #  Generate bindings for libs/*
-    #  libname: sensor_network, sensor_coap, mynewt_rust
-    local libname=$1
-    #  srcname: sensor_network, sensor_coap, mynewt_rust
-    local srcname=$2
-    #  prefixname: sensor_network, sensor_coap, mynewt_rust
-    local prefixname=$3
-    #  libdir looks like libs/sensor_network, libs/sensor_coap, libs/mynewt_rust
-    local modname=libs/$libname
-    local libdir=libs/$libname
-    #  libcmd looks like
-    #  bin/targets/bluepill_my_sensor/app/libs/sensor_network/libs/sensor_network/src/sensor_network.o.cmd
-    #  bin/targets/bluepill_my_sensor/app/libs/sensor_coap/libs/sensor_coap/src/sensor_coap.o.cmd
-    #  bin/targets/bluepill_my_sensor/app/libs/mynewt_rust/libs/mynewt_rust/src/json_helper.o.cmd
-    local libcmd=bin/targets/*_my_sensor/app/$libdir/$libdir/src/$srcname.o.cmd
-    if [ "$libname" == 'sensor_network' ]; then
-        #  Add sensor network + whitelist + blacklist.
-        #  sensor_value is defined in libs/sensor_coap.
-        local whitelist=`cat << EOF
-            --raw-line use \
-            --raw-line super::*; \
-            --blacklist-item     sensor_value \
-            --whitelist-function (?i)init_.*_post \
-            --whitelist-function (?i)do_.*_post \
-            --whitelist-function (?i)is_.*_node \
-            --whitelist-function (?i)start_.*_transport \
-            --whitelist-function (?i)register_.*_transport \
-            --whitelist-function (?i)should_send_to_.* \
-            --whitelist-function (?i)get_device_id \
-            --whitelist-function (?i)${prefixname}.* \
-            --whitelist-type     (?i)${prefixname}.* \
-            --whitelist-var      (?i)${prefixname}.*
-EOF
-`
-    elif [ "$libname" == 'sensor_coap' ]; then
-        #  Add sensor coap + whitelist + blacklist.
-        #  json_encoder and json_value are defined in encoding/json.
-        local whitelist=`cat << EOF
-            --raw-line use \
-            --raw-line super::*; \
-            --blacklist-item     json_encoder \
-            --blacklist-item     json_value \
-            --whitelist-type     (?i)sensor_value \
-            --whitelist-function (?i)init_sensor_.* \
-            --whitelist-function (?i)sensor_coap_.* \
-            --whitelist-function (?i)do_sensor_.* \
-            --whitelist-var      (?i)coap_.* \
-            --whitelist-function (?i)json_rep_.* \
-            --whitelist-function (?i)${prefixname}.*
-EOF
-`
-    elif [ "$libname" == 'mynewt_rust' ]; then
-        #  Add mynewt_rust + whitelist + blacklist.
-        local whitelist=`cat << EOF
-            --raw-line use \
-            --raw-line super::*; \
-            --blacklist-item     os_callout \
-            --blacklist-item     os_dev	\
-            --blacklist-item     os_dev_handlers \
-            --blacklist-item     os_event \
-            --blacklist-item     os_eventq \
-            --blacklist-item     os_memblock \
-            --blacklist-item     os_mempool \
-            --blacklist-item     os_mutex \
-            --blacklist-item     os_sanity_check \
-            --blacklist-item     os_task \
-            --blacklist-item     os_timeval \
-            --blacklist-item     os_timezone \
-            --blacklist-item     sensor \
-            --blacklist-item     sensor_accel_data \
-            --blacklist-item     sensor_cfg \
-            --blacklist-item     sensor_color_data \
-            --blacklist-item     sensor_data_t \
-            --blacklist-item     sensor_driver \
-            --blacklist-item     sensor_euler_data \
-            --blacklist-item     sensor_gyro_data \
-            --blacklist-item     sensor_humid_data \
-            --blacklist-item     sensor_int	\
-            --blacklist-item     sensor_itf	\
-            --blacklist-item     sensor_light_data \
-            --blacklist-item     sensor_listener \
-            --blacklist-item     sensor_mag_data \
-            --blacklist-item     sensor_notifier \
-            --blacklist-item     sensor_press_data \
-            --blacklist-item     sensor_quat_data \
-            --blacklist-item     sensor_timestamp \
-            --blacklist-item     sensor_temp_data \
-            --blacklist-item     sensor_type_traits \
-            --whitelist-function (?i)rust_sysinit \
-            --whitelist-type     (?i)sensor_temp_raw_data \
-            --whitelist-function (?i)device_get_name \
-            --whitelist-function (?i)get_temp_.* \
-            --whitelist-function (?i)is_null_sensor.* \
-            --whitelist-function (?i)null_sensor \
-            --whitelist-function (?i)sensor_get_device \
-            --whitelist-function (?i)json_helper_.*
-EOF
-`
-    else
-        #  Add whitelist only.
-        local whitelist=`cat << EOF
-            --raw-line use \
-            --raw-line super::*; \
-            --whitelist-function (?i)${prefixname}.* \
-            --whitelist-type     (?i)${prefixname}.* \
-            --whitelist-var      (?i)${prefixname}.*
-EOF
-`
-    fi
     generate_bindings $libname $modname $libdir $libcmd $whitelist
 }
 
