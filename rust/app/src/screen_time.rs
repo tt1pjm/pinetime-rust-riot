@@ -65,17 +65,16 @@ extern "C" fn screen_time_create(ht: &home_time_widget_t) -> &obj::lv_obj_t {  /
     scr  //  Return the screen
 }
 
-
 //  TODO
 #[repr(C)]
 struct home_time_widget_t {
     widget: widget_t,
     control_event_handler_t: handler,
-    screen: &lv_obj_t,
-    lv_time: &lv_obj_t,
-    lv_date: &lv_obj_t,
-    lv_ble: &lv_obj_t,
-    lv_power: &lv_obj_t,
+    screen: &obj::lv_obj_t,
+    lv_time: &obj::lv_obj_t,
+    lv_date: &obj::lv_obj_t,
+    lv_ble: &obj::lv_obj_t,
+    lv_power: &obj::lv_obj_t,
     ble_state: bleman_ble_state_t,
     /* Shared storage between gui and control */
     time: controller_time_spec_t,

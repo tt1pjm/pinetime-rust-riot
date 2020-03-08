@@ -61,23 +61,41 @@ fn function_is_whitelisted(fname: &str) -> bool {
     }
 }
 
-/// Given a function name like `os_task_init`, return the namespace (`os`)
-fn get_namespace(fname: &str) -> &str {
+/// Given a function name like `lv_obj_create`, return the namespace (`lv_obj`). Used to strip namespace from function names, leaving `create` as the stripped name.
+#[cfg(feature = "riot")]  //  If building for RIOT OS...
+fn get_namespace(fname: &str) -> String {
+    //  Get the first part before `_`.
+    let fname_split: Vec<&str> = fname.splitn(3, "_").collect();
+    if fname_split.len() < 3 { return "".to_string(); }  //  Not a valid namspace if doesn't follow pattern like `lv_obj_create`
+    let namespace1 = fname_split[0];
+    let namespace2 = fname_split[1];
+    //  Match the namespace and ignore if it's not a known namespace.
+    match namespace1 {
+        "lv" => {  //  If function is `lv_namespace2_...`            
+            format!("{}_{}", namespace1, namespace2)  //  Return `lv_namespace2`
+        }
+        _ => { "".to_string() }  //  Not a valid namspace
+    }
+}
+
+/// Given a function name like `os_task_init`, return the namespace (`os`). Used to strip namespace from function names, leaving `task_init` as the stripped name.
+#[cfg(feature = "mynewt")]  //  If building for Mynewt...
+fn get_namespace(fname: &str) -> String {
     //  Get the first part before `_`.
     let fname_split: Vec<&str> = fname.splitn(2, "_").collect();
     let namespace = fname_split[0];
     //  Match the namespace and ignore if it's not a known namespace.
     match namespace {
-        "do"     => { "" }   //  `do` is not a valid namespace e.g. `do_server_post()`
-        "get"    => { "" }   //  `get` is not a valid namespace e.g. `get_device_id()`
-        "init"   => { "" }   //  `init` is not a valid namespace e.g. `init_server_post()`
-        "start"  => { "" }   //  `start` is not a valid namespace e.g. `start_server_transport()`
+        "do"     => { "".to_string() }   //  `do` is not a valid namespace e.g. `do_server_post()`
+        "get"    => { "".to_string() }   //  `get` is not a valid namespace e.g. `get_device_id()`
+        "init"   => { "".to_string() }   //  `init` is not a valid namespace e.g. `init_server_post()`
+        "start"  => { "".to_string() }   //  `start` is not a valid namespace e.g. `start_server_transport()`
         "sensor" => {
             //  If it matches `sensor_network`, return `sensor_network`.
-            if fname.starts_with("sensor_network_") { "sensor_network" }
-            else { "sensor" }
+            if fname.starts_with("sensor_network_") { "sensor_network".to_string() }
+            else { "sensor".to_string() }
         }
-        _ => { namespace }  //  Else it's a valid namspace
+        _ => { namespace.to_string() }  //  Else it's a valid namspace
     }
 }
 
