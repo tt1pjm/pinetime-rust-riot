@@ -36,6 +36,7 @@ extern crate macros as mynewt_macros;   //  Declare the Mynewt Procedural Macros
 //  Declare the system modules
 use core::panic::PanicInfo; //  Import `PanicInfo` type which is used by `panic()` below
 use cortex_m::asm::bkpt;    //  Import cortex_m assembly function to inject breakpoint
+use lvgl::console;          //  Import Semihosting Console functions
 
 ///  Main program that initialises the sensor, network driver and starts reading and sending sensor data in the background.
 ///  Will be called at startup.

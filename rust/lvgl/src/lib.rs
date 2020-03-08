@@ -23,6 +23,8 @@ pub mod objx;                     //  Lvgl Objx API. Export folder `objx` as Rus
 
 //  TODO: pub mod themes;         //  Lvgl Themes API. Export folder `themes` as Rust module `lvgl::themes`
 
+pub mod console;                  //  Lvgl Console API. Export `console.rs` as Rust module `lvgl::console`
+
 /// Return type and error codes for Lvgl API
 pub mod result {
     /// Common return type for Lvgl API.  If no error, returns `Ok(val)` where val has type T.

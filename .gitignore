@@ -62,5 +62,6 @@ tags
 # OpenOCD
 openocd
 
-# Rust target
+# Rust build and temp files
 target
+tmprustlib
