@@ -1,7 +1,6 @@
 {
     "configurations": [
         {
-            /* Based on `make --trace --jobs=1` */
             "name": "RIOT",
             "includePath": [
                 "${workspaceFolder}/baselibc/include/",
@@ -113,7 +112,7 @@
                 "MYNEWT_VAL_BLE_SM_IO_CAP=BLE_HS_IO_DISPLAY_YESNO",
                 "NIMBLE_HOST_STACKSIZE=3072",
                 "VFS_FILE_BUFFER_SIZE=84",
-                "VFS_DIR_BUFFER_SIZE=52",
+                "VFS_DIR_BUFFER_SIZE=52"
             ],
             "windowsSdkVersion": "10.0.10586.0",
             "compilerPath": "/usr/local/bin/arm-none-eabi-gcc",
