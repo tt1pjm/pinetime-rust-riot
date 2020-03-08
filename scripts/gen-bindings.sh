@@ -13,9 +13,7 @@ function generate_bindings() {
     local libname=$1
     local modname=$2
     local libdir=$3
-    # headerfile looks like apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_core/lv_obj.h
-    local headerfile=apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_core/lv_obj.h
-    # local headerfile=$4
+    local headerfile=$4
     shift 4
     local whitelist="$@"
     echo "whitelist=$whitelist"
@@ -423,8 +421,8 @@ EOF
     generate_bindings $libname $modname $libdir $libcmd $whitelist
 }
 
-# Generate the bindings.
-generate_bindings_encoding json           json_encode    json  #  Generate bindings for encoding/json
+# Generate the bindings: libname, modname, libdir, headerfile, whitelist
+generate_bindings NOTUSED_libname lv_core NOTUSED_libdir apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_core/lv_obj.h
 
 exit
 
