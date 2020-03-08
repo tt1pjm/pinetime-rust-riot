@@ -7,7 +7,8 @@ set -x  #  Echo commands
 build_app=apps/pinetime
 #  build_app=apps/terminal_display
 rust_build_target=thumbv7em-none-eabihf
-launch_config=launch-nrf52-pi.json
+launch_config=launch-nrf52.json
+# TODO: For Raspberry Pi: launch_config=launch-nrf52-pi.json
 set +x  #  Stop echo
 echo ; echo "----- Building Rust app and RIOT OS for $rust_build_target / $build_app..." 
 
@@ -189,4 +190,4 @@ build_riot $build_app
 #  cp bin/targets/$build_app/app/apps/my_sensor_app/my_sensor_app.elf.map logs
 
 #  Flash the firmware
-scripts/nrf52/flash-app.sh
+#  scripts/nrf52/flash-app.sh

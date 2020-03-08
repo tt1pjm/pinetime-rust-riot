@@ -31,7 +31,7 @@ extern crate lvgl;                      //  Declare the LittlevGL (LVGL) library
 extern crate macros as mynewt_macros;   //  Declare the Mynewt Procedural Macros library
 
 //  Declare the modules in our application
-//  mod app_network;    //  Declare `app_network.rs` as Rust module `app_network` for Application Network functions
+mod screen_time;    //  Declare `screen_time.rs` as Rust module `screen_time` for Watch Face
 
 //  Declare the system modules
 use core::panic::PanicInfo; //  Import `PanicInfo` type which is used by `panic()` below
@@ -41,7 +41,7 @@ use lvgl::console;          //  Import Semihosting Console functions
 ///  Main program that initialises the sensor, network driver and starts reading and sending sensor data in the background.
 ///  Will be called at startup.
 #[no_mangle]                 //  Don't mangle the function name
-extern "C" fn rust_main() {  //  Declare extern "C" because it will be called by firmware
+extern "C" fn rust_main() {  //  Declare extern "C" because it will be called by RIOT OS firmware
 }
 
 ///  This function is called on panic, like an assertion failure. We display the filename and line number and pause in the debugger. From https://os.phil-opp.com/freestanding-rust-binary/
