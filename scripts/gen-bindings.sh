@@ -35,18 +35,21 @@ function generate_bindings() {
         -o $tmpexpandpath \
         $headerfile \
         -- \
+        -Dstatic="" \
+        -Dinline="" \
         -Ibaselibc/include/ \
         -Iapps/pinetime/bin/pkg/pinetime/ \
         -Iapps/pinetime  \
         -DDEVELHELP -Werror  \
         -DCPU_FAM_NRF52 \
-        -mlittle-endian -ffunction-sections -fdata-sections -fno-builtin -fshort-enums -ggdb -g3 -Os  \
+        -mlittle-endian -ffunction-sections -fdata-sections -fno-builtin -fshort-enums -ggdb -g3 \
         -DCPU_MODEL_NRF52832XXAA  \
         -DCPU_ARCH_CORTEX_M4F  \
         -DRIOT_BOARD=BOARD_PINETIME  \
         -DRIOT_CPU=CPU_NRF52  \
-        -DRIOT_MCU=MCU_NRF52 -std=c99 -fno-common \
-        -fno-delete-null-pointer-checks \
+        -DRIOT_MCU=MCU_NRF52 \
+        -std=c99 \
+        -fno-common \
         -DLV_CONF_INCLUDE_SIMPLE  \
         -DLV_LVGL_H_INCLUDE_SIMPLE  \
         -DNIMBLE_CFG_CONTROLLER=1  \

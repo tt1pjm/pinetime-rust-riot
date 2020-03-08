@@ -433,6 +433,12 @@ pub type lv_font_t = _lv_font_struct;
     pub fn lv_font_get_glyph_width(font: *const lv_font_t, letter: u32, letter_next: u32) -> u16;
 }
 #[lvgl_macros::safe_wrap(attr)] extern "C" {
+    #[doc = " Get the line height of a font. All characters fit into this height"]
+    #[doc = " - __`font_p`__: pointer to a font"]
+    #[doc = " Return: the height of a font"]
+    pub fn lv_font_get_line_height(font_p: *const lv_font_t) -> u8;
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     pub static mut lv_font_roboto_28: lv_font_t;
 }
 pub const LV_OPA_TRANSP: _bindgen_ty_3 = 0;
@@ -709,6 +715,37 @@ pub struct lv_color_hsv_t {
     pub v: u8,
 }
 #[lvgl_macros::safe_wrap(attr)] extern "C" {
+    #[doc = " GLOBAL PROTOTYPES"]
+    pub fn lv_color_to1(color: lv_color_t) -> u8;
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    pub fn lv_color_to8(color: lv_color_t) -> u8;
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    pub fn lv_color_to16(color: lv_color_t) -> u16;
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    pub fn lv_color_to32(color: lv_color_t) -> u32;
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    pub fn lv_color_mix(c1: lv_color_t, c2: lv_color_t, mix: u8) -> lv_color_t;
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    #[doc = " Get the brightness of a color"]
+    #[doc = " - __`color`__: a color"]
+    #[doc = " Return: the brightness [0..255]"]
+    pub fn lv_color_brightness(color: lv_color_t) -> u8;
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    pub fn lv_color_make(r: u8, g: u8, b: u8) -> lv_color_t;
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    pub fn lv_color_hex(c: u32) -> lv_color_t;
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    pub fn lv_color_hex3(c: u32) -> lv_color_t;
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Convert a HSV color to RGB"]
     #[doc = " - __`h`__: hue [0..359]"]
     #[doc = " - __`s`__: saturation [0..100]"]
@@ -760,6 +797,24 @@ pub struct lv_area_t {
         x2: lv_coord_t,
         y2: lv_coord_t,
     );
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    #[doc = " Copy an area"]
+    #[doc = " - __`dest`__: pointer to the destination area"]
+    #[doc = " - __`src`__: pointer to the source area"]
+    pub fn lv_area_copy(dest: *mut lv_area_t, src: *const lv_area_t);
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    #[doc = " Get the width of an area"]
+    #[doc = " - __`area_p`__: pointer to an area"]
+    #[doc = " Return: the width of the area (if x1 == x2 -> width = 1)"]
+    pub fn lv_area_get_width(area_p: *const lv_area_t) -> lv_coord_t;
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    #[doc = " Get the height of an area"]
+    #[doc = " - __`area_p`__: pointer to an area"]
+    #[doc = " Return: the height of the area (if y1 == y2 -> height = 1)"]
+    pub fn lv_area_get_height(area_p: *const lv_area_t) -> lv_coord_t;
 }
 #[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Set the width of an area"]
@@ -978,6 +1033,77 @@ pub type lv_anim_t = _lv_anim_t;
     pub fn lv_anim_init(a: *mut lv_anim_t);
 }
 #[lvgl_macros::safe_wrap(attr)] extern "C" {
+    #[doc = " Set a variable to animate function to execute on `var`"]
+    #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
+    #[doc = " - __`var`__: pointer to a variable to animate"]
+    #[doc = " - __`exec_cb`__: a function to execute."]
+    #[doc = "                LittelvGL's built-in functions can be used."]
+    #[doc = "                E.g. lv_obj_set_x"]
+    pub fn lv_anim_set_exec_cb(
+        a: *mut lv_anim_t,
+        var: *mut ::cty::c_void,
+        exec_cb: lv_anim_exec_xcb_t,
+    );
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    #[doc = " Set the duration and delay of an animation"]
+    #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
+    #[doc = " - __`duration`__: duration of the animation in milliseconds"]
+    #[doc = " - __`delay`__: delay before the animation in milliseconds"]
+    pub fn lv_anim_set_time(a: *mut lv_anim_t, duration: u16, delay: i16);
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    #[doc = " Set the start and end values of an animation"]
+    #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
+    #[doc = " - __`start`__: the start value"]
+    #[doc = " - __`end`__: the end value"]
+    pub fn lv_anim_set_values(a: *mut lv_anim_t, start: lv_anim_value_t, end: lv_anim_value_t);
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    #[doc = " Similar to `lv_anim_set_var_and_cb` but `lv_anim_custom_exec_cb_t` receives"]
+    #[doc = " `lv_anim_t * ` as its first parameter instead of `void *`."]
+    #[doc = " This function might be used when LittlevGL is binded to other languages because"]
+    #[doc = " it's more consistent to have `lv_anim_t *` as first parameter."]
+    #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
+    #[doc = " - __`exec_cb`__: a function to execute."]
+    pub fn lv_anim_set_custom_exec_cb(a: *mut lv_anim_t, exec_cb: lv_anim_custom_exec_cb_t);
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    #[doc = " Set the path (curve) of the animation."]
+    #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
+    #[doc = " - __`path_cb`__: a function the get the current value of the animation."]
+    #[doc = "                The built in functions starts with `lv_anim_path_...`"]
+    pub fn lv_anim_set_path_cb(a: *mut lv_anim_t, path_cb: lv_anim_path_cb_t);
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    #[doc = " Set a function call when the animation is ready"]
+    #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
+    #[doc = " - __`ready_cb`__: a function call when the animation is ready"]
+    pub fn lv_anim_set_ready_cb(a: *mut lv_anim_t, ready_cb: lv_anim_ready_cb_t);
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    #[doc = " Make the animation to play back to when the forward direction is ready"]
+    #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
+    #[doc = " - __`wait_time`__: time in milliseconds to wait before starting the back direction"]
+    pub fn lv_anim_set_playback(a: *mut lv_anim_t, wait_time: u16);
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    #[doc = " Disable playback. (Disabled after `lv_anim_init()`)"]
+    #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
+    pub fn lv_anim_clear_playback(a: *mut lv_anim_t);
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    #[doc = " Make the animation to start again when ready."]
+    #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
+    #[doc = " - __`wait_time`__: time in milliseconds to wait before starting the animation again"]
+    pub fn lv_anim_set_repeat(a: *mut lv_anim_t, wait_time: u16);
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    #[doc = " Disable repeat. (Disabled after `lv_anim_init()`)"]
+    #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
+    pub fn lv_anim_clear_repeat(a: *mut lv_anim_t);
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Create an animation"]
     #[doc = " - __`a`__: an initialized 'anim_t' variable. Not required after call."]
     pub fn lv_anim_create(a: *mut lv_anim_t);
@@ -989,6 +1115,18 @@ pub type lv_anim_t = _lv_anim_t;
     #[doc = "           or NULL to ignore it and delete all the animations of 'var"]
     #[doc = " Return: true: at least 1 animation is deleted, false: no animation is deleted"]
     pub fn lv_anim_del(var: *mut ::cty::c_void, exec_cb: lv_anim_exec_xcb_t) -> bool;
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    #[doc = " Delete an aniamation by getting the animated variable from `a`."]
+    #[doc = " Only animations with `exec_cb` will be deleted."]
+    #[doc = " This function exist becasue it's logical that all anim functions receives an"]
+    #[doc = " `lv_anim_t` as their first parameter. It's not practical in C but might makes"]
+    #[doc = " the API more conequent and makes easier to genrate bindings."]
+    #[doc = " - __`a`__: pointer to an animation."]
+    #[doc = " - __`exec_cb`__: a function pointer which is animating 'var',"]
+    #[doc = "           or NULL to ignore it and delete all the animations of 'var"]
+    #[doc = " Return: true: at least 1 animation is deleted, false: no animation is deleted"]
+    pub fn lv_anim_custom_del(a: *mut lv_anim_t, exec_cb: lv_anim_custom_exec_cb_t) -> bool;
 }
 #[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Get the number of currently running animations"]
@@ -1287,6 +1425,46 @@ impl Default for lv_style_anim_dsc_t {
         start: *const lv_style_t,
         end: *const lv_style_t,
     );
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    #[doc = " Set the duration and delay of an animation"]
+    #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
+    #[doc = " - __`duration`__: duration of the animation in milliseconds"]
+    #[doc = " - __`delay`__: delay before the animation in milliseconds"]
+    pub fn lv_style_anim_set_time(a: *mut lv_anim_t, duration: u16, delay: i16);
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    #[doc = " Set a function call when the animation is ready"]
+    #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
+    #[doc = " - __`ready_cb`__: a function call when the animation is ready"]
+    pub fn lv_style_anim_set_ready_cb(a: *mut lv_anim_t, ready_cb: lv_anim_ready_cb_t);
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    #[doc = " Make the animation to play back to when the forward direction is ready"]
+    #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
+    #[doc = " - __`wait_time`__: time in milliseconds to wait before starting the back direction"]
+    pub fn lv_style_anim_set_playback(a: *mut lv_anim_t, wait_time: u16);
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    #[doc = " Disable playback. (Disabled after `lv_anim_init()`)"]
+    #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
+    pub fn lv_style_anim_clear_playback(a: *mut lv_anim_t);
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    #[doc = " Make the animation to start again when ready."]
+    #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
+    #[doc = " - __`wait_time`__: time in milliseconds to wait before starting the animation again"]
+    pub fn lv_style_anim_set_repeat(a: *mut lv_anim_t, wait_time: u16);
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    #[doc = " Disable repeat. (Disabled after `lv_anim_init()`)"]
+    #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
+    pub fn lv_style_anim_clear_repeat(a: *mut lv_anim_t);
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    #[doc = " Create an animation"]
+    #[doc = " - __`a`__: an initialized 'anim_t' variable. Not required after call."]
+    pub fn lv_style_anim_create(a: *mut lv_anim_t);
 }
 #[lvgl_macros::safe_wrap(attr)] extern "C" {
     pub static mut lv_style_scr: lv_style_t;
@@ -1923,6 +2101,9 @@ pub type lv_disp_t = _disp_t;
     #[doc = " - __`disp`__: pointer to a display (NULL to use the default display)"]
     #[doc = " Return: true: anti-aliasing is enabled; false: disabled"]
     pub fn lv_disp_get_antialiasing(disp: *mut lv_disp_t) -> bool;
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    pub fn lv_disp_set_direction(disp: *mut lv_disp_t, direction: ::cty::c_int);
 }
 #[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " Call in the display driver's `flush_cb` function when the flushing is finished"]

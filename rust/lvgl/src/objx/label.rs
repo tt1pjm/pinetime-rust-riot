@@ -1055,6 +1055,17 @@ pub type lv_label_style_t = u8;
     pub fn lv_label_set_anim_speed(label: *mut lv_obj_t, anim_speed: u16);
 }
 #[lvgl_macros::safe_wrap(attr)] extern "C" {
+    #[doc = " Set the style of an label"]
+    #[doc = " - __`label`__: pointer to an label object"]
+    #[doc = " - __`type`__: which style should be get (can be only `LV_LABEL_STYLE_MAIN`)"]
+    #[doc = " - __`style`__: pointer to a style"]
+    pub fn lv_label_set_style(
+        label: *mut lv_obj_t,
+        type_: lv_label_style_t,
+        style: *const lv_style_t,
+    );
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " @brief Set the selection start index."]
     #[doc = " - __`label`__: pointer to a label object."]
     #[doc = " - __`index`__: index to set. `LV_LABEL_TXT_SEL_OFF` to select nothing."]
@@ -1124,6 +1135,14 @@ pub type lv_label_style_t = u8;
     #[doc = " - __`pos`__: Point to check for characte under"]
     #[doc = " Return: whether a character is drawn under the point"]
     pub fn lv_label_is_char_under_pos(label: *const lv_obj_t, pos: *mut lv_point_t) -> bool;
+}
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    #[doc = " Get the style of an label object"]
+    #[doc = " - __`label`__: pointer to an label object"]
+    #[doc = " - __`type`__: which style should be get (can be only `LV_LABEL_STYLE_MAIN`)"]
+    #[doc = " Return: pointer to the label's style"]
+    pub fn lv_label_get_style(label: *const lv_obj_t, type_: lv_label_style_t)
+        -> *const lv_style_t;
 }
 #[lvgl_macros::safe_wrap(attr)] extern "C" {
     #[doc = " @brief Get the selection start index."]
