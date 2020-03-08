@@ -21,8 +21,8 @@ function generate_bindings() {
     local expandpath=rust/$libname/src/$modname/$submodname.rs
     local tmpexpandpath=rust/$libname/src/$modname/$submodname.tmp
 
-    #  Generate Rust bindings for the expanded macros.
-    #  TODO: Ensure that output folder has been created.        
+    #  Generate Rust bindings for the expanded macros, based on `make --trace --jobs=1`
+    #  TODO: Ensure that output folder has been created
     bindgen \
         --verbose \
         --use-core \
