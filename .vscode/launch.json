@@ -10,16 +10,15 @@
             //  OpenOCD path is defined in workspace.code-workspace.
             "servertype": "openocd",
             "cwd": "${workspaceRoot}",
-            //  Application Executable to be flashed before debugging.
-            "executable": "apps/pinetime/bin/pinetime/PineTime.elf",
-            //  "executable": "apps/terminal_display/bin/pinetime/terminal.elf",
+            //  Application Executable to be flashed to Blue Pill before debugging.  Note that the Application ELF image does not contain a valid Image Header.  So we must bypass the Bootloader, shown below.
+            "executable": "bin/targets/nrf52_my_sensor/app/apps/my_sensor_app/my_sensor_app.elf",
+            //  For Bootloader: "executable": "bin/targets/stm32l4_boot/app/apps/boot/boot.elf",
             "device": "nRF52832",
             //  Arm System View Description, from apache-mynewt-core/hw/mcu/nordic/src/ext/nrfx/mdk
             "svdFile": "scripts/nrf52/nrf52.svd",
             "configFiles": [ 
                 //  Tell OpenOCD to open the ST Link connection to STM32 MCU.
-                "interface/stlink-v2.cfg",
-                "target/nrf52.cfg",
+                "scripts/nrf52-pi/swd-pi.ocd",
                 //  Tell OpenOCD to run our custom debug commands.
                 "scripts/nrf52/debug.ocd"
             ],

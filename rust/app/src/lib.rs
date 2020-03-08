@@ -27,30 +27,11 @@
 
 //  Declare the libraries that contain macros
 extern crate cortex_m;                  //  Declare the external library `cortex_m`
-extern crate mynewt;                    //  Declare the Mynewt library
+extern crate lvgl;                      //  Declare the LittlevGL (LVGL) library
 extern crate macros as mynewt_macros;   //  Declare the Mynewt Procedural Macros library
 
 //  Declare the modules in our application
-mod app_network;    //  Declare `app_network.rs` as Rust module `app_network` for Application Network functions
-mod app_sensor;     //  Declare `app_sensor.rs` as Rust module `app_sensor` for Application Sensor functions
-mod touch_sensor;   //  Declare `touch_sensor.rs` as Rust module `touch_sensor` for Touch Sensor functions
-
-//  Declare the optional modules depending on the options in `../Cargo.toml`
-#[cfg(feature = "display_app")]  //  If graphics display app is enabled...
-mod display;                     //  Include the graphics display app
-
-#[cfg(feature = "ui_app")]       //  If druid UI app is enabled...
-mod ui;                          //  Include the druid UI app
-
-#[cfg(feature = "visual_app")]   //  If Visual Rust app is enabled...
-#[allow(unused_variables)]       //  Don't warn about unused variables
-mod visual;                      //  Include the Visual Rust app
-
-#[cfg(feature = "chip8_app")]    //  If CHIP8 Emulator app is enabled...
-mod chip8;                       //  Include the CHIP8 Emulator app
-
-#[cfg(feature = "use_float")]    //  If floating-point is enabled...
-mod gps_sensor;                  //  Include the GPS Sensor functions
+//  mod app_network;    //  Declare `app_network.rs` as Rust module `app_network` for Application Network functions
 
 //  Declare the system modules
 use core::panic::PanicInfo; //  Import `PanicInfo` type which is used by `panic()` below
@@ -60,73 +41,10 @@ use mynewt::{
     sys::console,           //  Import Mynewt Console API
 };
 
-//  Select the touch handler depending on the options in `../Cargo.toml`
-#[cfg(feature = "ui_app")]      //  If druid UI app is enabled...
-use ui::handle_touch;           //  Use the touch handler from druid UI app
-
-#[cfg(feature = "visual_app")]  //  If Visual Rust app is enabled...
-use visual::handle_touch;       //  Use the touch handler from the Visual Rust app
-
-#[cfg(feature = "chip8_app")]   //  If CHIP8 Emulator app is enabled...
-use chip8::handle_touch;        //  Use the touch handler from the CHIP8 Emulator app
-
-#[cfg(not(any(feature = "ui_app", feature = "visual_app", feature = "chip8_app")))]  //  If neither druid UI app nor Visual Rust app are enabled...
-pub fn handle_touch(_x: u16, _y: u16) { console::print("touch not handled\n"); console::flush(); }  //  Define a touch handler that does nothing
-
 ///  Main program that initialises the sensor, network driver and starts reading and sending sensor data in the background.
-///  main() will be called at Mynewt startup. It replaces the C version of the main() function.
-#[no_mangle]                 //  Don't mangle the name "main"
-extern "C" fn rust_main() -> ! {  //  Declare extern "C" because it will be called by Mynewt
-    //  Initialise the Mynewt packages and internal temperature sensor driver. Any startup
-    //  functions defined in pkg.yml of our custom drivers and libraries will be called by 
-    //  sysinit().  Here are the startup functions consolidated by Mynewt:
-    //  bin/targets/nrf52_my_sensor/generated/src/nrf52_my_sensor-sysinit-app.c
-    mynewt::sysinit();
-
-    //  Start Bluetooth Beacon.  TODO: Create a safe wrapper for starting Bluetooth LE.
-    //  extern { fn start_ble() -> i32; }
-    //  let rc = unsafe { start_ble() };
-    //  assert!(rc == 0, "BLE fail");
-
-    //  Start the display
-    druid::start_display()
-        .expect("DSP fail");
-
-    //  Test the display
-    #[cfg(feature = "display_app")]  //  If graphics display app is enabled...
-    display::test_display()
-        .expect("DSP test fail");
-
-    //  Start the touch sensor
-    touch_sensor::start_touch_sensor()
-        .expect("TCH fail");
-
-    //  Test the touch sensor
-    //  touch_sensor::test()
-    //      .expect("TCH test fail");
-
-    //  Launch the druid UI app
-    #[cfg(feature = "ui_app")]  //  If druid UI app is enabled...
-    ui::launch();
-
-    //  Launch the Visual Rust app
-    #[cfg(feature = "visual_app")]  //  If Visual Rust app is enabled...
-    visual::on_start()
-        .expect("VIS fail");
-
-    //  Launch the CHIP8 Emulator app
-    #[cfg(feature = "chip8_app")]  //  If CHIP8 Emulator app is enabled...
-    chip8::on_start()
-        .expect("CHIP8 fail");
-
-    //  Main event loop
-    loop {                            //  Loop forever...
-        os::eventq_run(               //  Processing events...
-            os::eventq_dflt_get()     //  From default event queue.
-                .expect("GET fail")
-        ).expect("RUN fail");
-    }
-    //  Never comes here
+///  Will be called at startup.
+#[no_mangle]                      //  Don't mangle the function name
+extern "C" fn rust_main() -> ! {  //  Declare extern "C" because it will be called by firmware
 }
 
 ///  This function is called on panic, like an assertion failure. We display the filename and line number and pause in the debugger. From https://os.phil-opp.com/freestanding-rust-binary/

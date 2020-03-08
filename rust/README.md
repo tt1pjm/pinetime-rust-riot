@@ -1,15 +1,11 @@
 # rust
 
-Rust application, macros and wrappers for Mynewt. To download additional repos needed for the build:
-
-```bash
-git submodule update --init
-```
+Rust application, macros and wrappers for LittlevGL.
 
 ## Contents
 
 [`app`](app): Rust Application
 
-[`mynewt`](mynewt): Rust Safe Wrappers for Mynewt API
+[`lvgl`](lvgl): Rust Safe Wrappers for LittlevGL (LVGL) API
 
 [`macros`](macros): Rust Procedural Macros
