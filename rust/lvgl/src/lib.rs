@@ -10,13 +10,13 @@ extern crate macros as Lvgl_macros;  //  Import Procedural Macros from `macros` 
 
 #[allow(non_camel_case_types)]    //  Allow type names to have non-camel case
 #[allow(non_upper_case_globals)]  //  Allow globals to have lowercase letters
-pub mod kernel;                   //  Lvgl Kernel API. Export folder `kernel` as Rust module `Lvgl::kernel`
-
-///  Initialise the Lvgl system.  Start the Lvgl drivers and libraries.  Equivalent to `sysinit()` macro in C.
-pub fn sysinit() {
-    unsafe { rust_sysinit(); }
-    sys::console::flush();
-}
+pub mod core;                     //  Lvgl Core API. Export folder `core` as Rust module `lvgl::core`
+pub mod draw;                     //  Lvgl Draw API. Export folder `draw` as Rust module `lvgl::draw`
+pub mod font;                     //  Lvgl Font API. Export folder `font` as Rust module `lvgl::font`
+pub mod hal;                      //  Lvgl HAL API. Export folder `hal` as Rust module `lvgl::hal`
+pub mod misc;                     //  Lvgl Misc API. Export folder `misc` as Rust module `lvgl::misc`
+pub mod objx;                     //  Lvgl Objx API. Export folder `objx` as Rust module `lvgl::objx`
+pub mod themes;                   //  Lvgl Themes API. Export folder `themes` as Rust module `lvgl::themes`
 
 /// Return type and error codes for Lvgl API
 pub mod result {
