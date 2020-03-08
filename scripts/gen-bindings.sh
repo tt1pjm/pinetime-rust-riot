@@ -11,8 +11,8 @@ export RUST_BACKTRACE=1  #  Show Rust errors.
 function generate_bindings() {
     #  Generate bindings for the module.
     local libname=$1     # Library name e.g. lvgl
-    local modname=$2     # Module name e.g. lv_core
-    local submodname=$3  # Submodule name e.g. lv_obj
+    local modname=$2     # Module name e.g. core
+    local submodname=$3  # Submodule name e.g. obj
     local headerfile=$4  # Header file e.g. apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_core/lv_obj.h
     shift 4
     local whitelist="$@" # Whitelist Options: --raw-line, --blacklist-item, --whitelist-function, --whitelist-type, --whitelist-var
@@ -176,8 +176,9 @@ headerprefix=apps/pinetime/bin/pkg/pinetime
 
 function generate_bindings_core() {
     #  Add whitelist and blacklist for for lv_core/lv_obj
-    local modname=lv_core
-    local submodname=lv_obj
+    local modname=core
+    local submodname=obj
+    local headerfile=$headerprefix/$libname/src/lv_$modname/lv_$submodname.h
     local whitelistname=lv_
     local whitelist=`cat << EOF
         --raw-line use \
@@ -188,13 +189,14 @@ function generate_bindings_core() {
 EOF
 `
     #  Generate the bindings for lv_core/lv_obj: libname, modname, submodname, headerfile, whitelist
-    generate_bindings $libname $modname $submodname $headerprefix/$libname/src/$modname/$submodname.h $whitelist
+    generate_bindings $libname $modname $submodname $headerfile $whitelist
 }
 
 function generate_bindings_objx() {
     #  Add whitelist and blacklist for for lv_objx/lv_label
-    local modname=lv_objx
-    local submodname=lv_label
+    local modname=objx
+    local submodname=label
+    local headerfile=$headerprefix/$libname/src/lv_$modname/lv_$submodname.h
     local whitelistname=lv_label
     local whitelist=`cat << EOF
         --raw-line use \
@@ -204,15 +206,22 @@ function generate_bindings_objx() {
         --whitelist-var      (?i)${whitelistname}.*
 EOF
 `
-    #  Generate the bindings for lv_objx/lv_label
-    generate_bindings $libname $modname $submodname $headerprefix/$libname/src/$modname/$submodname.h $whitelist
+    #  Generate the bindings for lv_objx/lv_label: libname, modname, submodname, headerfile, whitelist
+    generate_bindings $libname $modname $submodname $headerfile $whitelist
 }
 
 #  Generate bindings for lv_core
 generate_bindings_core
 
+#draw
+#font
+#hal
+#misc
+
 #  Generate bindings for lv_objx
 generate_bindings_objx
+
+#themes
 
 exit
 
