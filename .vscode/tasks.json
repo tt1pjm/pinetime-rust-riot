@@ -247,21 +247,21 @@
                 "command": "cmd",
                 "args": [
                     "/c",
-                    " cargo doc --document-private-items && echo ✅ ◾ ️Done! target/thumbv7m-none-eabi/doc "
+                    " cargo doc --document-private-items && echo ✅ ◾ ️Done! target/thumbv7em-none-eabihf/doc "
                 ]
             },
             "osx": {
                 "command": "bash",
                 "args": [
                     "-c", "-l",
-                    " set -e -x ; rustdoc --output docs/articles --html-in-header scripts/rustdoc-header.html --html-before-content scripts/rustdoc-before.html rust/app/src/chip8.md ; cargo doc --document-private-items ; echo ✅ ◾ ️Done! target/thumbv7m-none-eabi/doc "
+                    " set -e -x ; cargo doc --document-private-items ; echo ✅ ◾ ️Done! target/thumbv7em-none-eabihf/doc "
                 ]
             },
             "linux": {
                 "command": "bash",
                 "args": [
                     "-c", "-l",
-                    " set -e -x ; cargo doc --document-private-items ; echo ✅ ◾ ️Done! target/thumbv7m-none-eabi/doc "
+                    " set -e -x ; cargo doc --document-private-items ; echo ✅ ◾ ️Done! target/thumbv7em-none-eabihf/doc "
                 ]
             },
             "problemMatcher": [],

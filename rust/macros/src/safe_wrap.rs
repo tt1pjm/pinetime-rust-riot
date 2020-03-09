@@ -467,7 +467,7 @@ fn transform_function_name(ident: &Ident) -> TransformedFunctionName {
     //  Get namespace e.g. `os`
     let fname = ident.to_string();
     let namespace = get_namespace(&fname);
-    println!("fname: {:#?}, namespace: {:#?}", fname, namespace);
+    //  println!("fname: {:#?}, namespace: {:#?}", fname, namespace);
     //  Get namespace prefix e.g. `os_`
     let namespace_prefix = 
         if namespace.len() > 0 { 

@@ -94,3 +94,81 @@ struct home_time_widget_t {
 struct widget_t {}
 struct control_event_handler_t {}
 struct controller_time_spec_t {}
+
+/* TODO
+static void _home_time_set_bt_label(home_time_widget_t *htwidget)
+{
+
+    if (htwidget->ble_state == BLEMAN_BLE_STATE_DISCONNECTED ) {
+        lv_label_set_text(htwidget->lv_ble, "");
+    }
+    else {
+        const char *color = _state2color[htwidget->ble_state];
+        lv_label_set_text_fmt(htwidget->lv_ble,
+                              "%s "LV_SYMBOL_BLUETOOTH"#",
+                              color);
+    }
+}
+
+static void _home_time_set_power_label(home_time_widget_t *htwidget)
+{
+    const char *color = battery_mid_color;
+    unsigned percentage = hal_battery_get_percentage(htwidget->millivolts);
+    if (percentage <= battery_low) {
+        color = battery_low_color;
+    }
+    if (htwidget->powered && !(htwidget->charging) ) {
+        /* Battery charge cycle finished */
+        color = battery_full_color;
+    }
+    lv_label_set_text_fmt(htwidget->lv_power,
+                          "%s %u%%%s#\n(%"PRIu32"mV)",
+                          color, percentage,
+                          htwidget->powered ? LV_SYMBOL_CHARGE : " ",
+                          htwidget->millivolts
+                          );
+    lv_obj_align(htwidget->lv_power, htwidget->screen, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
+}
+
+static int _home_time_set_time_label(home_time_widget_t *ht)
+{
+    char time[6];
+    char date[15];
+    int res = snprintf(time, sizeof(time), "%02u:%02u", ht->time.hour,
+                       ht->time.minute);
+    if (res != sizeof(time) - 1) {
+        LOG_ERROR("[home_time]: error formatting time string %*s\n", res, time);
+        return -1;
+    }
+    lv_label_set_text(ht->lv_time, time);
+
+    res = snprintf(date, sizeof(date), "%u %s %u\n", ht->time.dayofmonth,
+                   controller_time_month_get_short_name(&ht->time),
+                   ht->time.year);
+    if (res == sizeof(date)) {
+        LOG_ERROR("[home_time]: error formatting date string %*s\n", res, date);
+        return -1;
+    }
+    lv_label_set_text(ht->lv_date, date);
+    return 0;
+}
+
+static int _screen_time_update_screen(widget_t *widget)
+{
+    home_time_widget_t *ht = _from_widget(widget);
+
+    _home_time_set_time_label(ht);
+    _home_time_set_bt_label(ht);
+    _home_time_set_power_label(ht);
+    return 0;
+}
+*/
+
+/* Stack Trace for screen_time_create:
+#0  screen_time_create (ht=ht@entry=0x200008dc <home_time_widget>) at /Users/Luppy/PineTime/PineTime-apps/widgets/home_time/screen_time.c:68
+#1  0x0001b36c in home_time_draw (widget=0x200008dc <home_time_widget>, parent=<optimized out>) at /Users/Luppy/PineTime/PineTime-apps/widgets/home_time/screen_time.c:222
+#2  0x00003b32 in _switch_widget_draw (type=<optimized out>, widget=0x200008dc <home_time_widget>, gui=<optimized out>) at /Users/Luppy/PineTime/PineTime-apps/modules/gui/gui.c:159
+#3  _gui_handle_msg (msg=0x20004c90 <_stack+1944>, gui=<optimized out>) at /Users/Luppy/PineTime/PineTime-apps/modules/gui/gui.c:299
+#4  _lvgl_thread (arg=0x20004408 <_gui>) at /Users/Luppy/PineTime/PineTime-apps/modules/gui/gui.c:351
+#5  0x000002f0 in sched_switch (other_prio=<optimized out>) at /Users/Luppy/PineTime/PineTime-apps/RIOT/core/sched.c:179
+*/
