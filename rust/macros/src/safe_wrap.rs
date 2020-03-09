@@ -83,7 +83,7 @@ fn get_namespace(fname: &str) -> String {
     match namespace1 {
         "lv" => {  //  If function is `lv_namespace2_...`
             match namespace2 {
-                "ll" | "mem" | "signal" | "style" | "task" => 
+                "anim" | "area" | "disp" | "font" | "color" | "event" | "indev" | "ll" | "mem" | "signal" | "style" | "task" | "tick" => 
                     namespace1.to_string(),  //  If `lv_style_...`, return namespace `lv`
                 _ => format!("{}_{}", namespace1, namespace2)  //  Return namespace `lv_namespace2`
             }
@@ -467,7 +467,7 @@ fn transform_function_name(ident: &Ident) -> TransformedFunctionName {
     //  Get namespace e.g. `os`
     let fname = ident.to_string();
     let namespace = get_namespace(&fname);
-    //  println!("namespace: {:#?}", namespace);
+    println!("fname: {:#?}, namespace: {:#?}", fname, namespace);
     //  Get namespace prefix e.g. `os_`
     let namespace_prefix = 
         if namespace.len() > 0 { 

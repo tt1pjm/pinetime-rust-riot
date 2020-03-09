@@ -1,3 +1,247 @@
+fname: "lv_font_get_glyph_bitmap", namespace: "lv"
+fname: "lv_font_get_glyph_dsc", namespace: "lv"
+fname: "lv_font_get_glyph_width", namespace: "lv"
+fname: "lv_font_get_line_height", namespace: "lv"
+fname: "lv_color_to1", namespace: "lv"
+fname: "lv_color_to8", namespace: "lv"
+fname: "lv_color_to16", namespace: "lv"
+fname: "lv_color_to32", namespace: "lv"
+fname: "lv_color_mix", namespace: "lv"
+fname: "lv_color_brightness", namespace: "lv"
+fname: "lv_color_make", namespace: "lv"
+fname: "lv_color_hex", namespace: "lv"
+fname: "lv_color_hex3", namespace: "lv"
+fname: "lv_color_hsv_to_rgb", namespace: "lv"
+fname: "lv_color_rgb_to_hsv", namespace: "lv"
+fname: "lv_color_to_hsv", namespace: "lv"
+fname: "lv_area_set", namespace: "lv"
+fname: "lv_area_copy", namespace: "lv"
+fname: "lv_area_get_width", namespace: "lv"
+fname: "lv_area_get_height", namespace: "lv"
+fname: "lv_area_set_width", namespace: "lv"
+fname: "lv_area_set_height", namespace: "lv"
+fname: "lv_area_set_pos", namespace: "lv"
+fname: "lv_area_get_size", namespace: "lv"
+fname: "lv_area_intersect", namespace: "lv"
+fname: "lv_area_join", namespace: "lv"
+fname: "lv_area_is_point_on", namespace: "lv"
+fname: "lv_area_is_on", namespace: "lv"
+fname: "lv_area_is_in", namespace: "lv"
+fname: "lv_area_increment", namespace: "lv"
+fname: "lv_anim_core_init", namespace: "lv"
+fname: "lv_anim_init", namespace: "lv"
+fname: "lv_anim_set_exec_cb", namespace: "lv"
+fname: "lv_anim_set_time", namespace: "lv"
+fname: "lv_anim_set_values", namespace: "lv"
+fname: "lv_anim_set_custom_exec_cb", namespace: "lv"
+fname: "lv_anim_set_path_cb", namespace: "lv"
+fname: "lv_anim_set_ready_cb", namespace: "lv"
+fname: "lv_anim_set_playback", namespace: "lv"
+fname: "lv_anim_clear_playback", namespace: "lv"
+fname: "lv_anim_set_repeat", namespace: "lv"
+fname: "lv_anim_clear_repeat", namespace: "lv"
+fname: "lv_anim_create", namespace: "lv"
+fname: "lv_anim_del", namespace: "lv"
+fname: "lv_anim_custom_del", namespace: "lv"
+fname: "lv_anim_count_running", namespace: "lv"
+fname: "lv_anim_speed_to_time", namespace: "lv"
+fname: "lv_anim_path_linear", namespace: "lv"
+fname: "lv_anim_path_ease_in", namespace: "lv"
+fname: "lv_anim_path_ease_out", namespace: "lv"
+fname: "lv_anim_path_ease_in_out", namespace: "lv"
+fname: "lv_anim_path_overshoot", namespace: "lv"
+fname: "lv_anim_path_bounce", namespace: "lv"
+fname: "lv_anim_path_step", namespace: "lv"
+fname: "lv_style_init", namespace: "lv"
+fname: "lv_style_copy", namespace: "lv"
+fname: "lv_style_mix", namespace: "lv"
+fname: "lv_style_anim_init", namespace: "lv"
+fname: "lv_style_anim_set_styles", namespace: "lv"
+fname: "lv_style_anim_set_time", namespace: "lv"
+fname: "lv_style_anim_set_ready_cb", namespace: "lv"
+fname: "lv_style_anim_set_playback", namespace: "lv"
+fname: "lv_style_anim_clear_playback", namespace: "lv"
+fname: "lv_style_anim_set_repeat", namespace: "lv"
+fname: "lv_style_anim_clear_repeat", namespace: "lv"
+fname: "lv_style_anim_create", namespace: "lv"
+fname: "lv_mem_init", namespace: "lv"
+fname: "lv_mem_alloc", namespace: "lv"
+fname: "lv_mem_free", namespace: "lv"
+fname: "lv_mem_realloc", namespace: "lv"
+fname: "lv_mem_defrag", namespace: "lv"
+fname: "lv_mem_monitor", namespace: "lv"
+fname: "lv_mem_get_size", namespace: "lv"
+fname: "lv_ll_init", namespace: "lv"
+fname: "lv_ll_ins_head", namespace: "lv"
+fname: "lv_ll_ins_prev", namespace: "lv"
+fname: "lv_ll_ins_tail", namespace: "lv"
+fname: "lv_ll_rem", namespace: "lv"
+fname: "lv_ll_clear", namespace: "lv"
+fname: "lv_ll_chg_list", namespace: "lv"
+fname: "lv_ll_get_head", namespace: "lv"
+fname: "lv_ll_get_tail", namespace: "lv"
+fname: "lv_ll_get_next", namespace: "lv"
+fname: "lv_ll_get_prev", namespace: "lv"
+fname: "lv_ll_get_len", namespace: "lv"
+fname: "lv_ll_move_before", namespace: "lv"
+fname: "lv_ll_is_empty", namespace: "lv"
+fname: "lv_task_core_init", namespace: "lv"
+fname: "lv_task_handler", namespace: "lv"
+fname: "lv_task_create_basic", namespace: "lv"
+fname: "lv_task_create", namespace: "lv"
+fname: "lv_task_del", namespace: "lv"
+fname: "lv_task_set_cb", namespace: "lv"
+fname: "lv_task_set_prio", namespace: "lv"
+fname: "lv_task_set_period", namespace: "lv"
+fname: "lv_task_ready", namespace: "lv"
+fname: "lv_task_once", namespace: "lv"
+fname: "lv_task_reset", namespace: "lv"
+fname: "lv_task_enable", namespace: "lv"
+fname: "lv_task_get_idle", namespace: "lv"
+fname: "lv_disp_drv_init", namespace: "lv"
+fname: "lv_disp_buf_init", namespace: "lv"
+fname: "lv_disp_drv_register", namespace: "lv"
+fname: "lv_disp_drv_update", namespace: "lv"
+fname: "lv_disp_remove", namespace: "lv"
+fname: "lv_disp_set_default", namespace: "lv"
+fname: "lv_disp_get_default", namespace: "lv"
+fname: "lv_disp_get_hor_res", namespace: "lv"
+fname: "lv_disp_get_ver_res", namespace: "lv"
+fname: "lv_disp_get_antialiasing", namespace: "lv"
+fname: "lv_disp_set_direction", namespace: "lv"
+fname: "lv_disp_flush_ready", namespace: "lv"
+fname: "lv_disp_get_next", namespace: "lv"
+fname: "lv_disp_get_buf", namespace: "lv"
+fname: "lv_disp_get_inv_buf_size", namespace: "lv"
+fname: "lv_disp_pop_from_inv_buf", namespace: "lv"
+fname: "lv_disp_is_double_buf", namespace: "lv"
+fname: "lv_disp_is_true_double_buf", namespace: "lv"
+fname: "lv_indev_drv_init", namespace: "lv"
+fname: "lv_indev_drv_register", namespace: "lv"
+fname: "lv_indev_drv_update", namespace: "lv"
+fname: "lv_indev_get_next", namespace: "lv"
+fname: "lv_indev_read", namespace: "lv"
+fname: "lv_tick_inc", namespace: "lv"
+fname: "lv_tick_get", namespace: "lv"
+fname: "lv_tick_elaps", namespace: "lv"
+fname: "lv_init", namespace: ""
+fname: "lv_obj_create", namespace: "lv_obj"
+fname: "lv_obj_del", namespace: "lv_obj"
+fname: "lv_obj_del_async", namespace: "lv_obj"
+fname: "lv_obj_clean", namespace: "lv_obj"
+fname: "lv_obj_invalidate", namespace: "lv_obj"
+fname: "lv_obj_set_parent", namespace: "lv_obj"
+fname: "lv_obj_move_foreground", namespace: "lv_obj"
+fname: "lv_obj_move_background", namespace: "lv_obj"
+fname: "lv_obj_set_pos", namespace: "lv_obj"
+fname: "lv_obj_set_x", namespace: "lv_obj"
+fname: "lv_obj_set_y", namespace: "lv_obj"
+fname: "lv_obj_set_size", namespace: "lv_obj"
+fname: "lv_obj_set_width", namespace: "lv_obj"
+fname: "lv_obj_set_height", namespace: "lv_obj"
+fname: "lv_obj_align", namespace: "lv_obj"
+fname: "lv_obj_align_origo", namespace: "lv_obj"
+fname: "lv_obj_realign", namespace: "lv_obj"
+fname: "lv_obj_set_auto_realign", namespace: "lv_obj"
+fname: "lv_obj_set_ext_click_area", namespace: "lv_obj"
+fname: "lv_obj_set_style", namespace: "lv_obj"
+fname: "lv_obj_refresh_style", namespace: "lv_obj"
+fname: "lv_obj_report_style_mod", namespace: "lv_obj"
+fname: "lv_obj_set_hidden", namespace: "lv_obj"
+fname: "lv_obj_set_click", namespace: "lv_obj"
+fname: "lv_obj_set_top", namespace: "lv_obj"
+fname: "lv_obj_set_drag", namespace: "lv_obj"
+fname: "lv_obj_set_drag_dir", namespace: "lv_obj"
+fname: "lv_obj_set_drag_throw", namespace: "lv_obj"
+fname: "lv_obj_set_drag_parent", namespace: "lv_obj"
+fname: "lv_obj_set_parent_event", namespace: "lv_obj"
+fname: "lv_obj_set_base_dir", namespace: "lv_obj"
+fname: "lv_obj_set_opa_scale_enable", namespace: "lv_obj"
+fname: "lv_obj_set_opa_scale", namespace: "lv_obj"
+fname: "lv_obj_set_protect", namespace: "lv_obj"
+fname: "lv_obj_clear_protect", namespace: "lv_obj"
+fname: "lv_obj_set_event_cb", namespace: "lv_obj"
+fname: "lv_event_send", namespace: "lv"
+fname: "lv_event_send_func", namespace: "lv"
+fname: "lv_event_get_data", namespace: "lv"
+fname: "lv_obj_set_signal_cb", namespace: "lv_obj"
+fname: "lv_signal_send", namespace: "lv"
+fname: "lv_obj_set_design_cb", namespace: "lv_obj"
+fname: "lv_obj_allocate_ext_attr", namespace: "lv_obj"
+fname: "lv_obj_refresh_ext_draw_pad", namespace: "lv_obj"
+fname: "lv_obj_get_screen", namespace: "lv_obj"
+fname: "lv_obj_get_disp", namespace: "lv_obj"
+fname: "lv_obj_get_parent", namespace: "lv_obj"
+fname: "lv_obj_get_child", namespace: "lv_obj"
+fname: "lv_obj_get_child_back", namespace: "lv_obj"
+fname: "lv_obj_count_children", namespace: "lv_obj"
+fname: "lv_obj_count_children_recursive", namespace: "lv_obj"
+fname: "lv_obj_get_coords", namespace: "lv_obj"
+fname: "lv_obj_get_inner_coords", namespace: "lv_obj"
+fname: "lv_obj_get_x", namespace: "lv_obj"
+fname: "lv_obj_get_y", namespace: "lv_obj"
+fname: "lv_obj_get_width", namespace: "lv_obj"
+fname: "lv_obj_get_height", namespace: "lv_obj"
+fname: "lv_obj_get_width_fit", namespace: "lv_obj"
+fname: "lv_obj_get_height_fit", namespace: "lv_obj"
+fname: "lv_obj_get_auto_realign", namespace: "lv_obj"
+fname: "lv_obj_get_ext_click_pad_left", namespace: "lv_obj"
+fname: "lv_obj_get_ext_click_pad_right", namespace: "lv_obj"
+fname: "lv_obj_get_ext_click_pad_top", namespace: "lv_obj"
+fname: "lv_obj_get_ext_click_pad_bottom", namespace: "lv_obj"
+fname: "lv_obj_get_ext_draw_pad", namespace: "lv_obj"
+fname: "lv_obj_get_style", namespace: "lv_obj"
+fname: "lv_obj_get_hidden", namespace: "lv_obj"
+fname: "lv_obj_get_click", namespace: "lv_obj"
+fname: "lv_obj_get_top", namespace: "lv_obj"
+fname: "lv_obj_get_drag", namespace: "lv_obj"
+fname: "lv_obj_get_drag_dir", namespace: "lv_obj"
+fname: "lv_obj_get_drag_throw", namespace: "lv_obj"
+fname: "lv_obj_get_drag_parent", namespace: "lv_obj"
+fname: "lv_obj_get_parent_event", namespace: "lv_obj"
+fname: "lv_obj_get_base_dir", namespace: "lv_obj"
+fname: "lv_obj_get_opa_scale_enable", namespace: "lv_obj"
+fname: "lv_obj_get_opa_scale", namespace: "lv_obj"
+fname: "lv_obj_get_protect", namespace: "lv_obj"
+fname: "lv_obj_is_protected", namespace: "lv_obj"
+fname: "lv_obj_get_signal_cb", namespace: "lv_obj"
+fname: "lv_obj_get_design_cb", namespace: "lv_obj"
+fname: "lv_obj_get_event_cb", namespace: "lv_obj"
+fname: "lv_obj_get_ext_attr", namespace: "lv_obj"
+fname: "lv_obj_get_type", namespace: "lv_obj"
+fname: "lv_obj_get_user_data", namespace: "lv_obj"
+fname: "lv_obj_get_user_data_ptr", namespace: "lv_obj"
+fname: "lv_obj_set_user_data", namespace: "lv_obj"
+fname: "lv_obj_get_group", namespace: "lv_obj"
+fname: "lv_obj_is_focused", namespace: "lv_obj"
+fname: "lv_obj_handle_get_type_signal", namespace: "lv_obj"
+fname: "lv_label_create", namespace: "lv_label"
+fname: "lv_label_set_text", namespace: "lv_label"
+fname: "lv_label_set_text_fmt", namespace: "lv_label"
+fname: "lv_label_set_array_text", namespace: "lv_label"
+fname: "lv_label_set_static_text", namespace: "lv_label"
+fname: "lv_label_set_long_mode", namespace: "lv_label"
+fname: "lv_label_set_align", namespace: "lv_label"
+fname: "lv_label_set_recolor", namespace: "lv_label"
+fname: "lv_label_set_body_draw", namespace: "lv_label"
+fname: "lv_label_set_anim_speed", namespace: "lv_label"
+fname: "lv_label_set_style", namespace: "lv_label"
+fname: "lv_label_set_text_sel_start", namespace: "lv_label"
+fname: "lv_label_set_text_sel_end", namespace: "lv_label"
+fname: "lv_label_get_text", namespace: "lv_label"
+fname: "lv_label_get_long_mode", namespace: "lv_label"
+fname: "lv_label_get_align", namespace: "lv_label"
+fname: "lv_label_get_recolor", namespace: "lv_label"
+fname: "lv_label_get_body_draw", namespace: "lv_label"
+fname: "lv_label_get_anim_speed", namespace: "lv_label"
+fname: "lv_label_get_letter_pos", namespace: "lv_label"
+fname: "lv_label_get_letter_on", namespace: "lv_label"
+fname: "lv_label_is_char_under_pos", namespace: "lv_label"
+fname: "lv_label_get_style", namespace: "lv_label"
+fname: "lv_label_get_text_sel_start", namespace: "lv_label"
+fname: "lv_label_get_text_sel_end", namespace: "lv_label"
+fname: "lv_label_ins_text", namespace: "lv_label"
+fname: "lv_label_cut_text", namespace: "lv_label"
 #![feature(prelude_import)]
 //! LittlevGL (LVGL) API for Rust. Contains Rust bindings for LittlevGL API for C, generated by `bindgen`.
 //! Also includes safe versions of LittlevGL APIs created specially for Rust.
@@ -820,7 +1064,7 @@ pub mod core {
         #[doc = " - __`font_p`__: pointer to a font"]
         #[doc = " - __`letter`__: an UNICODE character code"]
         #[doc = " Return:  pointer to the bitmap of the letter"]
-        pub fn get_glyph_bitmap(font_p: *const lv_font_t, letter: u32)
+        pub fn font_get_glyph_bitmap(font_p: *const lv_font_t, letter: u32)
          -> LvglResult<*const u8> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -850,9 +1094,10 @@ pub mod core {
           " Return: true: descriptor is successfully loaded into `dsc_out`."]
         #[doc =
           "         false: the letter was not found, no data is loaded to `dsc_out`"]
-        pub fn get_glyph_dsc(font_p: *const lv_font_t,
-                             dsc_out: *mut lv_font_glyph_dsc_t, letter: u32,
-                             letter_next: u32) -> LvglResult<bool> {
+        pub fn font_get_glyph_dsc(font_p: *const lv_font_t,
+                                  dsc_out: *mut lv_font_glyph_dsc_t,
+                                  letter: u32, letter_next: u32)
+         -> LvglResult<bool> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Get the descriptor of a glyph"]
@@ -886,8 +1131,8 @@ pub mod core {
         #[doc =
           " - __`letter_next`__: the next letter after `letter`. Used for kerning"]
         #[doc = " Return: the width of the glyph"]
-        pub fn get_glyph_width(font: *const lv_font_t, letter: u32,
-                               letter_next: u32) -> LvglResult<u16> {
+        pub fn font_get_glyph_width(font: *const lv_font_t, letter: u32,
+                                    letter_next: u32) -> LvglResult<u16> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Get the width of a glyph with kerning"]
@@ -915,7 +1160,8 @@ pub mod core {
           " Get the line height of a font. All characters fit into this height"]
         #[doc = " - __`font_p`__: pointer to a font"]
         #[doc = " Return: the height of a font"]
-        pub fn get_line_height(font_p: *const lv_font_t) -> LvglResult<u8> {
+        pub fn font_get_line_height(font_p: *const lv_font_t)
+         -> LvglResult<u8> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc =
@@ -1322,7 +1568,7 @@ pub mod core {
             }
         }
         #[doc = " GLOBAL PROTOTYPES"]
-        pub fn to1(color: lv_color_t) -> LvglResult<u8> {
+        pub fn color_to1(color: lv_color_t) -> LvglResult<u8> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " GLOBAL PROTOTYPES"]
@@ -1337,7 +1583,7 @@ pub mod core {
                 Ok(result_value)
             }
         }
-        pub fn to8(color: lv_color_t) -> LvglResult<u8> {
+        pub fn color_to8(color: lv_color_t) -> LvglResult<u8> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 pub fn lv_color_to8(color: lv_color_t)
@@ -1351,7 +1597,7 @@ pub mod core {
                 Ok(result_value)
             }
         }
-        pub fn to16(color: lv_color_t) -> LvglResult<u16> {
+        pub fn color_to16(color: lv_color_t) -> LvglResult<u16> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 pub fn lv_color_to16(color: lv_color_t)
@@ -1365,7 +1611,7 @@ pub mod core {
                 Ok(result_value)
             }
         }
-        pub fn to32(color: lv_color_t) -> LvglResult<u32> {
+        pub fn color_to32(color: lv_color_t) -> LvglResult<u32> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 pub fn lv_color_to32(color: lv_color_t)
@@ -1379,7 +1625,7 @@ pub mod core {
                 Ok(result_value)
             }
         }
-        pub fn mix(c1: lv_color_t, c2: lv_color_t, mix: u8)
+        pub fn color_mix(c1: lv_color_t, c2: lv_color_t, mix: u8)
          -> LvglResult<lv_color_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -1399,7 +1645,7 @@ pub mod core {
         #[doc = " Get the brightness of a color"]
         #[doc = " - __`color`__: a color"]
         #[doc = " Return: the brightness [0..255]"]
-        pub fn brightness(color: lv_color_t) -> LvglResult<u8> {
+        pub fn color_brightness(color: lv_color_t) -> LvglResult<u8> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Get the brightness of a color"]
@@ -1416,7 +1662,7 @@ pub mod core {
                 Ok(result_value)
             }
         }
-        pub fn make(r: u8, g: u8, b: u8) -> LvglResult<lv_color_t> {
+        pub fn color_make(r: u8, g: u8, b: u8) -> LvglResult<lv_color_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 pub fn lv_color_make(r: u8, g: u8, b: u8)
@@ -1430,7 +1676,7 @@ pub mod core {
                 Ok(result_value)
             }
         }
-        pub fn hex(c: u32) -> LvglResult<lv_color_t> {
+        pub fn color_hex(c: u32) -> LvglResult<lv_color_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 pub fn lv_color_hex(c: u32)
@@ -1444,7 +1690,7 @@ pub mod core {
                 Ok(result_value)
             }
         }
-        pub fn hex3(c: u32) -> LvglResult<lv_color_t> {
+        pub fn color_hex3(c: u32) -> LvglResult<lv_color_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 pub fn lv_color_hex3(c: u32)
@@ -1464,7 +1710,8 @@ pub mod core {
         #[doc = " - __`v`__: value [0..100]"]
         #[doc =
           " Return: the given RGB color in RGB (with LV_COLOR_DEPTH depth)"]
-        pub fn hsv_to_rgb(h: u16, s: u8, v: u8) -> LvglResult<lv_color_t> {
+        pub fn color_hsv_to_rgb(h: u16, s: u8, v: u8)
+         -> LvglResult<lv_color_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Convert a HSV color to RGB"]
@@ -1490,7 +1737,7 @@ pub mod core {
         #[doc = " - __`g8`__: 8-bit green"]
         #[doc = " - __`b8`__: 8-bit blue"]
         #[doc = " Return: the given RGB color in HSV"]
-        pub fn rgb_to_hsv(r8: u8, g8: u8, b8: u8)
+        pub fn color_rgb_to_hsv(r8: u8, g8: u8, b8: u8)
          -> LvglResult<lv_color_hsv_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -1514,7 +1761,7 @@ pub mod core {
         #[doc = " Convert a color to HSV"]
         #[doc = " - __`color`__: color"]
         #[doc = " Return: the given color in HSV"]
-        pub fn to_hsv(color: lv_color_t) -> LvglResult<lv_color_hsv_t> {
+        pub fn color_to_hsv(color: lv_color_t) -> LvglResult<lv_color_hsv_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Convert a color to HSV"]
@@ -1571,8 +1818,9 @@ pub mod core {
         #[doc = " - __`y1`__: top coordinate of the area"]
         #[doc = " - __`x2`__: right coordinate of the area"]
         #[doc = " - __`y2`__: bottom coordinate of the area"]
-        pub fn set(area_p: *mut lv_area_t, x1: lv_coord_t, y1: lv_coord_t,
-                   x2: lv_coord_t, y2: lv_coord_t) -> LvglResult<()> {
+        pub fn area_set(area_p: *mut lv_area_t, x1: lv_coord_t,
+                        y1: lv_coord_t, x2: lv_coord_t, y2: lv_coord_t)
+         -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Initialize an area"]
@@ -1598,7 +1846,7 @@ pub mod core {
         #[doc = " Copy an area"]
         #[doc = " - __`dest`__: pointer to the destination area"]
         #[doc = " - __`src`__: pointer to the source area"]
-        pub fn copy(dest: *mut lv_area_t, src: *const lv_area_t)
+        pub fn area_copy(dest: *mut lv_area_t, src: *const lv_area_t)
          -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -1619,7 +1867,8 @@ pub mod core {
         #[doc = " Get the width of an area"]
         #[doc = " - __`area_p`__: pointer to an area"]
         #[doc = " Return: the width of the area (if x1 == x2 -> width = 1)"]
-        pub fn get_width(area_p: *const lv_area_t) -> LvglResult<lv_coord_t> {
+        pub fn area_get_width(area_p: *const lv_area_t)
+         -> LvglResult<lv_coord_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Get the width of an area"]
@@ -1641,7 +1890,7 @@ pub mod core {
         #[doc = " Get the height of an area"]
         #[doc = " - __`area_p`__: pointer to an area"]
         #[doc = " Return: the height of the area (if y1 == y2 -> height = 1)"]
-        pub fn get_height(area_p: *const lv_area_t)
+        pub fn area_get_height(area_p: *const lv_area_t)
          -> LvglResult<lv_coord_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -1665,7 +1914,7 @@ pub mod core {
         #[doc = " - __`area_p`__: pointer to an area"]
         #[doc =
           " - __`w`__: the new width of the area (w == 1 makes x1 == x2)"]
-        pub fn set_width(area_p: *mut lv_area_t, w: lv_coord_t)
+        pub fn area_set_width(area_p: *mut lv_area_t, w: lv_coord_t)
          -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -1688,7 +1937,7 @@ pub mod core {
         #[doc = " - __`area_p`__: pointer to an area"]
         #[doc =
           " - __`h`__: the new height of the area (h == 1 makes y1 == y2)"]
-        pub fn set_height(area_p: *mut lv_area_t, h: lv_coord_t)
+        pub fn area_set_height(area_p: *mut lv_area_t, h: lv_coord_t)
          -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -1712,8 +1961,8 @@ pub mod core {
         #[doc = " - __`area_p`__: pointer to an area"]
         #[doc = " - __`x`__: the new x coordinate of the area"]
         #[doc = " - __`y`__: the new y coordinate of the area"]
-        pub fn set_pos(area_p: *mut lv_area_t, x: lv_coord_t, y: lv_coord_t)
-         -> LvglResult<()> {
+        pub fn area_set_pos(area_p: *mut lv_area_t, x: lv_coord_t,
+                            y: lv_coord_t) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc =
@@ -1736,7 +1985,7 @@ pub mod core {
         #[doc = " Return with area of an area (x * y)"]
         #[doc = " - __`area_p`__: pointer to an area"]
         #[doc = " Return: size of area"]
-        pub fn get_size(area_p: *const lv_area_t) -> LvglResult<u32> {
+        pub fn area_get_size(area_p: *const lv_area_t) -> LvglResult<u32> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Return with area of an area (x * y)"]
@@ -1761,8 +2010,8 @@ pub mod core {
         #[doc = " - __`a2_p`__: pointer to the second area"]
         #[doc =
           " Return: false: the two area has NO common parts, res_p is invalid"]
-        pub fn intersect(res_p: *mut lv_area_t, a1_p: *const lv_area_t,
-                         a2_p: *const lv_area_t) -> LvglResult<bool> {
+        pub fn area_intersect(res_p: *mut lv_area_t, a1_p: *const lv_area_t,
+                              a2_p: *const lv_area_t) -> LvglResult<bool> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Get the common parts of two areas"]
@@ -1793,8 +2042,8 @@ pub mod core {
           " - __`res_p`__: pointer to an area, the result will be stored here"]
         #[doc = " - __`a1_p`__: pointer to the first area"]
         #[doc = " - __`a2_p`__: pointer to the second area"]
-        pub fn join(a_res_p: *mut lv_area_t, a1_p: *const lv_area_t,
-                    a2_p: *const lv_area_t) -> LvglResult<()> {
+        pub fn area_join(a_res_p: *mut lv_area_t, a1_p: *const lv_area_t,
+                         a2_p: *const lv_area_t) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc =
@@ -1821,7 +2070,7 @@ pub mod core {
         #[doc = " - __`a_p`__: pointer to an area"]
         #[doc = " - __`p_p`__: pointer to a point"]
         #[doc = " Return: false:the point is out of the area"]
-        pub fn is_point_on(a_p: *const lv_area_t, p_p: *const lv_point_t)
+        pub fn area_is_point_on(a_p: *const lv_area_t, p_p: *const lv_point_t)
          -> LvglResult<bool> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -1847,7 +2096,7 @@ pub mod core {
         #[doc = " - __`a1_p`__: pointer to an area."]
         #[doc = " - __`a2_p`__: pointer to an other area"]
         #[doc = " Return: false: a1_p and a2_p has no common parts"]
-        pub fn is_on(a1_p: *const lv_area_t, a2_p: *const lv_area_t)
+        pub fn area_is_on(a1_p: *const lv_area_t, a2_p: *const lv_area_t)
          -> LvglResult<bool> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -1875,8 +2124,8 @@ pub mod core {
         #[doc =
           " - __`aholder`__: pointer to an area which could involve ain_p"]
         #[doc = " @return"]
-        pub fn is_in(ain_p: *const lv_area_t, aholder_p: *const lv_area_t)
-         -> LvglResult<bool> {
+        pub fn area_is_in(ain_p: *const lv_area_t,
+                          aholder_p: *const lv_area_t) -> LvglResult<bool> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Check if an area is fully on an other"]
@@ -1903,7 +2152,7 @@ pub mod core {
         #[doc = " - __`a_p`__: pointer to an area to grow"]
         #[doc =
           " - __`amount`__: amount to increment the area, or negative to decrement"]
-        pub fn increment(a_p: *mut lv_area_t, amount: lv_coord_t)
+        pub fn area_increment(a_p: *mut lv_area_t, amount: lv_coord_t)
          -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -2098,7 +2347,7 @@ pub mod core {
         }
         pub type lv_anim_t = _lv_anim_t;
         #[doc = " Init. the animation module"]
-        pub fn core_init() -> LvglResult<()> {
+        pub fn anim_core_init() -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Init. the animation module"]
@@ -2120,7 +2369,7 @@ pub mod core {
         #[doc = " lv_anim_create(&a);"]
         #[doc =
           " - __`a`__: pointer to an `lv_anim_t` variable to initialize"]
-        pub fn init(a: *mut lv_anim_t) -> LvglResult<()> {
+        pub fn anim_init(a: *mut lv_anim_t) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Initialize an animation variable."]
@@ -2147,8 +2396,9 @@ pub mod core {
         #[doc = " - __`exec_cb`__: a function to execute."]
         #[doc = "                LittelvGL's built-in functions can be used."]
         #[doc = "                E.g. lv_obj_set_x"]
-        pub fn set_exec_cb(a: *mut lv_anim_t, var: Ptr,
-                           exec_cb: lv_anim_exec_xcb_t) -> LvglResult<()> {
+        pub fn anim_set_exec_cb(a: *mut lv_anim_t, var: Ptr,
+                                exec_cb: lv_anim_exec_xcb_t)
+         -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc =
@@ -2179,7 +2429,7 @@ pub mod core {
         #[doc =
           " - __`duration`__: duration of the animation in milliseconds"]
         #[doc = " - __`delay`__: delay before the animation in milliseconds"]
-        pub fn set_time(a: *mut lv_anim_t, duration: u16, delay: i16)
+        pub fn anim_set_time(a: *mut lv_anim_t, duration: u16, delay: i16)
          -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -2206,8 +2456,8 @@ pub mod core {
         #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
         #[doc = " - __`start`__: the start value"]
         #[doc = " - __`end`__: the end value"]
-        pub fn set_values(a: *mut lv_anim_t, start: lv_anim_value_t,
-                          end: lv_anim_value_t) -> LvglResult<()> {
+        pub fn anim_set_values(a: *mut lv_anim_t, start: lv_anim_value_t,
+                               end: lv_anim_value_t) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Set the start and end values of an animation"]
@@ -2238,8 +2488,8 @@ pub mod core {
           " it's more consistent to have `lv_anim_t *` as first parameter."]
         #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
         #[doc = " - __`exec_cb`__: a function to execute."]
-        pub fn set_custom_exec_cb(a: *mut lv_anim_t,
-                                  exec_cb: lv_anim_custom_exec_cb_t)
+        pub fn anim_set_custom_exec_cb(a: *mut lv_anim_t,
+                                       exec_cb: lv_anim_custom_exec_cb_t)
          -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -2274,7 +2524,7 @@ pub mod core {
           " - __`path_cb`__: a function the get the current value of the animation."]
         #[doc =
           "                The built in functions starts with `lv_anim_path_...`"]
-        pub fn set_path_cb(a: *mut lv_anim_t, path_cb: lv_anim_path_cb_t)
+        pub fn anim_set_path_cb(a: *mut lv_anim_t, path_cb: lv_anim_path_cb_t)
          -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -2301,7 +2551,8 @@ pub mod core {
         #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
         #[doc =
           " - __`ready_cb`__: a function call when the animation is ready"]
-        pub fn set_ready_cb(a: *mut lv_anim_t, ready_cb: lv_anim_ready_cb_t)
+        pub fn anim_set_ready_cb(a: *mut lv_anim_t,
+                                 ready_cb: lv_anim_ready_cb_t)
          -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -2327,7 +2578,7 @@ pub mod core {
         #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
         #[doc =
           " - __`wait_time`__: time in milliseconds to wait before starting the back direction"]
-        pub fn set_playback(a: *mut lv_anim_t, wait_time: u16)
+        pub fn anim_set_playback(a: *mut lv_anim_t, wait_time: u16)
          -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -2350,7 +2601,7 @@ pub mod core {
         }
         #[doc = " Disable playback. (Disabled after `lv_anim_init()`)"]
         #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
-        pub fn clear_playback(a: *mut lv_anim_t) -> LvglResult<()> {
+        pub fn anim_clear_playback(a: *mut lv_anim_t) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc =
@@ -2371,7 +2622,7 @@ pub mod core {
         #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
         #[doc =
           " - __`wait_time`__: time in milliseconds to wait before starting the animation again"]
-        pub fn set_repeat(a: *mut lv_anim_t, wait_time: u16)
+        pub fn anim_set_repeat(a: *mut lv_anim_t, wait_time: u16)
          -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -2392,7 +2643,7 @@ pub mod core {
         }
         #[doc = " Disable repeat. (Disabled after `lv_anim_init()`)"]
         #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
-        pub fn clear_repeat(a: *mut lv_anim_t) -> LvglResult<()> {
+        pub fn anim_clear_repeat(a: *mut lv_anim_t) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Disable repeat. (Disabled after `lv_anim_init()`)"]
@@ -2411,7 +2662,7 @@ pub mod core {
         #[doc = " Create an animation"]
         #[doc =
           " - __`a`__: an initialized 'anim_t' variable. Not required after call."]
-        pub fn create(a: *mut lv_anim_t) -> LvglResult<()> {
+        pub fn anim_create(a: *mut lv_anim_t) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Create an animation"]
@@ -2436,7 +2687,7 @@ pub mod core {
           "           or NULL to ignore it and delete all the animations of 'var"]
         #[doc =
           " Return: true: at least 1 animation is deleted, false: no animation is deleted"]
-        pub fn del(var: Ptr, exec_cb: lv_anim_exec_xcb_t)
+        pub fn anim_del(var: Ptr, exec_cb: lv_anim_exec_xcb_t)
          -> LvglResult<bool> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -2479,8 +2730,8 @@ pub mod core {
           "           or NULL to ignore it and delete all the animations of 'var"]
         #[doc =
           " Return: true: at least 1 animation is deleted, false: no animation is deleted"]
-        pub fn custom_del(a: *mut lv_anim_t,
-                          exec_cb: lv_anim_custom_exec_cb_t)
+        pub fn anim_custom_del(a: *mut lv_anim_t,
+                               exec_cb: lv_anim_custom_exec_cb_t)
          -> LvglResult<bool> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -2516,7 +2767,7 @@ pub mod core {
         }
         #[doc = " Get the number of currently running animations"]
         #[doc = " Return: the number of running animations"]
-        pub fn count_running() -> LvglResult<u16> {
+        pub fn anim_count_running() -> LvglResult<u16> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Get the number of currently running animations"]
@@ -2539,8 +2790,8 @@ pub mod core {
         #[doc = " - __`end`__: end value of the animation"]
         #[doc =
           " Return: the required time [ms] for the animation with the given parameters"]
-        pub fn speed_to_time(speed: u16, start: lv_anim_value_t,
-                             end: lv_anim_value_t) -> LvglResult<u16> {
+        pub fn anim_speed_to_time(speed: u16, start: lv_anim_value_t,
+                                  end: lv_anim_value_t) -> LvglResult<u16> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc =
@@ -2570,7 +2821,7 @@ pub mod core {
           " Calculate the current value of an animation applying linear characteristic"]
         #[doc = " - __`a`__: pointer to an animation"]
         #[doc = " Return: the current value to set"]
-        pub fn path_linear(a: *const lv_anim_t)
+        pub fn anim_path_linear(a: *const lv_anim_t)
          -> LvglResult<lv_anim_value_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -2593,7 +2844,7 @@ pub mod core {
           " Calculate the current value of an animation slowing down the start phase"]
         #[doc = " - __`a`__: pointer to an animation"]
         #[doc = " Return: the current value to set"]
-        pub fn path_ease_in(a: *const lv_anim_t)
+        pub fn anim_path_ease_in(a: *const lv_anim_t)
          -> LvglResult<lv_anim_value_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -2617,7 +2868,7 @@ pub mod core {
           " Calculate the current value of an animation slowing down the end phase"]
         #[doc = " - __`a`__: pointer to an animation"]
         #[doc = " Return: the current value to set"]
-        pub fn path_ease_out(a: *const lv_anim_t)
+        pub fn anim_path_ease_out(a: *const lv_anim_t)
          -> LvglResult<lv_anim_value_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -2641,7 +2892,7 @@ pub mod core {
           " Calculate the current value of an animation applying an \"S\" characteristic (cosine)"]
         #[doc = " - __`a`__: pointer to an animation"]
         #[doc = " Return: the current value to set"]
-        pub fn path_ease_in_out(a: *const lv_anim_t)
+        pub fn anim_path_ease_in_out(a: *const lv_anim_t)
          -> LvglResult<lv_anim_value_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -2665,7 +2916,7 @@ pub mod core {
           " Calculate the current value of an animation with overshoot at the end"]
         #[doc = " - __`a`__: pointer to an animation"]
         #[doc = " Return: the current value to set"]
-        pub fn path_overshoot(a: *const lv_anim_t)
+        pub fn anim_path_overshoot(a: *const lv_anim_t)
          -> LvglResult<lv_anim_value_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -2688,7 +2939,7 @@ pub mod core {
         #[doc = " Calculate the current value of an animation with 3 bounces"]
         #[doc = " - __`a`__: pointer to an animation"]
         #[doc = " Return: the current value to set"]
-        pub fn path_bounce(a: *const lv_anim_t)
+        pub fn anim_path_bounce(a: *const lv_anim_t)
          -> LvglResult<lv_anim_value_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -2712,7 +2963,8 @@ pub mod core {
         #[doc = " (Set end value on the end of the animation)"]
         #[doc = " - __`a`__: pointer to an animation"]
         #[doc = " Return: the current value to set"]
-        pub fn path_step(a: *const lv_anim_t) -> LvglResult<lv_anim_value_t> {
+        pub fn anim_path_step(a: *const lv_anim_t)
+         -> LvglResult<lv_anim_value_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc =
@@ -4415,7 +4667,7 @@ pub mod core {
           " It is used to have known values in the fields and not junk in memory."]
         #[doc = " After it you can safely set only the fields you need."]
         #[doc = " - __`driver`__: pointer to driver variable to initialize"]
-        pub fn drv_init(driver: *mut lv_disp_drv_t) -> LvglResult<()> {
+        pub fn disp_drv_init(driver: *mut lv_disp_drv_t) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Initialize a display driver with default values."]
@@ -4455,8 +4707,9 @@ pub mod core {
         #[doc = " sent. Set to `NULL` if unused."]
         #[doc =
           " - __`size_in_px_cnt`__: size of the `buf1` and `buf2` in pixel count."]
-        pub fn buf_init(disp_buf: *mut lv_disp_buf_t, buf1: Ptr, buf2: Ptr,
-                        size_in_px_cnt: u32) -> LvglResult<()> {
+        pub fn disp_buf_init(disp_buf: *mut lv_disp_buf_t, buf1: Ptr,
+                             buf2: Ptr, size_in_px_cnt: u32)
+         -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Initialize a display buffer"]
@@ -4503,7 +4756,7 @@ pub mod core {
         #[doc =
           " - __`driver`__: pointer to an initialized 'lv_disp_drv_t' variable (can be local variable)"]
         #[doc = " Return: pointer to the new display or NULL on error"]
-        pub fn drv_register(driver: *mut lv_disp_drv_t)
+        pub fn disp_drv_register(driver: *mut lv_disp_drv_t)
          -> LvglResult<*mut lv_disp_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -4529,7 +4782,8 @@ pub mod core {
         #[doc =
           " - __`disp`__: pointer to a display. (return value of `lv_disp_drv_register`)"]
         #[doc = " - __`new_drv`__: pointer to the new driver"]
-        pub fn drv_update(disp: *mut lv_disp_t, new_drv: *mut lv_disp_drv_t)
+        pub fn disp_drv_update(disp: *mut lv_disp_t,
+                               new_drv: *mut lv_disp_drv_t)
          -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -4551,7 +4805,7 @@ pub mod core {
         }
         #[doc = " Remove a display"]
         #[doc = " - __`disp`__: pointer to display"]
-        pub fn remove(disp: *mut lv_disp_t) -> LvglResult<()> {
+        pub fn disp_remove(disp: *mut lv_disp_t) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Remove a display"]
@@ -4569,7 +4823,7 @@ pub mod core {
         #[doc =
           " Set a default screen. The new screens will be created on it by default."]
         #[doc = " - __`disp`__: pointer to a display"]
-        pub fn set_default(disp: *mut lv_disp_t) -> LvglResult<()> {
+        pub fn disp_set_default(disp: *mut lv_disp_t) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc =
@@ -4587,7 +4841,7 @@ pub mod core {
         }
         #[doc = " Get the default display"]
         #[doc = " Return: pointer to the default display"]
-        pub fn get_default() -> LvglResult<*mut lv_disp_t> {
+        pub fn disp_get_default() -> LvglResult<*mut lv_disp_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Get the default display"]
@@ -4607,7 +4861,8 @@ pub mod core {
         #[doc =
           " - __`disp`__: pointer to a display (NULL to use the default display)"]
         #[doc = " Return: the horizontal resolution of the display"]
-        pub fn get_hor_res(disp: *mut lv_disp_t) -> LvglResult<lv_coord_t> {
+        pub fn disp_get_hor_res(disp: *mut lv_disp_t)
+         -> LvglResult<lv_coord_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Get the horizontal resolution of a display"]
@@ -4630,7 +4885,8 @@ pub mod core {
         #[doc =
           " - __`disp`__: pointer to a display (NULL to use the default display)"]
         #[doc = " Return: the vertical resolution of the display"]
-        pub fn get_ver_res(disp: *mut lv_disp_t) -> LvglResult<lv_coord_t> {
+        pub fn disp_get_ver_res(disp: *mut lv_disp_t)
+         -> LvglResult<lv_coord_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Get the vertical resolution of a display"]
@@ -4653,7 +4909,8 @@ pub mod core {
         #[doc =
           " - __`disp`__: pointer to a display (NULL to use the default display)"]
         #[doc = " Return: true: anti-aliasing is enabled; false: disabled"]
-        pub fn get_antialiasing(disp: *mut lv_disp_t) -> LvglResult<bool> {
+        pub fn disp_get_antialiasing(disp: *mut lv_disp_t)
+         -> LvglResult<bool> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc =
@@ -4674,8 +4931,8 @@ pub mod core {
                 Ok(result_value)
             }
         }
-        pub fn set_direction(disp: *mut lv_disp_t, direction: ::cty::c_int)
-         -> LvglResult<()> {
+        pub fn disp_set_direction(disp: *mut lv_disp_t,
+                                  direction: ::cty::c_int) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 pub fn lv_disp_set_direction(disp: *mut lv_disp_t,
@@ -4694,7 +4951,8 @@ pub mod core {
           " Call in the display driver's `flush_cb` function when the flushing is finished"]
         #[doc =
           " - __`disp_drv`__: pointer to display driver in `flush_cb` where this function is called"]
-        pub fn flush_ready(disp_drv: *mut lv_disp_drv_t) -> LvglResult<()> {
+        pub fn disp_flush_ready(disp_drv: *mut lv_disp_drv_t)
+         -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc =
@@ -4716,7 +4974,8 @@ pub mod core {
           " - __`disp`__: pointer to the current display. NULL to initialize."]
         #[doc =
           " Return: the next display or NULL if no more. Give the first display when the parameter is NULL"]
-        pub fn get_next(disp: *mut lv_disp_t) -> LvglResult<*mut lv_disp_t> {
+        pub fn disp_get_next(disp: *mut lv_disp_t)
+         -> LvglResult<*mut lv_disp_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Get the next display."]
@@ -4738,7 +4997,7 @@ pub mod core {
         #[doc = " Get the internal buffer of a display"]
         #[doc = " - __`disp`__: pointer to a display"]
         #[doc = " Return: pointer to the internal buffers"]
-        pub fn get_buf(disp: *mut lv_disp_t)
+        pub fn disp_get_buf(disp: *mut lv_disp_t)
          -> LvglResult<*mut lv_disp_buf_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -4758,7 +5017,8 @@ pub mod core {
         }
         #[doc = " Get the number of areas in the buffer"]
         #[doc = " Return: number of invalid areas"]
-        pub fn get_inv_buf_size(disp: *mut lv_disp_t) -> LvglResult<u16> {
+        pub fn disp_get_inv_buf_size(disp: *mut lv_disp_t)
+         -> LvglResult<u16> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Get the number of areas in the buffer"]
@@ -4778,7 +5038,7 @@ pub mod core {
         #[doc =
           " Pop (delete) the last 'num' invalidated areas from the buffer"]
         #[doc = " - __`num`__: number of areas to delete"]
-        pub fn pop_from_inv_buf(disp: *mut lv_disp_t, num: u16)
+        pub fn disp_pop_from_inv_buf(disp: *mut lv_disp_t, num: u16)
          -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -4800,7 +5060,7 @@ pub mod core {
           " Check the driver configuration if it's double buffered (both `buf1` and `buf2` are set)"]
         #[doc = " - __`disp`__: pointer to to display to check"]
         #[doc = " Return: true: double buffered; false: not double buffered"]
-        pub fn is_double_buf(disp: *mut lv_disp_t) -> LvglResult<bool> {
+        pub fn disp_is_double_buf(disp: *mut lv_disp_t) -> LvglResult<bool> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc =
@@ -4825,7 +5085,8 @@ pub mod core {
         #[doc = " `size` is screen sized)"]
         #[doc = " - __`disp`__: pointer to to display to check"]
         #[doc = " Return: true: double buffered; false: not double buffered"]
-        pub fn is_true_double_buf(disp: *mut lv_disp_t) -> LvglResult<bool> {
+        pub fn disp_is_true_double_buf(disp: *mut lv_disp_t)
+         -> LvglResult<bool> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc =
@@ -5166,7 +5427,7 @@ pub mod core {
           " It is used to surly have known values in the fields ant not memory junk."]
         #[doc = " After it you can set the fields."]
         #[doc = " - __`driver`__: pointer to driver variable to initialize"]
-        pub fn drv_init(driver: *mut lv_indev_drv_t) -> LvglResult<()> {
+        pub fn indev_drv_init(driver: *mut lv_indev_drv_t) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc =
@@ -5190,7 +5451,7 @@ pub mod core {
         #[doc =
           " - __`driver`__: pointer to an initialized 'lv_indev_drv_t' variable (can be local variable)"]
         #[doc = " Return: pointer to the new input device or NULL on error"]
-        pub fn drv_register(driver: *mut lv_indev_drv_t)
+        pub fn indev_drv_register(driver: *mut lv_indev_drv_t)
          -> LvglResult<*mut lv_indev_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -5215,8 +5476,9 @@ pub mod core {
         #[doc =
           " - __`indev`__: pointer to a input device. (return value of `lv_indev_drv_register`)"]
         #[doc = " - __`new_drv`__: pointer to the new driver"]
-        pub fn drv_update(indev: *mut lv_indev_t,
-                          new_drv: *mut lv_indev_drv_t) -> LvglResult<()> {
+        pub fn indev_drv_update(indev: *mut lv_indev_t,
+                                new_drv: *mut lv_indev_drv_t)
+         -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Update the driver in run time."]
@@ -5241,7 +5503,7 @@ pub mod core {
         #[doc =
           " Return: the next input devise or NULL if no more. Give the first input device when the parameter"]
         #[doc = " is NULL"]
-        pub fn get_next(indev: *mut lv_indev_t)
+        pub fn indev_get_next(indev: *mut lv_indev_t)
          -> LvglResult<*mut lv_indev_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -5268,7 +5530,7 @@ pub mod core {
         #[doc = " - __`data`__: input device will write its data here"]
         #[doc =
           " Return: false: no more data; true: there more data to read (buffered)"]
-        pub fn read(indev: *mut lv_indev_t, data: *mut lv_indev_data_t)
+        pub fn indev_read(indev: *mut lv_indev_t, data: *mut lv_indev_data_t)
          -> LvglResult<bool> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -5295,7 +5557,7 @@ pub mod core {
         #[doc = " You have to call this function periodically"]
         #[doc =
           " - __`tick_period`__: the call period of this function in milliseconds"]
-        pub fn inc(tick_period: u32) -> LvglResult<()> {
+        pub fn tick_inc(tick_period: u32) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " You have to call this function periodically"]
@@ -5313,7 +5575,7 @@ pub mod core {
         }
         #[doc = " Get the elapsed milliseconds since start up"]
         #[doc = " Return: the elapsed milliseconds"]
-        pub fn get() -> LvglResult<u32> {
+        pub fn tick_get() -> LvglResult<u32> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Get the elapsed milliseconds since start up"]
@@ -5333,7 +5595,7 @@ pub mod core {
         #[doc =
           " - __`prev_tick`__: a previous time stamp (return value of systick_get() )"]
         #[doc = " Return: the elapsed milliseconds since 'prev_tick'"]
-        pub fn elaps(prev_tick: u32) -> LvglResult<u32> {
+        pub fn tick_elaps(prev_tick: u32) -> LvglResult<u32> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc =
@@ -6747,8 +7009,9 @@ pub mod core {
           " - __`data`__: arbitrary data depending on the object type and the event. (Usually `NULL`)"]
         #[doc =
           " Return: LV_RES_OK: `obj` was not deleted in the event; LV_RES_INV: `obj` was deleted in the event"]
-        pub fn send(obj: *mut lv_obj_t, event: lv_event_t,
-                    data: *const ::cty::c_void) -> LvglResult<lv_res_t> {
+        pub fn event_send(obj: *mut lv_obj_t, event: lv_event_t,
+                          data: *const ::cty::c_void)
+         -> LvglResult<lv_res_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Send an event to the object"]
@@ -6785,8 +7048,8 @@ pub mod core {
         #[doc = " - __`data`__: pointer to a custom data"]
         #[doc =
           " Return: LV_RES_OK: `obj` was not deleted in the event; LV_RES_INV: `obj` was deleted in the event"]
-        pub fn send_func(event_xcb: lv_event_cb_t, obj: *mut lv_obj_t,
-                         event: lv_event_t, data: *const ::cty::c_void)
+        pub fn event_send_func(event_xcb: lv_event_cb_t, obj: *mut lv_obj_t,
+                               event: lv_event_t, data: *const ::cty::c_void)
          -> LvglResult<lv_res_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -6824,7 +7087,7 @@ pub mod core {
         }
         #[doc = " Get the `data` parameter of the current event"]
         #[doc = " Return: the `data` parameter"]
-        pub fn get_data() -> LvglResult<*const ::cty::c_void> {
+        pub fn event_get_data() -> LvglResult<*const ::cty::c_void> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Get the `data` parameter of the current event"]
