@@ -129,7 +129,13 @@ mod screen_time {
         if state.ble_state == BleState::BLEMAN_BLE_STATE_DISCONNECTED {
             label::set_text(widgets.ble_label, &Strn::new(b"\x00"));
         } else {
-            let color = state2color[state.ble_state];
+            let color =
+                match state.ble_state {
+                    BLEMAN_BLE_STATE_INACTIVE => "#000000",
+                    BLEMAN_BLE_STATE_DISCONNECTED => "#f2495c",
+                    BLEMAN_BLE_STATE_ADVERTISING => "#5794f2",
+                    BLEMAN_BLE_STATE_CONNECTED => "#37872d",
+                };
             let mut status = heapless::String::<heapless::consts::U16>::new();
             (&mut status).write_fmt(::core::fmt::Arguments::new_v1(&["",
                                                                      " \u{f293}#\u{0}"],

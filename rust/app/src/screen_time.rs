@@ -87,7 +87,13 @@ fn set_bt_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResul
     if state.ble_state == BleState::BLEMAN_BLE_STATE_DISCONNECTED {
         label::set_text(widgets.ble_label, strn!(""));
     } else {
-        let color = state2color[state.ble_state];
+        let color = 
+            match state.ble_state {
+                BLEMAN_BLE_STATE_INACTIVE => "#000000",     //  Black
+                BLEMAN_BLE_STATE_DISCONNECTED => "#f2495c", //  GUI_COLOR_LBL_BASIC_RED
+                BLEMAN_BLE_STATE_ADVERTISING => "#5794f2",  //  GUI_COLOR_LBL_BASIC_BLUE
+                BLEMAN_BLE_STATE_CONNECTED => "#37872d",    //  GUI_COLOR_LBL_DARK_GREEN
+            };
         //  Create a string buffer with max size 16 and format the Bluetooth status
         let mut status = heapless::String::<heapless::consts::U16>::new();
         write!(&mut status, 
