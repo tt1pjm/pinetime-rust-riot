@@ -92,10 +92,10 @@ do
     fi
 done
 
-#  Expand Rust macros for troubleshooting: logs/libmynewt-expanded.rs and libapp-expanded.rs
+#  Expand Rust macros for troubleshooting: logs/liblvgl-expanded.rs and libapp-expanded.rs
 set +e  # Ignore errors
-# pushd rust/mynewt ; cargo rustc $rust_build_options -- -Z unstable-options --pretty expanded > ../../logs/libmynewt-expanded.rs ; popd
-# pushd rust/app    ; cargo rustc $rust_build_options -- -Z unstable-options --pretty expanded > ../../logs/libapp-expanded.rs    ; popd
+pushd rust/lvgl ; cargo rustc $rust_build_options -- -Z unstable-options --pretty expanded > ../../logs/liblvgl-expanded.rs ; popd
+pushd rust/app  ; cargo rustc $rust_build_options -- -Z unstable-options --pretty expanded > ../../logs/libapp-expanded.rs  ; popd
 set -e  # Stop on errors
 
 #  Build the Rust app in "src" folder.
@@ -185,9 +185,9 @@ echo ; echo "----- Build RIOT OS and link with Rust app"
 set -x
 build_riot $build_app
 
-#  TODO: Copy the disassembly and linker map to the logs folder.
-#  cp bin/targets/$build_app/app/apps/my_sensor_app/my_sensor_app.elf.lst logs
-#  cp bin/targets/$build_app/app/apps/my_sensor_app/my_sensor_app.elf.map logs
+#  Copy the disassembly and linker map to the logs folder.
+$objdump_cmd -t -S --demangle --line-numbers --wide program $build_app/bin/*/*.elf >logs/PineTime.S 2>&1
+cp $build_app/bin/*/*.map logs
 
 #  Flash the firmware
 #  scripts/nrf52/flash-app.sh

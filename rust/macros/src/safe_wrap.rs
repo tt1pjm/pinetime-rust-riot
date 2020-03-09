@@ -37,7 +37,16 @@ use syn::{
     token::Comma,
 };
 
-/// Given a function name like `os_task_init`, return true if we should create the wrapper
+/// Given a RIOT OS function name like `lv_obj_create`, return true if we should create the wrapper
+#[cfg(feature = "riot")]  //  If building for RIOT OS...
+fn function_is_whitelisted(fname: &str) -> bool {
+    //  Functions starting with `lv_` are whitelisted.
+    if fname.starts_with("lv_") { true }
+    else { false }
+}
+
+/// Given a Mynewt function name like `os_task_init`, return true if we should create the wrapper
+#[cfg(feature = "mynewt")]  //  If building for Mynewt...
 fn function_is_whitelisted(fname: &str) -> bool {
     match fname {  //  If match found, then it's whitelisted.
         //  kernel/os
@@ -61,10 +70,11 @@ fn function_is_whitelisted(fname: &str) -> bool {
     }
 }
 
-/// Given a function name like `lv_obj_create`, return the namespace (`lv_obj`). Used to strip namespace from function names, leaving `create` as the stripped name.
+/// Given a RIOT OS function name like `lv_obj_create`, return the namespace (`lv_obj`). Used to strip namespace from function names, leaving `create` as the stripped name.
 #[cfg(feature = "riot")]  //  If building for RIOT OS...
 fn get_namespace(fname: &str) -> String {
-    //  Get the first part before `_`.
+    //  println!("get_namespace {}", fname);
+    //  Get the first 2 parts between `_`.
     let fname_split: Vec<&str> = fname.splitn(3, "_").collect();
     if fname_split.len() < 3 { return "".to_string(); }  //  Not a valid namspace if doesn't follow pattern like `lv_obj_create`
     let namespace1 = fname_split[0];
@@ -78,7 +88,7 @@ fn get_namespace(fname: &str) -> String {
     }
 }
 
-/// Given a function name like `os_task_init`, return the namespace (`os`). Used to strip namespace from function names, leaving `task_init` as the stripped name.
+/// Given a Mynewt function name like `os_task_init`, return the namespace (`os`). Used to strip namespace from function names, leaving `task_init` as the stripped name.
 #[cfg(feature = "mynewt")]  //  If building for Mynewt...
 fn get_namespace(fname: &str) -> String {
     //  Get the first part before `_`.
@@ -389,19 +399,25 @@ fn transform_return_type(output: &ReturnType) -> TransformedReturnType {
         else { "".to_string() };  //  No return type
     //  println!("wrap_type: {:#?}", wrap_type);
 
+    #[cfg(feature = "riot")]    //  If building for RIOT OS...
+    let result_token = quote! { LvglResult };    //  Result type is LvglResult
+
+    #[cfg(feature = "mynewt")]  //  If building for Mynewt...
+    let result_token = quote! { MynewtResult };  //  Result type is MynewtResult
+
     //  Declare the result type.
     let declare_result_tokens =
         match wrap_type.as_str() {
             //  No return type (void)
-            ""                          => { quote! { MynewtResult< () > } }
+            ""                          => { quote! { #result_token< () > } }
             //  Mynewt error code
-            ":: cty :: c_int"           => { quote! { MynewtResult< () > } }
+            ":: cty :: c_int"           => { quote! { #result_token< () > } }
             //  String becomes `Strn`
-            "* const :: cty :: c_char"  => { quote! { MynewtResult< Strn > } }
+            "* const :: cty :: c_char"  => { quote! { #result_token< Strn > } }
             //  Specified return type e.g. `* mut os_eventq`
             _ => {
                 let return_type_tokens = syn::parse_str::<Type>(&wrap_type).unwrap();
-                quote! { MynewtResult< #return_type_tokens > }  
+                quote! { #result_token< #return_type_tokens > }  
             }
         };        
     //  Assign the result.
@@ -447,7 +463,7 @@ fn transform_function_name(ident: &Ident) -> TransformedFunctionName {
     //  Get namespace e.g. `os`
     let fname = ident.to_string();
     let namespace = get_namespace(&fname);
-    //  !("namespace: {:#?}", namespace);
+    //  println!("namespace: {:#?}", namespace);
     //  Get namespace prefix e.g. `os_`
     let namespace_prefix = 
         if namespace.len() > 0 { 
