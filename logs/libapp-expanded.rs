@@ -319,7 +319,7 @@ mod screen_time {
         };
     /// Create the Time Screen, populated with widgets
     #[no_mangle]
-    extern "C" fn screen_time_create<'a>(ht: &'a home_time_widget_t)
+    extern "C" fn screen_time_create(ht: *const home_time_widget_t)
      -> LvglResult<*mut obj::lv_obj_t> {
         let scr = obj::create(ptr::null_mut(), ptr::null())?;
         let label1 = label::create(scr, ptr::null())?;

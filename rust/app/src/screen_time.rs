@@ -16,7 +16,7 @@ static mut style_time: obj::lv_style_t = fill_zero!(obj::lv_style_t);
 
 /// Create the Time Screen, populated with widgets
 #[no_mangle]  //  Don't mangle the function name
-extern "C" fn screen_time_create<'a>(ht: &'a home_time_widget_t) -> LvglResult<*mut obj::lv_obj_t> {  //  Declare extern "C" because it will be called by RIOT OS firmware
+extern "C" fn screen_time_create(ht: *const home_time_widget_t) -> LvglResult<*mut obj::lv_obj_t> {  //  Declare extern "C" because it will be called by RIOT OS firmware
     let scr = obj::create(ptr::null_mut(), ptr::null()) ? ;
 
     //  Create a label for time (00:00)
