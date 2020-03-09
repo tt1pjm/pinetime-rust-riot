@@ -90,7 +90,7 @@ fn set_bt_label(htwidget: &home_time_widget_t) -> LvglResult<()> {
         label::set_text(htwidget.lv_ble, strn!(""));
     } else {
         let color = state2color[htwidget.ble_state];
-        label::set_text_fmt(htwidget.lv_ble,
+        label::set_text_fmt(htwidget.lv_ble,  //  TODO: Convert to heapless write
             //  TODO: strn!("%s "LV_SYMBOL_BLUETOOTH"#"),  //  LV_SYMBOL_BLUETOOTH="\xef\x8a\x93"
             strn!("%s BT#"),
             color
@@ -109,7 +109,7 @@ fn set_power_label(htwidget: &home_time_widget_t) -> LvglResult<()> {
             { battery_full_color }  //  Battery charge cycle finished
         else 
             { battery_mid_color };
-    label::set_text_fmt(htwidget.lv_power,
+    label::set_text_fmt(htwidget.lv_power,  //  TODO: Convert to heapless write
         strn!("%s %u%%%s#\n(%umV)"),
         color,
         percentage,
@@ -165,7 +165,7 @@ extern "C" fn screen_time_update_screen(widget: &widget_t) -> i32 {
     0  //  Return OK
 }
 
-//  TODO
+//  TODO: Sync with screen_time.c
 #[repr(C)]
 struct home_time_widget_t {
     widget:     widget_t,
@@ -183,7 +183,7 @@ struct home_time_widget_t {
     powered:    bool,
 }
 
-//  TODO
+//  TODO: Sync with screen_time.c
 struct widget_t {}
 struct control_event_handler_t {}
 struct controller_time_spec_t {}
