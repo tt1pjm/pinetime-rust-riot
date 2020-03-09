@@ -125,20 +125,20 @@ fn set_power_label(htwidget: &home_time_widget_t) -> LvglResult<()> {
 fn set_time_label(ht: &home_time_widget_t) -> LvglResult<()> {
     //  Create a string buffer with max size 6 and format the time
     let mut time = heapless::String::<heapless::consts::U6>::new();
-    write!(&mut time, "{:02}:{:02}", 
+    write!(&mut time, "{:02}:{:02}\0",  //  Must terminate Rust strings with null
         ht.time.hour, 
         ht.time.minute)
         .expect("time fail");
-    label::set_text(ht.lv_time, time);
+    label::set_text(ht.lv_time, &Strn::new(time.as_bytes()));  //  TODO: Simplify
 
     //  Create a string buffer with max size 15 and format the date
     let mut date = heapless::String::<heapless::consts::U15>::new();
-    write!(&mut date, "{} {} {}\n",
+    write!(&mut date, "{} {} {}\n\0",  //  Must terminate Rust strings with null
         ht.time.dayofmonth,
         controller_time_month_get_short_name(&ht.time),
         ht.time.year)
         .expect("date fail");
-    label::set_text(ht.lv_date, date);
+    label::set_text(ht.lv_date, &Strn::new(date.as_bytes()));  //  TODO: Simplify
     Ok(())
 }
 

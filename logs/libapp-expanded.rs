@@ -157,7 +157,8 @@ mod screen_time {
     fn set_time_label(ht: &home_time_widget_t) -> LvglResult<()> {
         let mut time = heapless::String::<heapless::consts::U6>::new();
         (&mut time).write_fmt(::core::fmt::Arguments::new_v1_formatted(&["",
-                                                                         ":"],
+                                                                         ":",
+                                                                         "\u{0}"],
                                                                        &match (&ht.time.hour,
                                                                                &ht.time.minute)
                                                                             {
@@ -195,10 +196,10 @@ mod screen_time {
                                                                                                                                                ::core::fmt::rt::v1::Count::Implied,
                                                                                                                                            width:
                                                                                                                                                ::core::fmt::rt::v1::Count::Is(2usize),},}])).expect("time fail");
-        label::set_text(ht.lv_time, time);
+        label::set_text(ht.lv_time, &Strn::new(time.as_bytes()));
         let mut date = heapless::String::<heapless::consts::U15>::new();
         (&mut date).write_fmt(::core::fmt::Arguments::new_v1(&["", " ", " ",
-                                                               "\n"],
+                                                               "\n\u{0}"],
                                                              &match (&ht.time.dayofmonth,
                                                                      &controller_time_month_get_short_name(&ht.time),
                                                                      &ht.time.year)
@@ -212,7 +213,7 @@ mod screen_time {
                                                                    ::core::fmt::ArgumentV1::new(arg2,
                                                                                                 ::core::fmt::Display::fmt)],
                                                               })).expect("date fail");
-        label::set_text(ht.lv_date, date);
+        label::set_text(ht.lv_date, &Strn::new(date.as_bytes()));
         Ok(())
     }
     /// Create the Time Screen, populated with widgets. Called by home_time_draw() in screen_time.c.
