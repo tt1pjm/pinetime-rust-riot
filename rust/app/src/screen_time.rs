@@ -72,7 +72,7 @@ fn create_screen(ht: &home_time_widget_t) -> LvglResult<()> {
     obj::set_event_cb(label1, screen_time_pressed);
 
     //  Update the screen
-    update_screen(&ht.widget) ? ;
+    update_screen(&ht) ? ;
     Ok(())
 }
 
@@ -88,8 +88,7 @@ fn update_screen(htwidget: &home_time_widget_t) -> LvglResult<()> {
 fn set_bt_label(htwidget: &home_time_widget_t) -> LvglResult<()> {
     if htwidget.ble_state == BLEMAN_BLE_STATE_DISCONNECTED {
         label::set_text(htwidget.lv_ble, strn!(""));
-    }
-    else {
+    } else {
         let color = state2color[htwidget.ble_state];
         label::set_text_fmt(htwidget.lv_ble,
             //  TODO: strn!("%s "LV_SYMBOL_BLUETOOTH"#"),  //  LV_SYMBOL_BLUETOOTH="\xef\x8a\x93"

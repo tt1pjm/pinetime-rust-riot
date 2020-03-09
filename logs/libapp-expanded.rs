@@ -112,7 +112,7 @@ mod screen_time {
         obj::set_click(scr, true);
         obj::set_event_cb(scr, screen_time_pressed);
         obj::set_event_cb(label1, screen_time_pressed);
-        update_screen(&ht.widget)?;
+        update_screen(&ht)?;
         Ok(())
     }
     /// Populate the screen with the current state. Called by screen_time_update_screen() below.
