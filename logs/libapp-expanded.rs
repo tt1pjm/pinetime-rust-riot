@@ -75,7 +75,7 @@ mod screen_time {
                                                           ::core::mem::size_of::<obj::lv_style_t>()])
         };
     /// Create the Time Screen, populated with widgets. Called by screen_time_create() below.
-    fn create_screen(ht: &home_time_widget_t) -> LvglResult<()> {
+    fn create_screen(ht: &WatchFaceWidgets) -> LvglResult<()> {
         let scr = ht.screen;
         let label1 = label::create(scr, ptr::null())?;
         label::set_long_mode(label1, label::LV_LABEL_LONG_BREAK);
@@ -112,22 +112,23 @@ mod screen_time {
         obj::set_click(scr, true);
         obj::set_event_cb(scr, screen_time_pressed);
         obj::set_event_cb(label1, screen_time_pressed);
-        update_screen(&ht)?;
         Ok(())
     }
     /// Populate the screen with the current state. Called by screen_time_update_screen() below.
-    fn update_screen(htwidget: &home_time_widget_t) -> LvglResult<()> {
-        set_time_label(htwidget)?;
-        set_bt_label(htwidget)?;
-        set_power_label(htwidget)?;
+    fn update_screen(widgets: &WatchFaceWidgets, state: &WatchFaceState)
+     -> LvglResult<()> {
+        set_time_label(widgets, state)?;
+        set_bt_label(widgets, state)?;
+        set_power_label(widgets, state)?;
         Ok(())
     }
     /// Populate the Bluetooth Label with the Bluetooth status. Called by screen_time_update_screen() above.
-    fn set_bt_label(htwidget: &home_time_widget_t) -> LvglResult<()> {
-        if htwidget.ble_state == BLEMAN_BLE_STATE_DISCONNECTED {
-            label::set_text(htwidget.lv_ble, &Strn::new(b"\x00"));
+    fn set_bt_label(widgets: &WatchFaceWidgets, state: &WatchFaceState)
+     -> LvglResult<()> {
+        if state.ble_state == BLEMAN_BLE_STATE_DISCONNECTED {
+            label::set_text(widgets.lv_ble, &Strn::new(b"\x00"));
         } else {
-            let color = state2color[htwidget.ble_state];
+            let color = state2color[state.ble_state];
             let mut status = heapless::String::<heapless::consts::U16>::new();
             (&mut status).write_fmt(::core::fmt::Arguments::new_v1(&["",
                                                                      " \u{f293}#\u{0}"],
@@ -138,20 +139,21 @@ mod screen_time {
                                                                         [::core::fmt::ArgumentV1::new(arg0,
                                                                                                       ::core::fmt::Display::fmt)],
                                                                     })).expect("bt fail");
-            label::set_text(htwidget.lv_ble, &Strn::new(status.as_bytes()));
+            label::set_text(widgets.lv_ble, &Strn::new(status.as_bytes()));
         }
         Ok(())
     }
     /// Populate the Power Label with the battery status. Called by screen_time_update_screen() above.
-    fn set_power_label(htwidget: &home_time_widget_t) -> LvglResult<()> {
-        let percentage = hal_battery_get_percentage(htwidget.millivolts);
+    fn set_power_label(widgets: &WatchFaceWidgets, state: &WatchFaceState)
+     -> LvglResult<()> {
+        let percentage = hal_battery_get_percentage(state.millivolts);
         let color =
             if percentage <= battery_low {
                 battery_low_color
-            } else if htwidget.powered && !(htwidget.charging) {
+            } else if state.powered && !(state.charging) {
                 battery_full_color
             } else { battery_mid_color };
-        let symbol = if htwidget.powered { "\u{F0E7}" } else { " " };
+        let symbol = if state.powered { "\u{F0E7}" } else { " " };
         let mut status = heapless::String::<heapless::consts::U16>::new();
         (&mut status).write_fmt(::core::fmt::Arguments::new_v1(&["", " ", "%",
                                                                  "#\n(",
@@ -159,7 +161,7 @@ mod screen_time {
                                                                &match (&color,
                                                                        &percentage,
                                                                        &symbol,
-                                                                       &htwidget.millivolts)
+                                                                       &state.millivolts)
                                                                     {
                                                                     (arg0,
                                                                      arg1,
@@ -174,19 +176,20 @@ mod screen_time {
                                                                      ::core::fmt::ArgumentV1::new(arg3,
                                                                                                   ::core::fmt::Display::fmt)],
                                                                 })).expect("batt fail");
-        label::set_text(htwidget.lv_power, &Strn::new(status.as_bytes()));
-        obj::align(htwidget.lv_power, htwidget.screen,
+        label::set_text(widgets.lv_power, &Strn::new(status.as_bytes()));
+        obj::align(widgets.lv_power, widgets.screen,
                    obj::LV_ALIGN_IN_TOP_RIGHT, 0, 0);
         Ok(())
     }
     /// Populate the Time and Date Labels with the time and date. Called by screen_time_update_screen() above.
-    fn set_time_label(htwidget: &home_time_widget_t) -> LvglResult<()> {
+    fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState)
+     -> LvglResult<()> {
         let mut time = heapless::String::<heapless::consts::U6>::new();
         (&mut time).write_fmt(::core::fmt::Arguments::new_v1_formatted(&["",
                                                                          ":",
                                                                          "\u{0}"],
-                                                                       &match (&htwidget.time.hour,
-                                                                               &htwidget.time.minute)
+                                                                       &match (&state.time.hour,
+                                                                               &state.time.minute)
                                                                             {
                                                                             (arg0,
                                                                              arg1)
@@ -222,13 +225,13 @@ mod screen_time {
                                                                                                                                                ::core::fmt::rt::v1::Count::Implied,
                                                                                                                                            width:
                                                                                                                                                ::core::fmt::rt::v1::Count::Is(2usize),},}])).expect("time fail");
-        label::set_text(htwidget.lv_time, &Strn::new(time.as_bytes()));
+        label::set_text(widgets.lv_time, &Strn::new(time.as_bytes()));
         let mut date = heapless::String::<heapless::consts::U15>::new();
         (&mut date).write_fmt(::core::fmt::Arguments::new_v1(&["", " ", " ",
                                                                "\n\u{0}"],
-                                                             &match (&htwidget.time.dayofmonth,
-                                                                     &controller_time_month_get_short_name(&htwidget.time),
-                                                                     &htwidget.time.year)
+                                                             &match (&state.time.dayofmonth,
+                                                                     &controller_time_month_get_short_name(&state.time),
+                                                                     &state.time.year)
                                                                   {
                                                                   (arg0, arg1,
                                                                    arg2) =>
@@ -239,41 +242,59 @@ mod screen_time {
                                                                    ::core::fmt::ArgumentV1::new(arg2,
                                                                                                 ::core::fmt::Display::fmt)],
                                                               })).expect("date fail");
-        label::set_text(htwidget.lv_date, &Strn::new(date.as_bytes()));
+        label::set_text(widgets.lv_date, &Strn::new(date.as_bytes()));
         Ok(())
     }
     /// Create the Time Screen, populated with widgets. Called by home_time_draw() in screen_time.c.
     #[no_mangle]
-    extern "C" fn screen_time_create(htwidget: *const home_time_widget_t)
+    extern "C" fn screen_time_create(widget: *const home_time_widget_t)
      -> *mut obj::lv_obj_t {
-        let scr =
+        let screen =
             obj::create(ptr::null_mut(),
                         ptr::null()).expect("create screen obj fail");
-        (*htwidget).screen = scr;
-        create_screen(&*htwidget).expect("create_screen fail");
-        scr
+        (*widget).screen = screen;
+        let mut subwidgets = &widget.subwidgets;
+        subwidgets.screen = screen;
+        create_screen(subwidgets).expect("create_screen fail");
+        let state = &widget.state;
+        update_screen(subwidgets, state).expect("update_screen fail");
+        screen
     }
-    /// Populate the screen with the current state. Called by home_time_update_screen() in screen_time.c and by screen_time_create() above.
+    /// Populate the Time Screen with the current status. Called by home_time_update_screen() in screen_time.c and by screen_time_create() above.
     #[no_mangle]
     extern "C" fn screen_time_update_screen(widget: *const widget_t) -> i32 {
         let htwidget = from_widget(widget);
-        update_screen(&htwidget).expect("update_screen fail");
+        let subwidgets = &htwidget.subwidgets;
+        let state = &htwidget.state;
+        update_screen(subwidgets, state).expect("update_screen fail");
         0
     }
+    /// LVGL Widget for Watch Face. TODO: Sync with widgets/home_time/include/home_time.h
     #[repr(C)]
     struct home_time_widget_t {
         widget: widget_t,
         handler: control_event_handler_t,
         screen: *mut obj::lv_obj_t,
-        lv_time: *mut obj::lv_obj_t,
-        lv_date: *mut obj::lv_obj_t,
-        lv_ble: *mut obj::lv_obj_t,
-        lv_power: *mut obj::lv_obj_t,
+        state: WatchFaceState,
+        subwidgets: WatchFaceWidgets,
+    }
+    /// State for the Watch Face, shared between GUI and control. TODO: Sync with widgets/home_time/include/home_time.h
+    #[repr(C)]
+    struct WatchFaceState {
         ble_state: bleman_ble_state_t,
         time: controller_time_spec_t,
         millivolts: u32,
         charging: bool,
         powered: bool,
+    }
+    /// Widgets for the Watch Face, private to Rust. TODO: Sync with widgets/home_time/include/home_time.h
+    #[repr(C)]
+    struct WatchFaceWidgets {
+        screen: *mut obj::lv_obj_t,
+        lv_time: *mut obj::lv_obj_t,
+        lv_date: *mut obj::lv_obj_t,
+        lv_ble: *mut obj::lv_obj_t,
+        lv_power: *mut obj::lv_obj_t,
     }
     struct widget_t {
     }

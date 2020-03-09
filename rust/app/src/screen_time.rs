@@ -21,7 +21,7 @@ use lvgl_macros::{
 static mut style_time: obj::lv_style_t = fill_zero!(obj::lv_style_t);
 
 /// Create the Time Screen, populated with widgets. Called by screen_time_create() below.
-fn create_screen(ht: &home_time_widget_t) -> LvglResult<()> {
+fn create_screen(ht: &WatchFaceWidgets) -> LvglResult<()> {
     let scr = ht.screen;
 
     //  Create a label for time (00:00)
@@ -70,49 +70,46 @@ fn create_screen(ht: &home_time_widget_t) -> LvglResult<()> {
     //  Set touch callbacks on the screen and the time label
     obj::set_event_cb(scr, screen_time_pressed);  //  TODO: Create Rust binding for screen_time_pressed() from screen_time.c
     obj::set_event_cb(label1, screen_time_pressed);
-
-    //  Update the screen
-    update_screen(&ht) ? ;
     Ok(())
 }
 
 /// Populate the screen with the current state. Called by screen_time_update_screen() below.
-fn update_screen(htwidget: &home_time_widget_t) -> LvglResult<()> {
-    set_time_label(htwidget) ? ;
-    set_bt_label(htwidget) ? ;
-    set_power_label(htwidget) ? ;
+fn update_screen(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
+    set_time_label(widgets, state) ? ;
+    set_bt_label(widgets, state) ? ;
+    set_power_label(widgets, state) ? ;
     Ok(())
 }
 
 /// Populate the Bluetooth Label with the Bluetooth status. Called by screen_time_update_screen() above.
-fn set_bt_label(htwidget: &home_time_widget_t) -> LvglResult<()> {
-    if htwidget.ble_state == BLEMAN_BLE_STATE_DISCONNECTED {
-        label::set_text(htwidget.lv_ble, strn!(""));
+fn set_bt_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
+    if state.ble_state == BLEMAN_BLE_STATE_DISCONNECTED {
+        label::set_text(widgets.lv_ble, strn!(""));
     } else {
-        let color = state2color[htwidget.ble_state];
+        let color = state2color[state.ble_state];
         //  Create a string buffer with max size 16 and format the Bluetooth status
         let mut status = heapless::String::<heapless::consts::U16>::new();
         write!(&mut status, 
             "{} \u{F293}#\0",  //  LV_SYMBOL_BLUETOOTH. Must terminate Rust strings with null.
             color)
             .expect("bt fail");
-        label::set_text(htwidget.lv_ble, &Strn::new(status.as_bytes()));  //  TODO: Simplify
+        label::set_text(widgets.lv_ble, &Strn::new(status.as_bytes()));  //  TODO: Simplify
     }
     Ok(())
 }
 
 /// Populate the Power Label with the battery status. Called by screen_time_update_screen() above.
-fn set_power_label(htwidget: &home_time_widget_t) -> LvglResult<()> {
-    let percentage = hal_battery_get_percentage(htwidget.millivolts);
+fn set_power_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
+    let percentage = hal_battery_get_percentage(state.millivolts);
     let color =   //  Charging color
         if percentage <= battery_low 
             { battery_low_color }
-        else if htwidget.powered && !(htwidget.charging) 
+        else if state.powered && !(state.charging) 
             { battery_full_color }  //  Battery charge cycle finished
         else 
             { battery_mid_color };
     let symbol =  //  Charging symbol
-        if htwidget.powered { "\u{F0E7}" }  //  LV_SYMBOL_CHARGE
+        if state.powered { "\u{F0E7}" }  //  LV_SYMBOL_CHARGE
         else { " " };
     //  Create a string buffer with max size 16 and format the battery status
     let mut status = heapless::String::<heapless::consts::U16>::new();
@@ -121,73 +118,94 @@ fn set_power_label(htwidget: &home_time_widget_t) -> LvglResult<()> {
         color,
         percentage,
         symbol,
-        htwidget.millivolts)
+        state.millivolts)
         .expect("batt fail");
-    label::set_text(htwidget.lv_power, &Strn::new(status.as_bytes()));  //  TODO: Simplify
-    obj::align(htwidget.lv_power, htwidget.screen, obj::LV_ALIGN_IN_TOP_RIGHT, 0, 0);
+    label::set_text(widgets.lv_power, &Strn::new(status.as_bytes()));  //  TODO: Simplify
+    obj::align(widgets.lv_power, widgets.screen, obj::LV_ALIGN_IN_TOP_RIGHT, 0, 0);
     Ok(())
 }
 
 /// Populate the Time and Date Labels with the time and date. Called by screen_time_update_screen() above.
-fn set_time_label(htwidget: &home_time_widget_t) -> LvglResult<()> {
+fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
     //  Create a string buffer with max size 6 and format the time
     let mut time = heapless::String::<heapless::consts::U6>::new();
     write!(&mut time, "{:02}:{:02}\0",  //  Must terminate Rust strings with null
-        htwidget.time.hour,    //  TODO: Use C accessor function
-        htwidget.time.minute)  //  TODO: Use C accessor function
+        state.time.hour,    //  TODO: Use C accessor function
+        state.time.minute)  //  TODO: Use C accessor function
         .expect("time fail");
-    label::set_text(htwidget.lv_time, &Strn::new(time.as_bytes()));  //  TODO: Simplify
+    label::set_text(widgets.lv_time, &Strn::new(time.as_bytes()));  //  TODO: Simplify
 
     //  Create a string buffer with max size 15 and format the date
     let mut date = heapless::String::<heapless::consts::U15>::new();
     write!(&mut date, "{} {} {}\n\0",  //  Must terminate Rust strings with null
-        htwidget.time.dayofmonth,  //  TODO: Use C accessor function
-        controller_time_month_get_short_name(&htwidget.time),
-        htwidget.time.year)        //  TODO: Use C accessor function
+        state.time.dayofmonth,  //  TODO: Use C accessor function
+        controller_time_month_get_short_name(&state.time),
+        state.time.year)        //  TODO: Use C accessor function
         .expect("date fail");
-    label::set_text(htwidget.lv_date, &Strn::new(date.as_bytes()));  //  TODO: Simplify
+    label::set_text(widgets.lv_date, &Strn::new(date.as_bytes()));  //  TODO: Simplify
     Ok(())
 }
 
 /// Create the Time Screen, populated with widgets. Called by home_time_draw() in screen_time.c.
 #[no_mangle]  //  Don't mangle the function name
-extern "C" fn screen_time_create(htwidget: *const home_time_widget_t) -> *mut obj::lv_obj_t {  //  Declare extern "C" because it will be called by RIOT OS firmware
+extern "C" fn screen_time_create(widget: *const home_time_widget_t) -> *mut obj::lv_obj_t {  //  Declare extern "C" because it will be called by RIOT OS firmware
     //  Create the screen object and update the screen widget
-    let scr = obj::create(ptr::null_mut(), ptr::null())
+    let screen = obj::create(ptr::null_mut(), ptr::null())
         .expect("create screen obj fail");
-    (*htwidget).screen = scr;
+    (*widget).screen = screen;
 
     //  Populate the widgets in the screen
-    create_screen(&*htwidget)
+    let mut subwidgets = &widget.subwidgets;
+    subwidgets.screen = screen;
+    create_screen(subwidgets)
         .expect("create_screen fail");
-    scr  //  Return the screen
+
+    //  Update the screen
+    let state = &widget.state;
+    update_screen(subwidgets, state)
+        .expect("update_screen fail");
+    screen  //  Return the screen
 }
 
-/// Populate the screen with the current state. Called by home_time_update_screen() in screen_time.c and by screen_time_create() above.
+/// Populate the Time Screen with the current status. Called by home_time_update_screen() in screen_time.c and by screen_time_create() above.
 #[no_mangle]  //  Don't mangle the function name
 extern "C" fn screen_time_update_screen(widget: *const widget_t) -> i32 {
     let htwidget = from_widget(widget);  //  TODO: Create Rust binding for from_widget() from screen_time.c
-    update_screen(&htwidget)
+    let subwidgets = &htwidget.subwidgets;
+    let state = &htwidget.state;
+    update_screen(subwidgets, state)
         .expect("update_screen fail");
     0  //  Return OK
 }
 
-//  TODO: Sync with widgets/home_time/include/home_time.h
+/// LVGL Widget for Watch Face. TODO: Sync with widgets/home_time/include/home_time.h
 #[repr(C)]
 struct home_time_widget_t {
-    widget:     widget_t,  //  TODO: Should not be exposed to Rust
+    widget:     widget_t,                 //  TODO: Should not be exposed to Rust
     handler:    control_event_handler_t,  //  TODO: Should not be exposed to Rust
-    screen:     *mut obj::lv_obj_t,  //  TODO: Should not be exposed to Rust
-    lv_time:    *mut obj::lv_obj_t,  //  TODO: Should be private to Rust
-    lv_date:    *mut obj::lv_obj_t,  //  TODO: Should be private to Rust
-    lv_ble:     *mut obj::lv_obj_t,  //  TODO: Should be private to Rust
-    lv_power:   *mut obj::lv_obj_t,  //  TODO: Should be private to Rust
-    ble_state:  bleman_ble_state_t,  //  TODO: Should not be exposed to Rust
-    //  Shared storage between gui and control
+    screen:     *mut obj::lv_obj_t,  //  TODO: Shared with WatchFaceWidgets
+    state:      WatchFaceState,      //  TODO: State for the Watch Face, shared between GUI and control
+    subwidgets: WatchFaceWidgets,    //  TODO: Child Widgets for the Watch Face
+}
+
+/// State for the Watch Face, shared between GUI and control. TODO: Sync with widgets/home_time/include/home_time.h
+#[repr(C)]
+struct WatchFaceState {
+    ble_state:  bleman_ble_state_t,      //  TODO: Should not be exposed to Rust
     time:       controller_time_spec_t,  //  TODO: Should not be exposed to Rust
     millivolts: u32,
     charging:   bool,
     powered:    bool,
+}
+
+/// Widgets for the Watch Face, private to Rust. TODO: Sync with widgets/home_time/include/home_time.h
+#[repr(C)]
+struct WatchFaceWidgets {
+    screen:     *mut obj::lv_obj_t,  //  TODO: Shared with home_time_widget_t
+    lv_time:    *mut obj::lv_obj_t,  //  TODO: Should be private to Rust
+    lv_date:    *mut obj::lv_obj_t,  //  TODO: Should be private to Rust
+    lv_ble:     *mut obj::lv_obj_t,  //  TODO: Should be private to Rust
+    lv_power:   *mut obj::lv_obj_t,  //  TODO: Should be private to Rust
 }
 
 //  TODO: Sync with widgets/home_time/include/home_time.h
