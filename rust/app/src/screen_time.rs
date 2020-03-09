@@ -191,7 +191,7 @@ struct home_time_widget_t {
 }
 
 //  TODO: Sync with screen_time.c
-struct widget_t {}
+struct widget_t {}  //  TODO: Create Rust binding from modules/widget/include/widget.h
 struct control_event_handler_t {}
 struct controller_time_spec_t {}
 
