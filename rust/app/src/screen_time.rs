@@ -133,17 +133,17 @@ fn set_time_label(htwidget: &home_time_widget_t) -> LvglResult<()> {
     //  Create a string buffer with max size 6 and format the time
     let mut time = heapless::String::<heapless::consts::U6>::new();
     write!(&mut time, "{:02}:{:02}\0",  //  Must terminate Rust strings with null
-        htwidget.time.hour, 
-        htwidget.time.minute)
+        htwidget.time.hour,    //  TODO: Use C accessor function
+        htwidget.time.minute)  //  TODO: Use C accessor function
         .expect("time fail");
     label::set_text(htwidget.lv_time, &Strn::new(time.as_bytes()));  //  TODO: Simplify
 
     //  Create a string buffer with max size 15 and format the date
     let mut date = heapless::String::<heapless::consts::U15>::new();
     write!(&mut date, "{} {} {}\n\0",  //  Must terminate Rust strings with null
-        htwidget.time.dayofmonth,
+        htwidget.time.dayofmonth,  //  TODO: Use C accessor function
         controller_time_month_get_short_name(&htwidget.time),
-        htwidget.time.year)
+        htwidget.time.year)        //  TODO: Use C accessor function
         .expect("date fail");
     label::set_text(htwidget.lv_date, &Strn::new(date.as_bytes()));  //  TODO: Simplify
     Ok(())
@@ -172,28 +172,28 @@ extern "C" fn screen_time_update_screen(widget: *const widget_t) -> i32 {
     0  //  Return OK
 }
 
-//  TODO: Sync with screen_time.c
+//  TODO: Sync with widgets/home_time/include/home_time.h
 #[repr(C)]
 struct home_time_widget_t {
-    widget:     widget_t,
-    handler:    control_event_handler_t,
-    screen:     *mut obj::lv_obj_t,
-    lv_time:    *mut obj::lv_obj_t,
-    lv_date:    *mut obj::lv_obj_t,
-    lv_ble:     *mut obj::lv_obj_t,
-    lv_power:   *mut obj::lv_obj_t,
-    ble_state:  bleman_ble_state_t,
-    /* Shared storage between gui and control */
-    time:       controller_time_spec_t,
+    widget:     widget_t,  //  TODO: Should not be exposed to Rust
+    handler:    control_event_handler_t,  //  TODO: Should not be exposed to Rust
+    screen:     *mut obj::lv_obj_t,  //  TODO: Should not be exposed to Rust
+    lv_time:    *mut obj::lv_obj_t,  //  TODO: Should be private to Rust
+    lv_date:    *mut obj::lv_obj_t,  //  TODO: Should be private to Rust
+    lv_ble:     *mut obj::lv_obj_t,  //  TODO: Should be private to Rust
+    lv_power:   *mut obj::lv_obj_t,  //  TODO: Should be private to Rust
+    ble_state:  bleman_ble_state_t,  //  TODO: Should not be exposed to Rust
+    //  Shared storage between gui and control
+    time:       controller_time_spec_t,  //  TODO: Should not be exposed to Rust
     millivolts: u32,
     charging:   bool,
     powered:    bool,
 }
 
-//  TODO: Sync with screen_time.c
-struct widget_t {}  //  TODO: Create Rust binding from modules/widget/include/widget.h
-struct control_event_handler_t {}
-struct controller_time_spec_t {}
+//  TODO: Sync with widgets/home_time/include/home_time.h
+struct widget_t {}  //  TODO: Should not be exposed to Rust
+struct control_event_handler_t {}  //  TODO: Should not be exposed to Rust
+struct controller_time_spec_t {}   //  TODO: Should not be exposed to Rust
 
 /* Stack Trace for screen_time_create:
 #0  screen_time_create (ht=ht@entry=0x200008dc <home_time_widget>) at /Users/Luppy/PineTime/PineTime-apps/widgets/home_time/screen_time.c:68
