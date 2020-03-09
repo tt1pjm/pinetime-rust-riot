@@ -8,8 +8,7 @@
 
 extern crate macros as lvgl_macros;  //  Import Procedural Macros from `macros` library
 
-#[allow(non_camel_case_types)]    //  Allow type names to have non-camel case
-#[allow(non_upper_case_globals)]  //  Allow globals to have lowercase letters
+#[allow(unused_imports)]          //  Allow unused imports
 pub mod core;                     //  Lvgl Core API. Export folder `core` as Rust module `lvgl::core`
 
 //  TODO: pub mod draw;           //  Lvgl Draw API. Export folder `draw` as Rust module `lvgl::draw`
@@ -17,8 +16,7 @@ pub mod core;                     //  Lvgl Core API. Export folder `core` as Rus
 //  TODO: pub mod hal;            //  Lvgl HAL API. Export folder `hal` as Rust module `lvgl::hal`
 //  TODO: pub mod misc;           //  Lvgl Misc API. Export folder `misc` as Rust module `lvgl::misc`
 
-#[allow(non_camel_case_types)]    //  Allow type names to have non-camel case
-#[allow(non_upper_case_globals)]  //  Allow globals to have lowercase letters
+#[allow(unused_imports)]          //  Allow unused imports
 pub mod objx;                     //  Lvgl Objx API. Export folder `objx` as Rust module `lvgl::objx`
 
 //  TODO: pub mod themes;         //  Lvgl Themes API. Export folder `themes` as Rust module `lvgl::themes`

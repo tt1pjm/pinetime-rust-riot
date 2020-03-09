@@ -20,10 +20,8 @@ extern crate compiler_builtins;
 extern crate macros as lvgl_macros;
 //  Import Procedural Macros from `macros` library
 
-//  Allow type names to have non-camel case
-//  Allow globals to have lowercase letters
-#[allow(non_camel_case_types)]
-#[allow(non_upper_case_globals)]
+//  Allow unused imports
+#[allow(unused_imports)]
 pub mod core {
     //  Lvgl Core API. Export folder `core` as Rust module `lvgl::core`
 
@@ -32,8 +30,7 @@ pub mod core {
     //  TODO: pub mod hal;            //  Lvgl HAL API. Export folder `hal` as Rust module `lvgl::hal`
     //  TODO: pub mod misc;           //  Lvgl Misc API. Export folder `misc` as Rust module `lvgl::misc`
 
-    //  Allow type names to have non-camel case
-    //  Allow globals to have lowercase letters
+    //  Allow unused imports
     //  Lvgl Objx API. Export folder `objx` as Rust module `lvgl::objx`
 
     //  TODO: pub mod themes;         //  Lvgl Themes API. Export folder `themes` as Rust module `lvgl::themes`
@@ -79,7 +76,10 @@ pub mod core {
 
 
     //! LittlevGL (LVGL) Core API for Rust
+    use crate::{result::*, Out, Ptr, Strn};
     /// Contains Rust bindings for LittlevGL (LVGL) Core API `lv_core`
+    #[allow(non_camel_case_types)]
+    #[allow(non_upper_case_globals)]
     #[allow(unused_imports)]
     pub mod obj {
         use super::*;
@@ -2952,7 +2952,7 @@ pub mod core {
             fn default() -> Self { unsafe { ::core::mem::zeroed() } }
         }
         #[doc = "  Init the basic styles"]
-        pub fn init() -> LvglResult<()> {
+        pub fn style_init() -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = "  Init the basic styles"]
@@ -2969,7 +2969,7 @@ pub mod core {
         #[doc = " Copy a style to an other"]
         #[doc = " - __`dest`__: pointer to the destination style"]
         #[doc = " - __`src`__: pointer to the source style"]
-        pub fn copy(dest: *mut lv_style_t, src: *const lv_style_t)
+        pub fn style_copy(dest: *mut lv_style_t, src: *const lv_style_t)
          -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -2994,8 +2994,8 @@ pub mod core {
         #[doc = " - __`res`__: store the result style here"]
         #[doc =
           " - __`ratio`__: the ratio of mix [0..256]; 0: `start` style; 256: `end` style"]
-        pub fn mix(start: *const lv_style_t, end: *const lv_style_t,
-                   res: *mut lv_style_t, ratio: u16) -> LvglResult<()> {
+        pub fn style_mix(start: *const lv_style_t, end: *const lv_style_t,
+                         res: *mut lv_style_t, ratio: u16) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Mix two styles according to a given ratio"]
@@ -3026,7 +3026,7 @@ pub mod core {
         #[doc = " lv_style_anim_create(&a);"]
         #[doc =
           " - __`a`__: pointer to an `lv_anim_t` variable to initialize"]
-        pub fn anim_init(a: *mut lv_anim_t) -> LvglResult<()> {
+        pub fn style_anim_init(a: *mut lv_anim_t) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Initialize an animation variable."]
@@ -3052,9 +3052,11 @@ pub mod core {
         #[doc =
           " - __`start`__: pointer to a style to animate from (start value)"]
         #[doc = " - __`end`__: pointer to a style to animate to (end value)"]
-        pub fn anim_set_styles(a: *mut lv_anim_t, to_anim: *mut lv_style_t,
-                               start: *const lv_style_t,
-                               end: *const lv_style_t) -> LvglResult<()> {
+        pub fn style_anim_set_styles(a: *mut lv_anim_t,
+                                     to_anim: *mut lv_style_t,
+                                     start: *const lv_style_t,
+                                     end: *const lv_style_t)
+         -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc =
@@ -3085,8 +3087,8 @@ pub mod core {
         #[doc =
           " - __`duration`__: duration of the animation in milliseconds"]
         #[doc = " - __`delay`__: delay before the animation in milliseconds"]
-        pub fn anim_set_time(a: *mut lv_anim_t, duration: u16, delay: i16)
-         -> LvglResult<()> {
+        pub fn style_anim_set_time(a: *mut lv_anim_t, duration: u16,
+                                   delay: i16) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Set the duration and delay of an animation"]
@@ -3112,8 +3114,8 @@ pub mod core {
         #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
         #[doc =
           " - __`ready_cb`__: a function call when the animation is ready"]
-        pub fn anim_set_ready_cb(a: *mut lv_anim_t,
-                                 ready_cb: lv_anim_ready_cb_t)
+        pub fn style_anim_set_ready_cb(a: *mut lv_anim_t,
+                                       ready_cb: lv_anim_ready_cb_t)
          -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -3140,7 +3142,7 @@ pub mod core {
         #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
         #[doc =
           " - __`wait_time`__: time in milliseconds to wait before starting the back direction"]
-        pub fn anim_set_playback(a: *mut lv_anim_t, wait_time: u16)
+        pub fn style_anim_set_playback(a: *mut lv_anim_t, wait_time: u16)
          -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -3164,7 +3166,8 @@ pub mod core {
         }
         #[doc = " Disable playback. (Disabled after `lv_anim_init()`)"]
         #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
-        pub fn anim_clear_playback(a: *mut lv_anim_t) -> LvglResult<()> {
+        pub fn style_anim_clear_playback(a: *mut lv_anim_t)
+         -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc =
@@ -3185,7 +3188,7 @@ pub mod core {
         #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
         #[doc =
           " - __`wait_time`__: time in milliseconds to wait before starting the animation again"]
-        pub fn anim_set_repeat(a: *mut lv_anim_t, wait_time: u16)
+        pub fn style_anim_set_repeat(a: *mut lv_anim_t, wait_time: u16)
          -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -3208,7 +3211,7 @@ pub mod core {
         }
         #[doc = " Disable repeat. (Disabled after `lv_anim_init()`)"]
         #[doc = " - __`a`__: pointer to an initialized `lv_anim_t` variable"]
-        pub fn anim_clear_repeat(a: *mut lv_anim_t) -> LvglResult<()> {
+        pub fn style_anim_clear_repeat(a: *mut lv_anim_t) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Disable repeat. (Disabled after `lv_anim_init()`)"]
@@ -3227,7 +3230,7 @@ pub mod core {
         #[doc = " Create an animation"]
         #[doc =
           " - __`a`__: an initialized 'anim_t' variable. Not required after call."]
-        pub fn anim_create(a: *mut lv_anim_t) -> LvglResult<()> {
+        pub fn style_anim_create(a: *mut lv_anim_t) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Create an animation"]
@@ -3327,7 +3330,7 @@ pub mod core {
         }
         #[doc =
           " Initiaize the dyn_mem module (work memory and other variables)"]
-        pub fn init() -> LvglResult<()> {
+        pub fn mem_init() -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc =
@@ -3345,7 +3348,7 @@ pub mod core {
         #[doc = " Allocate a memory dynamically"]
         #[doc = " - __`size`__: size of the memory to allocate in bytes"]
         #[doc = " Return: pointer to the allocated memory"]
-        pub fn alloc(size: usize) -> LvglResult<*mut ::cty::c_void> {
+        pub fn mem_alloc(size: usize) -> LvglResult<*mut ::cty::c_void> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Allocate a memory dynamically"]
@@ -3365,7 +3368,7 @@ pub mod core {
         }
         #[doc = " Free an allocated data"]
         #[doc = " - __`data`__: pointer to an allocated memory"]
-        pub fn free(data: *const ::cty::c_void) -> LvglResult<()> {
+        pub fn mem_free(data: *const ::cty::c_void) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Free an allocated data"]
@@ -3387,7 +3390,7 @@ pub mod core {
           " Its content will be copied to the new memory block and freed"]
         #[doc = " - __`new_size`__: the desired new size in byte"]
         #[doc = " Return: pointer to the new memory"]
-        pub fn realloc(data_p: Ptr, new_size: usize)
+        pub fn mem_realloc(data_p: Ptr, new_size: usize)
          -> LvglResult<*mut ::cty::c_void> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -3413,7 +3416,7 @@ pub mod core {
             }
         }
         #[doc = " Join the adjacent free memory blocks"]
-        pub fn defrag() -> LvglResult<()> {
+        pub fn mem_defrag() -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Join the adjacent free memory blocks"]
@@ -3432,7 +3435,7 @@ pub mod core {
         #[doc = " - __`mon_p`__: pointer to a dm_mon_p variable,"]
         #[doc =
           "              the result of the analysis will be stored here"]
-        pub fn monitor(mon_p: *mut lv_mem_monitor_t) -> LvglResult<()> {
+        pub fn mem_monitor(mon_p: *mut lv_mem_monitor_t) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc =
@@ -3453,7 +3456,7 @@ pub mod core {
         #[doc = " Give the size of an allocated memory"]
         #[doc = " - __`data`__: pointer to an allocated memory"]
         #[doc = " Return: the size of data memory in bytes"]
-        pub fn get_size(data: *const ::cty::c_void) -> LvglResult<u32> {
+        pub fn mem_get_size(data: *const ::cty::c_void) -> LvglResult<u32> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Give the size of an allocated memory"]
@@ -3486,7 +3489,7 @@ pub mod core {
         #[doc = " Initialize linked list"]
         #[doc = " - __`ll_dsc`__: pointer to ll_dsc variable"]
         #[doc = " - __`node_size`__: the size of 1 node in bytes"]
-        pub fn init(ll_p: *mut lv_ll_t, node_size: u32) -> LvglResult<()> {
+        pub fn ll_init(ll_p: *mut lv_ll_t, node_size: u32) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Initialize linked list"]
@@ -3505,7 +3508,7 @@ pub mod core {
         #[doc = " Add a new head to a linked list"]
         #[doc = " - __`ll_p`__: pointer to linked list"]
         #[doc = " Return: pointer to the new head"]
-        pub fn ins_head(ll_p: *mut lv_ll_t)
+        pub fn ll_ins_head(ll_p: *mut lv_ll_t)
          -> LvglResult<*mut ::cty::c_void> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -3527,7 +3530,7 @@ pub mod core {
         #[doc = " - __`ll_p`__: pointer to linked list"]
         #[doc = " - __`n_act`__: pointer a node"]
         #[doc = " Return: pointer to the new head"]
-        pub fn ins_prev(ll_p: *mut lv_ll_t, n_act: Ptr)
+        pub fn ll_ins_prev(ll_p: *mut lv_ll_t, n_act: Ptr)
          -> LvglResult<*mut ::cty::c_void> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -3552,7 +3555,7 @@ pub mod core {
         #[doc = " Add a new tail to a linked list"]
         #[doc = " - __`ll_p`__: pointer to linked list"]
         #[doc = " Return: pointer to the new tail"]
-        pub fn ins_tail(ll_p: *mut lv_ll_t)
+        pub fn ll_ins_tail(ll_p: *mut lv_ll_t)
          -> LvglResult<*mut ::cty::c_void> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -3574,7 +3577,7 @@ pub mod core {
         #[doc = " It does not free the the memory of node."]
         #[doc = " - __`ll_p`__: pointer to the linked list of 'node_p'"]
         #[doc = " - __`node_p`__: pointer to node in 'll_p' linked list"]
-        pub fn rem(ll_p: *mut lv_ll_t, node_p: Ptr) -> LvglResult<()> {
+        pub fn ll_rem(ll_p: *mut lv_ll_t, node_p: Ptr) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Remove the node 'node_p' from 'll_p' linked list."]
@@ -3597,7 +3600,7 @@ pub mod core {
         #[doc =
           " Remove and free all elements from a linked list. The list remain valid but become empty."]
         #[doc = " - __`ll_p`__: pointer to linked list"]
-        pub fn clear(ll_p: *mut lv_ll_t) -> LvglResult<()> {
+        pub fn ll_clear(ll_p: *mut lv_ll_t) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc =
@@ -3620,8 +3623,8 @@ pub mod core {
         #[doc = " - __`node`__: pointer to a node"]
         #[doc = " - __`head`__: true: be the head in the new list"]
         #[doc = "             false be the head in the new list"]
-        pub fn chg_list(ll_ori_p: *mut lv_ll_t, ll_new_p: *mut lv_ll_t,
-                        node: Ptr, head: bool) -> LvglResult<()> {
+        pub fn ll_chg_list(ll_ori_p: *mut lv_ll_t, ll_new_p: *mut lv_ll_t,
+                           node: Ptr, head: bool) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Move a node to a new linked list"]
@@ -3648,7 +3651,7 @@ pub mod core {
         #[doc = " Return with head node of the linked list"]
         #[doc = " - __`ll_p`__: pointer to linked list"]
         #[doc = " Return: pointer to the head of 'll_p'"]
-        pub fn get_head(ll_p: *const lv_ll_t)
+        pub fn ll_get_head(ll_p: *const lv_ll_t)
          -> LvglResult<*mut ::cty::c_void> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -3669,7 +3672,7 @@ pub mod core {
         #[doc = " Return with tail node of the linked list"]
         #[doc = " - __`ll_p`__: pointer to linked list"]
         #[doc = " Return: pointer to the head of 'll_p'"]
-        pub fn get_tail(ll_p: *const lv_ll_t)
+        pub fn ll_get_tail(ll_p: *const lv_ll_t)
          -> LvglResult<*mut ::cty::c_void> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -3691,7 +3694,7 @@ pub mod core {
         #[doc = " - __`ll_p`__: pointer to linked list"]
         #[doc = " - __`n_act`__: pointer a node"]
         #[doc = " Return: pointer to the next node"]
-        pub fn get_next(ll_p: *const lv_ll_t, n_act: *const ::cty::c_void)
+        pub fn ll_get_next(ll_p: *const lv_ll_t, n_act: *const ::cty::c_void)
          -> LvglResult<*mut ::cty::c_void> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -3718,7 +3721,7 @@ pub mod core {
         #[doc = " - __`ll_p`__: pointer to linked list"]
         #[doc = " - __`n_act`__: pointer a node"]
         #[doc = " Return: pointer to the previous node"]
-        pub fn get_prev(ll_p: *const lv_ll_t, n_act: *const ::cty::c_void)
+        pub fn ll_get_prev(ll_p: *const lv_ll_t, n_act: *const ::cty::c_void)
          -> LvglResult<*mut ::cty::c_void> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -3744,7 +3747,7 @@ pub mod core {
         #[doc = " Return the length of the linked list."]
         #[doc = " - __`ll_p`__: pointer to linked list"]
         #[doc = " Return: length of the linked list"]
-        pub fn get_len(ll_p: *const lv_ll_t) -> LvglResult<u32> {
+        pub fn ll_get_len(ll_p: *const lv_ll_t) -> LvglResult<u32> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Return the length of the linked list."]
@@ -3766,7 +3769,7 @@ pub mod core {
         #[doc = " - __`n_act`__: pointer to node to move"]
         #[doc =
           " - __`n_after`__: pointer to a node which should be after `n_act`"]
-        pub fn move_before(ll_p: *mut lv_ll_t, n_act: Ptr, n_after: Ptr)
+        pub fn ll_move_before(ll_p: *mut lv_ll_t, n_act: Ptr, n_after: Ptr)
          -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -3793,7 +3796,7 @@ pub mod core {
         #[doc = " Check if a linked list is empty"]
         #[doc = " - __`ll_p`__: pointer to a linked list"]
         #[doc = " Return: true: the linked list is empty; false: not empty"]
-        pub fn is_empty(ll_p: *mut lv_ll_t) -> LvglResult<bool> {
+        pub fn ll_is_empty(ll_p: *mut lv_ll_t) -> LvglResult<bool> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Check if a linked list is empty"]
@@ -3908,7 +3911,7 @@ pub mod core {
         }
         pub type lv_task_t = _lv_task_t;
         #[doc = " Init the lv_task module"]
-        pub fn core_init() -> LvglResult<()> {
+        pub fn task_core_init() -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Init the lv_task module"]
@@ -3923,7 +3926,7 @@ pub mod core {
             }
         }
         #[doc = " Call it  periodically to handle lv_tasks."]
-        pub fn handler() -> LvglResult<()> {
+        pub fn task_handler() -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Call it  periodically to handle lv_tasks."]
@@ -3941,7 +3944,7 @@ pub mod core {
           " Create an \"empty\" task. It needs to initialzed with at least"]
         #[doc = " `lv_task_set_cb` and `lv_task_set_period`"]
         #[doc = " Return: pointer to the craeted task"]
-        pub fn create_basic() -> LvglResult<*mut lv_task_t> {
+        pub fn task_create_basic() -> LvglResult<*mut lv_task_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc =
@@ -3971,8 +3974,8 @@ pub mod core {
           " - __`prio`__: priority of the task (LV_TASK_PRIO_OFF means the task is stopped)"]
         #[doc = " - __`user_data`__: custom parameter"]
         #[doc = " Return: pointer to the new task"]
-        pub fn create(task_xcb: lv_task_cb_t, period: u32,
-                      prio: lv_task_prio_t, user_data: Ptr)
+        pub fn task_create(task_xcb: lv_task_cb_t, period: u32,
+                           prio: lv_task_prio_t, user_data: Ptr)
          -> LvglResult<*mut lv_task_t> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -4006,7 +4009,7 @@ pub mod core {
         }
         #[doc = " Delete a lv_task"]
         #[doc = " - __`task`__: pointer to task_cb created by task"]
-        pub fn del(task: *mut lv_task_t) -> LvglResult<()> {
+        pub fn task_del(task: *mut lv_task_t) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Delete a lv_task"]
@@ -4025,7 +4028,7 @@ pub mod core {
           " Set the callback the task (the function to call periodically)"]
         #[doc = " - __`task`__: pointer to a task"]
         #[doc = " - __`task_cb`__: the function to call periodically"]
-        pub fn set_cb(task: *mut lv_task_t, task_cb: lv_task_cb_t)
+        pub fn task_set_cb(task: *mut lv_task_t, task_cb: lv_task_cb_t)
          -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -4048,7 +4051,7 @@ pub mod core {
         #[doc = " Set new priority for a lv_task"]
         #[doc = " - __`task`__: pointer to a lv_task"]
         #[doc = " - __`prio`__: the new priority"]
-        pub fn set_prio(task: *mut lv_task_t, prio: lv_task_prio_t)
+        pub fn task_set_prio(task: *mut lv_task_t, prio: lv_task_prio_t)
          -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -4070,7 +4073,7 @@ pub mod core {
         #[doc = " Set new period for a lv_task"]
         #[doc = " - __`task`__: pointer to a lv_task"]
         #[doc = " - __`period`__: the new period"]
-        pub fn set_period(task: *mut lv_task_t, period: u32)
+        pub fn task_set_period(task: *mut lv_task_t, period: u32)
          -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
@@ -4089,7 +4092,7 @@ pub mod core {
         }
         #[doc = " Make a lv_task ready. It will not wait its period."]
         #[doc = " - __`task`__: pointer to a lv_task."]
-        pub fn ready(task: *mut lv_task_t) -> LvglResult<()> {
+        pub fn task_ready(task: *mut lv_task_t) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Make a lv_task ready. It will not wait its period."]
@@ -4106,7 +4109,7 @@ pub mod core {
         }
         #[doc = " Delete the lv_task after one call"]
         #[doc = " - __`task`__: pointer to a lv_task."]
-        pub fn once(task: *mut lv_task_t) -> LvglResult<()> {
+        pub fn task_once(task: *mut lv_task_t) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Delete the lv_task after one call"]
@@ -4125,7 +4128,7 @@ pub mod core {
         #[doc =
           " It will be called the previously set period milliseconds later."]
         #[doc = " - __`task`__: pointer to a lv_task."]
-        pub fn reset(task: *mut lv_task_t) -> LvglResult<()> {
+        pub fn task_reset(task: *mut lv_task_t) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Reset a lv_task."]
@@ -4145,7 +4148,7 @@ pub mod core {
         #[doc = " Enable or disable the whole  lv_task handling"]
         #[doc =
           " - __`en:`__: true: lv_task handling is running, false: lv_task handling is suspended"]
-        pub fn enable(en: bool) -> LvglResult<()> {
+        pub fn task_enable(en: bool) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Enable or disable the whole  lv_task handling"]
@@ -4163,7 +4166,7 @@ pub mod core {
         }
         #[doc = " Get idle percentage"]
         #[doc = " Return: the lv_task idle in percentage"]
-        pub fn get_idle() -> LvglResult<u8> {
+        pub fn task_get_idle() -> LvglResult<u8> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Get idle percentage"]
@@ -6867,8 +6870,8 @@ pub mod core {
         #[doc = " Send an event to the object"]
         #[doc = " - __`obj`__: pointer to an object"]
         #[doc = " - __`event`__: the type of the event from `lv_event_t`."]
-        pub fn send(obj: *mut lv_obj_t, signal: lv_signal_t, param: Ptr)
-         -> LvglResult<()> {
+        pub fn signal_send(obj: *mut lv_obj_t, signal: lv_signal_t,
+                           param: Ptr) -> LvglResult<()> {
             "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
             extern "C" {
                 #[doc = " Send an event to the object"]
@@ -8011,11 +8014,13 @@ pub mod core {
         }
     }
 }
-#[allow(non_camel_case_types)]
-#[allow(non_upper_case_globals)]
+#[allow(unused_imports)]
 pub mod objx {
     //! LittlevGL (LVGL) Objx API for Rust
+    use crate::{result::*, Out, Ptr, Strn};
     /// Contains Rust bindings for LittlevGL (LVGL) Objx API `lv_objx`
+    #[allow(non_camel_case_types)]
+    #[allow(non_upper_case_globals)]
     #[allow(unused_imports)]
     pub mod label {
         use super::*;
