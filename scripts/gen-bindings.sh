@@ -214,7 +214,8 @@ function generate_bindings_objx() {
         --raw-line super::*; \
         --whitelist-function (?i)${whitelistname}.* \
         --whitelist-type     (?i)${whitelistname}.* \
-        --whitelist-var      (?i)${whitelistname}.*
+        --whitelist-var      (?i)${whitelistname}.* \
+        --blacklist-item     _lv_obj_t
 EOF
 `
     #  Generate the bindings for lv_objx/lv_label: libname, modname, submodname, headerfile, whitelist

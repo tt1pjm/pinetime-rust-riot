@@ -2,6 +2,12 @@
 
 use crate::{
     result::*,
+    core::{
+        obj::{
+            _lv_obj_t,
+            lv_obj_t,
+        },
+    },
     Out, Ptr, Strn,
 };
 

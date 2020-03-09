@@ -7,7 +7,7 @@ edition = "2018"
 
 # External Rust libraries used by this module.  See crates.io.
 [dependencies]
-cty         = "0.2.0"  # C types library: https://crates.io/crates/cty
+cty         = "0.2.1"  # C types library: https://crates.io/crates/cty
 cstr_core   = "0.1.2"  # String utilities from cstr_core library: https://crates.io/crates/cstr_core
 memchr      = { version = "2", default-features = false } # String search. Reduce the ROM size by disabling default features. See https://github.com/BurntSushi/rust-memchr
 syn         = { version = "1.0.5", features = [ "full", "extra-traits" ] } # Rust source code parser: https://crates.io/crates/syn
