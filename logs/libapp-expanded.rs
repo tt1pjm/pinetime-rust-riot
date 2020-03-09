@@ -149,11 +149,11 @@ mod screen_time {
      -> LvglResult<()> {
         let percentage = hal_battery_get_percentage(state.millivolts);
         let color =
-            if percentage <= battery_low {
-                battery_low_color
+            if percentage <= 20 {
+                "#f2495c"
             } else if state.powered && !(state.charging) {
-                battery_full_color
-            } else { battery_mid_color };
+                "#73bf69"
+            } else { "#fade2a" };
         let symbol = if state.powered { "\u{F0E7}" } else { " " };
         let mut status = heapless::String::<heapless::consts::U16>::new();
         (&mut status).write_fmt(::core::fmt::Arguments::new_v1(&["", " ", "%",

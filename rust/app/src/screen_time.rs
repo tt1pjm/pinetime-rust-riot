@@ -103,12 +103,12 @@ fn set_bt_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResul
 fn set_power_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
     let percentage = hal_battery_get_percentage(state.millivolts);
     let color =   //  Charging color
-        if percentage <= battery_low 
-            { battery_low_color }
+        if percentage <= 20  //  battery_low 
+            { "#f2495c" }    //  battery_low_color
         else if state.powered && !(state.charging) 
-            { battery_full_color }  //  Battery charge cycle finished
+            { "#73bf69" }    //  battery_full_color: Battery charge cycle finished
         else 
-            { battery_mid_color };
+            { "#fade2a" };   //  battery_mid_color
     let symbol =  //  Charging symbol
         if state.powered { "\u{F0E7}" }  //  LV_SYMBOL_CHARGE
         else { " " };
