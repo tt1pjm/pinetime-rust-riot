@@ -119,7 +119,7 @@ fn home_time_set_power_label(htwidget: &home_time_widget_t) -> LvglResult<()> {
             else { strn!(" ") },
         htwidget.millivolts
     );
-    obj::align(htwidget.lv_power, htwidget.screen, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
+    obj::align(htwidget.lv_power, htwidget.screen, obj::LV_ALIGN_IN_TOP_RIGHT, 0, 0);
     Ok(())
 }
 
@@ -177,8 +177,8 @@ struct home_time_widget_t {
     /* Shared storage between gui and control */
     time: controller_time_spec_t,
     millivolts: u32,
-    charging: bool,
-    powered: bool,
+    charging:   bool,
+    powered:    bool,
 }
 
 //  TODO
