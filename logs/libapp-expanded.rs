@@ -75,8 +75,9 @@ mod screen_time {
                                                           ::core::mem::size_of::<obj::lv_style_t>()])
         };
     /// Create the Time Screen, populated with widgets. Called by screen_time_create() below.
-    fn create_screen(ht: &WatchFaceWidgets) -> LvglResult<()> {
-        let scr = ht.screen;
+    fn create_screen(widgets: &WatchFaceWidgets) -> LvglResult<()> {
+        let scr = widgets.screen;
+        if !!scr.is_null() { ::core::panicking::panic("null screen") };
         let label1 = label::create(scr, ptr::null())?;
         label::set_long_mode(label1, label::LV_LABEL_LONG_BREAK);
         label::set_text(label1, &Strn::new(b"00:00\x00"));
@@ -85,7 +86,7 @@ mod screen_time {
         label::set_align(label1, label::LV_LABEL_ALIGN_CENTER);
         obj::align(label1, scr, obj::LV_ALIGN_CENTER, 0, -30);
         label::set_style(label1, label::LV_LABEL_STYLE_MAIN, &style_time);
-        ht.lv_time = label1;
+        widgets.lv_time = label1;
         let l_state = label::create(scr, ptr::null())?;
         obj::set_width(l_state, 50);
         obj::set_height(l_state, 80);
@@ -93,7 +94,7 @@ mod screen_time {
         label::set_recolor(l_state, true);
         label::set_align(l_state, label::LV_LABEL_ALIGN_LEFT);
         obj::align(l_state, scr, obj::LV_ALIGN_IN_TOP_LEFT, 0, 0);
-        ht.lv_ble = l_state;
+        widgets.lv_ble = l_state;
         let l_power = label::create(scr, ptr::null())?;
         obj::set_width(l_power, 80);
         obj::set_height(l_power, 20);
@@ -101,14 +102,14 @@ mod screen_time {
         label::set_recolor(l_power, true);
         label::set_align(l_power, label::LV_LABEL_ALIGN_RIGHT);
         obj::align(l_power, scr, obj::LV_ALIGN_IN_TOP_RIGHT, 0, 0);
-        ht.lv_power = l_power;
+        widgets.lv_power = l_power;
         let label_date = label::create(scr, ptr::null())?;
         label::set_long_mode(label_date, label::LV_LABEL_LONG_BREAK);
         obj::set_width(label_date, 200);
         obj::set_height(label_date, 200);
         label::set_align(label_date, label::LV_LABEL_ALIGN_CENTER);
         obj::align(label_date, scr, obj::LV_ALIGN_CENTER, 0, 40);
-        ht.lv_date = label_date;
+        widgets.lv_date = label_date;
         obj::set_click(scr, true);
         obj::set_event_cb(scr, screen_time_pressed);
         obj::set_event_cb(label1, screen_time_pressed);

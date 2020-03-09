@@ -21,8 +21,9 @@ use lvgl_macros::{
 static mut style_time: obj::lv_style_t = fill_zero!(obj::lv_style_t);
 
 /// Create the Time Screen, populated with widgets. Called by screen_time_create() below.
-fn create_screen(ht: &WatchFaceWidgets) -> LvglResult<()> {
-    let scr = ht.screen;
+fn create_screen(widgets: &WatchFaceWidgets) -> LvglResult<()> {
+    let scr = widgets.screen;
+    assert!(!scr.is_null(), "null screen");
 
     //  Create a label for time (00:00)
     let label1 = label::create(scr, ptr::null()) ? ;
@@ -33,7 +34,7 @@ fn create_screen(ht: &WatchFaceWidgets) -> LvglResult<()> {
     label::set_align(label1, label::LV_LABEL_ALIGN_CENTER);
     obj::align(label1, scr, obj::LV_ALIGN_CENTER, 0, -30);
     label::set_style(label1, label::LV_LABEL_STYLE_MAIN, &style_time);
-    ht.lv_time = label1;
+    widgets.lv_time = label1;
 
     //  Create a label for Bluetooth state
     let l_state = label::create(scr, ptr::null()) ? ;
@@ -43,7 +44,7 @@ fn create_screen(ht: &WatchFaceWidgets) -> LvglResult<()> {
     label::set_recolor(l_state, true);
     label::set_align(l_state, label::LV_LABEL_ALIGN_LEFT);
     obj::align(l_state, scr, obj::LV_ALIGN_IN_TOP_LEFT, 0, 0);
-    ht.lv_ble = l_state;
+    widgets.lv_ble = l_state;
 
     //  Create a label for Power indicator
     let l_power = label::create(scr, ptr::null()) ? ;
@@ -53,7 +54,7 @@ fn create_screen(ht: &WatchFaceWidgets) -> LvglResult<()> {
     label::set_recolor(l_power, true);
     label::set_align(l_power, label::LV_LABEL_ALIGN_RIGHT);
     obj::align(l_power, scr, obj::LV_ALIGN_IN_TOP_RIGHT, 0, 0);
-    ht.lv_power = l_power;
+    widgets.lv_power = l_power;
 
     //  Create a label for Date
     let label_date = label::create(scr, ptr::null()) ? ;
@@ -62,7 +63,7 @@ fn create_screen(ht: &WatchFaceWidgets) -> LvglResult<()> {
     obj::set_height(label_date, 200);
     label::set_align(label_date, label::LV_LABEL_ALIGN_CENTER);
     obj::align(label_date, scr, obj::LV_ALIGN_CENTER, 0, 40);
-    ht.lv_date = label_date;
+    widgets.lv_date = label_date;
 
     //  Allow touch events
     obj::set_click(scr, true);
