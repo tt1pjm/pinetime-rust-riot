@@ -6,6 +6,7 @@ use crate::{
         obj::{
             _lv_obj_t,
             lv_obj_t,
+            lv_style_t,
         },
     },
     Out, Ptr, Strn,

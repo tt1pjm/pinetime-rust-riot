@@ -8,7 +8,10 @@ use lvgl::{
     objx::{
         label,
     },
-    fill_zero,
+    Strn, fill_zero,
+};
+use lvgl_macros::{
+    strn,
 };
 
 /// Style for the Time Label
@@ -22,7 +25,7 @@ extern "C" fn screen_time_create(ht: *const home_time_widget_t) -> LvglResult<*m
     //  Create a label for time (00:00)
     let label1 = label::create(scr, ptr::null()) ? ;
     label::set_long_mode(label1, label::LV_LABEL_LONG_BREAK);
-    label::set_text(label1, "00:00");
+    label::set_text(label1, strn!("00:00"));
     obj::set_width(label1, 240);
     obj::set_height(label1, 200);
     label::set_align(label1, label::LV_LABEL_ALIGN_CENTER);
@@ -34,7 +37,7 @@ extern "C" fn screen_time_create(ht: *const home_time_widget_t) -> LvglResult<*m
     let l_state = label::create(scr, ptr::null()) ? ;
     obj::set_width(l_state, 50);
     obj::set_height(l_state, 80);
-    label::set_text(l_state, "");
+    label::set_text(l_state, strn!(""));
     label::set_recolor(l_state, true);
     label::set_align(l_state, label::LV_LABEL_ALIGN_LEFT);
     obj::align(l_state, scr, obj::LV_ALIGN_IN_TOP_LEFT, 0, 0);
@@ -44,7 +47,7 @@ extern "C" fn screen_time_create(ht: *const home_time_widget_t) -> LvglResult<*m
     let l_power = label::create(scr, ptr::null()) ? ;
     obj::set_width(l_power, 80);
     obj::set_height(l_power, 20);
-    label::set_text(l_power, "");
+    label::set_text(l_power, strn!(""));
     label::set_recolor(l_power, true);
     label::set_align(l_power, label::LV_LABEL_ALIGN_RIGHT);
     obj::align(l_power, scr, obj::LV_ALIGN_IN_TOP_RIGHT, 0, 0);

@@ -320,19 +320,6 @@ pub struct lv_area_t {
 }
 pub type lv_border_part_t = u8;
 pub type lv_shadow_type_t = u8;
-#[doc = " Objects in LittlevGL can be assigned a style - which holds information about"]
-#[doc = " how the object should be drawn."]
-#[doc = ""]
-#[doc = " This allows for easy customization without having to modify the object's design"]
-#[doc = " function."]
-#[repr(C)]
-pub struct lv_style_t {
-    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize], u8>,
-    pub body: lv_style_t__bindgen_ty_1,
-    pub text: lv_style_t__bindgen_ty_2,
-    pub image: lv_style_t__bindgen_ty_3,
-    pub line: lv_style_t__bindgen_ty_4,
-}
 #[doc = " Object background."]
 #[repr(C)]
 pub struct lv_style_t__bindgen_ty_1 {
@@ -455,34 +442,6 @@ impl lv_style_t__bindgen_ty_4 {
         __bindgen_bitfield_unit.set(0usize, 1u8, {
             let rounded: u8 = unsafe { ::core::mem::transmute(rounded) };
             rounded as u64
-        });
-        __bindgen_bitfield_unit
-    }
-}
-impl Default for lv_style_t {
-    fn default() -> Self {
-        unsafe { ::core::mem::zeroed() }
-    }
-}
-impl lv_style_t {
-    #[inline]
-    pub fn glass(&self) -> u8 {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u8) }
-    }
-    #[inline]
-    pub fn set_glass(&mut self, val: u8) {
-        unsafe {
-            let val: u8 = ::core::mem::transmute(val);
-            self._bitfield_1.set(0usize, 1u8, val as u64)
-        }
-    }
-    #[inline]
-    pub fn new_bitfield_1(glass: u8) -> __BindgenBitfieldUnit<[u8; 1usize], u8> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize], u8> =
-            Default::default();
-        __bindgen_bitfield_unit.set(0usize, 1u8, {
-            let glass: u8 = unsafe { ::core::mem::transmute(glass) };
-            glass as u64
         });
         __bindgen_bitfield_unit
     }

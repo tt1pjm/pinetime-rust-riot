@@ -44,8 +44,8 @@ extern crate cortex_m;
 //  Declare the external library `cortex_m`
 extern crate lvgl;
 //  Declare the LittlevGL (LVGL) library
-extern crate macros as mynewt_macros;
-//  Declare the Mynewt Procedural Macros library
+extern crate macros as lvgl_macros;
+//  Declare the LVGL Procedural Macros library
 
 //  Declare the modules in our application
 mod screen_time {
@@ -65,7 +65,8 @@ mod screen_time {
     //  Loop forever so that device won't restart.
     //! Watch Face in Rust
     use core::ptr;
-    use lvgl::{result::*, core::{obj}, objx::{label}, fill_zero};
+    use lvgl::{result::*, core::{obj}, objx::{label}, Strn, fill_zero};
+    use lvgl_macros::{strn};
     /// Style for the Time Label
     static mut style_time: obj::lv_style_t =
         unsafe {
@@ -80,7 +81,7 @@ mod screen_time {
         let scr = obj::create(ptr::null_mut(), ptr::null())?;
         let label1 = label::create(scr, ptr::null())?;
         label::set_long_mode(label1, label::LV_LABEL_LONG_BREAK);
-        label::set_text(label1, "00:00");
+        label::set_text(label1, &Strn::new(b"00:00\x00"));
         obj::set_width(label1, 240);
         obj::set_height(label1, 200);
         label::set_align(label1, label::LV_LABEL_ALIGN_CENTER);
@@ -90,7 +91,7 @@ mod screen_time {
         let l_state = label::create(scr, ptr::null())?;
         obj::set_width(l_state, 50);
         obj::set_height(l_state, 80);
-        label::set_text(l_state, "");
+        label::set_text(l_state, &Strn::new(b"\x00"));
         label::set_recolor(l_state, true);
         label::set_align(l_state, label::LV_LABEL_ALIGN_LEFT);
         obj::align(l_state, scr, obj::LV_ALIGN_IN_TOP_LEFT, 0, 0);
@@ -98,7 +99,7 @@ mod screen_time {
         let l_power = label::create(scr, ptr::null())?;
         obj::set_width(l_power, 80);
         obj::set_height(l_power, 20);
-        label::set_text(l_power, "");
+        label::set_text(l_power, &Strn::new(b"\x00"));
         label::set_recolor(l_power, true);
         label::set_align(l_power, label::LV_LABEL_ALIGN_RIGHT);
         obj::align(l_power, scr, obj::LV_ALIGN_IN_TOP_RIGHT, 0, 0);

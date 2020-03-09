@@ -28,10 +28,10 @@
 //  Declare the libraries that contain macros
 extern crate cortex_m;                  //  Declare the external library `cortex_m`
 extern crate lvgl;                      //  Declare the LittlevGL (LVGL) library
-extern crate macros as mynewt_macros;   //  Declare the Mynewt Procedural Macros library
+extern crate macros as lvgl_macros;     //  Declare the LVGL Procedural Macros library
 
 //  Declare the modules in our application
-mod screen_time;    //  Declare `screen_time.rs` as Rust module `screen_time` for Watch Face
+mod screen_time;            //  Declare `screen_time.rs` as Rust module `screen_time` for Watch Face
 
 //  Declare the system modules
 use core::panic::PanicInfo; //  Import `PanicInfo` type which is used by `panic()` below
