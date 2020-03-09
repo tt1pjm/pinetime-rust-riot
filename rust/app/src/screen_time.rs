@@ -84,7 +84,7 @@ fn update_screen(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResu
 
 /// Populate the Bluetooth Label with the Bluetooth status. Called by screen_time_update_screen() above.
 fn set_bt_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
-    if state.ble_state == BLEMAN_BLE_STATE_DISCONNECTED {
+    if state.ble_state == BleState::BLEMAN_BLE_STATE_DISCONNECTED {
         label::set_text(widgets.ble_label, strn!(""));
     } else {
         let color = state2color[state.ble_state];
@@ -192,8 +192,8 @@ struct home_time_widget_t {
 /// State for the Watch Face, shared between GUI and control. TODO: Sync with widgets/home_time/include/home_time.h
 #[repr(C)]
 struct WatchFaceState {
-    ble_state:  bleman_ble_state_t,      //  TODO: Should not be exposed to Rust
-    time:       controller_time_spec_t,  //  TODO: Should not be exposed to Rust
+    ble_state:  BleState,  //  bleman_ble_state_t
+    time:       controller_time_spec_t,
     millivolts: u32,
     charging:   bool,
     powered:    bool,
@@ -201,6 +201,7 @@ struct WatchFaceState {
 
 /// Widgets for the Watch Face, private to Rust. TODO: Sync with widgets/home_time/include/home_time.h
 #[repr(C)]
+#[allow(non_camel_case_types)]
 struct WatchFaceWidgets {
     screen:      *mut obj::lv_obj_t,  //  TODO: Shared with home_time_widget_t
     time_label:  *mut obj::lv_obj_t,  //  TODO: Should be private to Rust
@@ -209,10 +210,32 @@ struct WatchFaceWidgets {
     power_label: *mut obj::lv_obj_t,  //  TODO: Should be private to Rust
 }
 
+//  TODO: Sync with modules/bleman/include/bleman.h
+#[repr(i32)]  //  TODO: Check size
+#[derive(PartialEq)]
+#[allow(non_camel_case_types)]
+enum BleState {  //  bleman_ble_state_t
+    BLEMAN_BLE_STATE_INACTIVE = 0,
+    BLEMAN_BLE_STATE_ADVERTISING = 1,
+    BLEMAN_BLE_STATE_DISCONNECTED = 2,
+    BLEMAN_BLE_STATE_CONNECTED = 3,
+}
+
+//  TODO: Sync with modules/controller/include/controller/time.h
+#[repr(C)]
+#[allow(non_camel_case_types)]
+struct controller_time_spec_t {
+    year: u16,
+    month: u8,
+    dayofmonth: u8,
+    hour: u8,
+    minute: u8,
+    second: u8,
+    fracs: u8,
+}
+
 //  TODO: Sync with widgets/home_time/include/home_time.h
 struct widget_t {}  //  TODO: Should not be exposed to Rust
-struct control_event_handler_t {}  //  TODO: Should not be exposed to Rust
-struct controller_time_spec_t {}   //  TODO: Should not be exposed to Rust
 
 /* Stack Trace for screen_time_create:
 #0  screen_time_create (ht=ht@entry=0x200008dc <home_time_widget>) at /Users/Luppy/PineTime/PineTime-apps/widgets/home_time/screen_time.c:68

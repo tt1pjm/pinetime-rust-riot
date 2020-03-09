@@ -126,7 +126,7 @@ mod screen_time {
     /// Populate the Bluetooth Label with the Bluetooth status. Called by screen_time_update_screen() above.
     fn set_bt_label(widgets: &WatchFaceWidgets, state: &WatchFaceState)
      -> LvglResult<()> {
-        if state.ble_state == BLEMAN_BLE_STATE_DISCONNECTED {
+        if state.ble_state == BleState::BLEMAN_BLE_STATE_DISCONNECTED {
             label::set_text(widgets.ble_label, &Strn::new(b"\x00"));
         } else {
             let color = state2color[state.ble_state];
@@ -282,7 +282,7 @@ mod screen_time {
     /// State for the Watch Face, shared between GUI and control. TODO: Sync with widgets/home_time/include/home_time.h
     #[repr(C)]
     struct WatchFaceState {
-        ble_state: bleman_ble_state_t,
+        ble_state: BleState,
         time: controller_time_spec_t,
         millivolts: u32,
         charging: bool,
@@ -290,6 +290,7 @@ mod screen_time {
     }
     /// Widgets for the Watch Face, private to Rust. TODO: Sync with widgets/home_time/include/home_time.h
     #[repr(C)]
+    #[allow(non_camel_case_types)]
     struct WatchFaceWidgets {
         screen: *mut obj::lv_obj_t,
         time_label: *mut obj::lv_obj_t,
@@ -297,11 +298,47 @@ mod screen_time {
         ble_label: *mut obj::lv_obj_t,
         power_label: *mut obj::lv_obj_t,
     }
-    struct widget_t {
+    #[repr(i32)]
+    #[allow(non_camel_case_types)]
+    enum BleState {
+        BLEMAN_BLE_STATE_INACTIVE = 0,
+        BLEMAN_BLE_STATE_ADVERTISING = 1,
+        BLEMAN_BLE_STATE_DISCONNECTED = 2,
+        BLEMAN_BLE_STATE_CONNECTED = 3,
     }
-    struct control_event_handler_t {
+    #[allow(non_camel_case_types)]
+    impl ::core::marker::StructuralPartialEq for BleState { }
+    #[automatically_derived]
+    #[allow(unused_qualifications)]
+    #[allow(non_camel_case_types)]
+    impl ::core::cmp::PartialEq for BleState {
+        #[inline]
+        fn eq(&self, other: &BleState) -> bool {
+            {
+                let __self_vi =
+                    unsafe { ::core::intrinsics::discriminant_value(&*self) }
+                        as i32;
+                let __arg_1_vi =
+                    unsafe { ::core::intrinsics::discriminant_value(&*other) }
+                        as i32;
+                if true && __self_vi == __arg_1_vi {
+                    match (&*self, &*other) { _ => true, }
+                } else { false }
+            }
+        }
     }
+    #[repr(C)]
+    #[allow(non_camel_case_types)]
     struct controller_time_spec_t {
+        year: u16,
+        month: u8,
+        dayofmonth: u8,
+        hour: u8,
+        minute: u8,
+        second: u8,
+        fracs: u8,
+    }
+    struct widget_t {
     }
 }
 use core::panic::PanicInfo;
