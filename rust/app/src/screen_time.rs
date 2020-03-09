@@ -76,7 +76,7 @@ extern "C" fn screen_time_create<'a>(ht: &'a home_time_widget_t) -> LvglResult<*
 #[repr(C)]
 struct home_time_widget_t {
     widget: widget_t,
-    control_event_handler_t: handler,
+    handler: control_event_handler_t,
     screen:   *const obj::lv_obj_t,
     lv_time:  *const obj::lv_obj_t,
     lv_date:  *const obj::lv_obj_t,
@@ -89,3 +89,8 @@ struct home_time_widget_t {
     charging: bool,
     powered: bool,
 }
+
+//  TODO
+struct widget_t {}
+struct control_event_handler_t {}
+struct controller_time_spec_t {}

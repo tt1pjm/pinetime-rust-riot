@@ -363,7 +363,7 @@ mod screen_time {
     #[repr(C)]
     struct home_time_widget_t {
         widget: widget_t,
-        control_event_handler_t: handler,
+        handler: control_event_handler_t,
         screen: *const obj::lv_obj_t,
         lv_time: *const obj::lv_obj_t,
         lv_date: *const obj::lv_obj_t,
@@ -374,6 +374,12 @@ mod screen_time {
         millivolts: u32,
         charging: bool,
         powered: bool,
+    }
+    struct widget_t {
+    }
+    struct control_event_handler_t {
+    }
+    struct controller_time_spec_t {
     }
 }
 use core::panic::PanicInfo;
