@@ -64,7 +64,7 @@ mod screen_time {
     //  Display the payload.
     //  Loop forever so that device won't restart.
     //! Watch Face in Rust
-    use core::ptr;
+    use core::{fmt::Write, ptr};
     use lvgl::{result::*, core::{obj}, objx::{label}, Strn, fill_zero};
     use lvgl_macros::{strn};
     /// Style for the Time Label
@@ -74,11 +74,9 @@ mod screen_time {
                                      obj::lv_style_t>([0;
                                                           ::core::mem::size_of::<obj::lv_style_t>()])
         };
-    /// Create the Time Screen, populated with widgets
-    #[no_mangle]
-    extern "C" fn screen_time_create(ht: *const home_time_widget_t)
-     -> LvglResult<*mut obj::lv_obj_t> {
-        let scr = obj::create(ptr::null_mut(), ptr::null())?;
+    /// Create the Time Screen, populated with widgets. Called by screen_time_create() below.
+    fn create_screen(ht: &home_time_widget_t) -> LvglResult<()> {
+        let scr = ht.screen;
         let label1 = label::create(scr, ptr::null())?;
         label::set_long_mode(label1, label::LV_LABEL_LONG_BREAK);
         label::set_text(label1, &Strn::new(b"00:00\x00"));
@@ -112,20 +110,140 @@ mod screen_time {
         obj::align(label_date, scr, obj::LV_ALIGN_CENTER, 0, 40);
         ht.lv_date = label_date;
         obj::set_click(scr, true);
-        obj::set_event_cb(scr, _screen_time_pressed);
-        obj::set_event_cb(label1, _screen_time_pressed);
-        _screen_time_update_screen(&ht.widget);
-        Ok(scr)
+        obj::set_event_cb(scr, screen_time_pressed);
+        obj::set_event_cb(label1, screen_time_pressed);
+        update_screen(&ht.widget)?;
+        Ok(())
+    }
+    /// Populate the screen with the current state. Called by screen_time_update_screen() below.
+    fn update_screen(widget: &widget_t) -> LvglResult<()> {
+        let ht = from_widget(widget);
+        home_time_set_time_label(ht)?;
+        home_time_set_bt_label(ht)?;
+        home_time_set_power_label(ht)?;
+        Ok(())
+    }
+    /// Populate the Bluetooth Label with the Bluetooth state. Called by screen_time_update_screen() above.
+    fn home_time_set_bt_label(htwidget: &home_time_widget_t)
+     -> LvglResult<()> {
+        if htwidget.ble_state == BLEMAN_BLE_STATE_DISCONNECTED {
+            label::set_text(htwidget.lv_ble, &Strn::new(b"\x00"));
+        } else {
+            let color = state2color[htwidget.ble_state];
+            label::set_text_fmt(htwidget.lv_ble, &Strn::new(b"%s BT#\x00"),
+                                color);
+        }
+        Ok(())
+    }
+    /// Populate the Power Label with the battery status. Called by screen_time_update_screen() above.
+    fn home_time_set_power_label(htwidget: &home_time_widget_t)
+     -> LvglResult<()> {
+        let percentage = hal_battery_get_percentage(htwidget.millivolts);
+        let color =
+            if percentage <= battery_low {
+                battery_low_color
+            } else if htwidget.powered && !(htwidget.charging) {
+                battery_full_color
+            } else { battery_mid_color };
+        label::set_text_fmt(htwidget.lv_power,
+                            &Strn::new(b"%s %u%%%s#\\n(%umV)\x00"), color,
+                            percentage,
+                            if htwidget.powered {
+                                &Strn::new(b"C\x00")
+                            } else { &Strn::new(b" \x00") },
+                            htwidget.millivolts);
+        obj::align(htwidget.lv_power, htwidget.screen, LV_ALIGN_IN_TOP_RIGHT,
+                   0, 0);
+        Ok(())
+    }
+    /// Populate the Time and Date Labels with the time and date. Called by screen_time_update_screen() above.
+    fn home_time_set_time_label(ht: &home_time_widget_t) -> LvglResult<()> {
+        let mut time = heapless::String::<heapless::consts::U6>::new();
+        (&mut time).write_fmt(::core::fmt::Arguments::new_v1_formatted(&["",
+                                                                         ":"],
+                                                                       &match (&ht.time.hour,
+                                                                               &ht.time.minute)
+                                                                            {
+                                                                            (arg0,
+                                                                             arg1)
+                                                                            =>
+                                                                            [::core::fmt::ArgumentV1::new(arg0,
+                                                                                                          ::core::fmt::Display::fmt),
+                                                                             ::core::fmt::ArgumentV1::new(arg1,
+                                                                                                          ::core::fmt::Display::fmt)],
+                                                                        },
+                                                                       &[::core::fmt::rt::v1::Argument{position:
+                                                                                                           0usize,
+                                                                                                       format:
+                                                                                                           ::core::fmt::rt::v1::FormatSpec{fill:
+                                                                                                                                               ' ',
+                                                                                                                                           align:
+                                                                                                                                               ::core::fmt::rt::v1::Alignment::Unknown,
+                                                                                                                                           flags:
+                                                                                                                                               8u32,
+                                                                                                                                           precision:
+                                                                                                                                               ::core::fmt::rt::v1::Count::Implied,
+                                                                                                                                           width:
+                                                                                                                                               ::core::fmt::rt::v1::Count::Is(2usize),},},
+                                                                         ::core::fmt::rt::v1::Argument{position:
+                                                                                                           1usize,
+                                                                                                       format:
+                                                                                                           ::core::fmt::rt::v1::FormatSpec{fill:
+                                                                                                                                               ' ',
+                                                                                                                                           align:
+                                                                                                                                               ::core::fmt::rt::v1::Alignment::Unknown,
+                                                                                                                                           flags:
+                                                                                                                                               8u32,
+                                                                                                                                           precision:
+                                                                                                                                               ::core::fmt::rt::v1::Count::Implied,
+                                                                                                                                           width:
+                                                                                                                                               ::core::fmt::rt::v1::Count::Is(2usize),},}])).expect("time fail");
+        label::set_text(ht.lv_time, time);
+        let mut date = heapless::String::<heapless::consts::U15>::new();
+        (&mut date).write_fmt(::core::fmt::Arguments::new_v1(&["", " ", " ",
+                                                               "\n"],
+                                                             &match (&ht.time.dayofmonth,
+                                                                     &controller_time_month_get_short_name(&ht.time),
+                                                                     &ht.time.year)
+                                                                  {
+                                                                  (arg0, arg1,
+                                                                   arg2) =>
+                                                                  [::core::fmt::ArgumentV1::new(arg0,
+                                                                                                ::core::fmt::Display::fmt),
+                                                                   ::core::fmt::ArgumentV1::new(arg1,
+                                                                                                ::core::fmt::Display::fmt),
+                                                                   ::core::fmt::ArgumentV1::new(arg2,
+                                                                                                ::core::fmt::Display::fmt)],
+                                                              })).expect("date fail");
+        label::set_text(ht.lv_date, date);
+        Ok(())
+    }
+    /// Create the Time Screen, populated with widgets. Called by home_time_draw() in screen_time.c.
+    #[no_mangle]
+    extern "C" fn screen_time_create(ht: *const home_time_widget_t)
+     -> *mut obj::lv_obj_t {
+        let scr =
+            obj::create(ptr::null_mut(),
+                        ptr::null()).expect("create screen obj fail");
+        (*ht).screen = scr;
+        create_screen(&*ht).expect("create_screen fail");
+        scr
+    }
+    /// Populate the screen with the current state. Called by home_time_update_screen() in screen_time.c and by screen_time_create() above.
+    #[no_mangle]
+    extern "C" fn screen_time_update_screen(widget: &widget_t) -> i32 {
+        update_screen(widget).expect("update_screen fail");
+        0
     }
     #[repr(C)]
     struct home_time_widget_t {
         widget: widget_t,
         handler: control_event_handler_t,
-        screen: *const obj::lv_obj_t,
-        lv_time: *const obj::lv_obj_t,
-        lv_date: *const obj::lv_obj_t,
-        lv_ble: *const obj::lv_obj_t,
-        lv_power: *const obj::lv_obj_t,
+        screen: *mut obj::lv_obj_t,
+        lv_time: *mut obj::lv_obj_t,
+        lv_date: *mut obj::lv_obj_t,
+        lv_ble: *mut obj::lv_obj_t,
+        lv_power: *mut obj::lv_obj_t,
         ble_state: bleman_ble_state_t,
         time: controller_time_spec_t,
         millivolts: u32,
