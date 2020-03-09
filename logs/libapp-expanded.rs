@@ -116,16 +116,14 @@ mod screen_time {
         Ok(())
     }
     /// Populate the screen with the current state. Called by screen_time_update_screen() below.
-    fn update_screen(widget: &widget_t) -> LvglResult<()> {
-        let ht = from_widget(widget);
-        home_time_set_time_label(ht)?;
-        home_time_set_bt_label(ht)?;
-        home_time_set_power_label(ht)?;
+    fn update_screen(htwidget: &home_time_widget_t) -> LvglResult<()> {
+        set_time_label(htwidget)?;
+        set_bt_label(htwidget)?;
+        set_power_label(htwidget)?;
         Ok(())
     }
     /// Populate the Bluetooth Label with the Bluetooth state. Called by screen_time_update_screen() above.
-    fn home_time_set_bt_label(htwidget: &home_time_widget_t)
-     -> LvglResult<()> {
+    fn set_bt_label(htwidget: &home_time_widget_t) -> LvglResult<()> {
         if htwidget.ble_state == BLEMAN_BLE_STATE_DISCONNECTED {
             label::set_text(htwidget.lv_ble, &Strn::new(b"\x00"));
         } else {
@@ -136,8 +134,7 @@ mod screen_time {
         Ok(())
     }
     /// Populate the Power Label with the battery status. Called by screen_time_update_screen() above.
-    fn home_time_set_power_label(htwidget: &home_time_widget_t)
-     -> LvglResult<()> {
+    fn set_power_label(htwidget: &home_time_widget_t) -> LvglResult<()> {
         let percentage = hal_battery_get_percentage(htwidget.millivolts);
         let color =
             if percentage <= battery_low {
@@ -152,12 +149,12 @@ mod screen_time {
                                 &Strn::new(b"C\x00")
                             } else { &Strn::new(b" \x00") },
                             htwidget.millivolts);
-        obj::align(htwidget.lv_power, htwidget.screen, LV_ALIGN_IN_TOP_RIGHT,
-                   0, 0);
+        obj::align(htwidget.lv_power, htwidget.screen,
+                   obj::LV_ALIGN_IN_TOP_RIGHT, 0, 0);
         Ok(())
     }
     /// Populate the Time and Date Labels with the time and date. Called by screen_time_update_screen() above.
-    fn home_time_set_time_label(ht: &home_time_widget_t) -> LvglResult<()> {
+    fn set_time_label(ht: &home_time_widget_t) -> LvglResult<()> {
         let mut time = heapless::String::<heapless::consts::U6>::new();
         (&mut time).write_fmt(::core::fmt::Arguments::new_v1_formatted(&["",
                                                                          ":"],
@@ -232,7 +229,8 @@ mod screen_time {
     /// Populate the screen with the current state. Called by home_time_update_screen() in screen_time.c and by screen_time_create() above.
     #[no_mangle]
     extern "C" fn screen_time_update_screen(widget: &widget_t) -> i32 {
-        update_screen(widget).expect("update_screen fail");
+        let ht_widget = from_widget(widget);
+        update_screen(&ht_widget).expect("update_screen fail");
         0
     }
     #[repr(C)]

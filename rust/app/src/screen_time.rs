@@ -68,7 +68,7 @@ fn create_screen(ht: &home_time_widget_t) -> LvglResult<()> {
     obj::set_click(scr, true);
 
     //  Set touch callbacks on the screen and the time label
-    obj::set_event_cb(scr, screen_time_pressed);
+    obj::set_event_cb(scr, screen_time_pressed);  //  TODO: Create Rust binding for screen_time_pressed() from screen_time.c
     obj::set_event_cb(label1, screen_time_pressed);
 
     //  Update the screen
@@ -77,16 +77,15 @@ fn create_screen(ht: &home_time_widget_t) -> LvglResult<()> {
 }
 
 /// Populate the screen with the current state. Called by screen_time_update_screen() below.
-fn update_screen(widget: &widget_t) -> LvglResult<()> {
-    let ht = from_widget(widget);
-    home_time_set_time_label(ht) ? ;
-    home_time_set_bt_label(ht) ? ;
-    home_time_set_power_label(ht) ? ;
+fn update_screen(htwidget: &home_time_widget_t) -> LvglResult<()> {
+    set_time_label(htwidget) ? ;
+    set_bt_label(htwidget) ? ;
+    set_power_label(htwidget) ? ;
     Ok(())
 }
 
 /// Populate the Bluetooth Label with the Bluetooth state. Called by screen_time_update_screen() above.
-fn home_time_set_bt_label(htwidget: &home_time_widget_t) -> LvglResult<()> {
+fn set_bt_label(htwidget: &home_time_widget_t) -> LvglResult<()> {
     if htwidget.ble_state == BLEMAN_BLE_STATE_DISCONNECTED {
         label::set_text(htwidget.lv_ble, strn!(""));
     }
@@ -102,7 +101,7 @@ fn home_time_set_bt_label(htwidget: &home_time_widget_t) -> LvglResult<()> {
 }
 
 /// Populate the Power Label with the battery status. Called by screen_time_update_screen() above.
-fn home_time_set_power_label(htwidget: &home_time_widget_t) -> LvglResult<()> {
+fn set_power_label(htwidget: &home_time_widget_t) -> LvglResult<()> {
     let percentage = hal_battery_get_percentage(htwidget.millivolts);
     let color = 
         if percentage <= battery_low 
@@ -124,7 +123,7 @@ fn home_time_set_power_label(htwidget: &home_time_widget_t) -> LvglResult<()> {
 }
 
 /// Populate the Time and Date Labels with the time and date. Called by screen_time_update_screen() above.
-fn home_time_set_time_label(ht: &home_time_widget_t) -> LvglResult<()> {
+fn set_time_label(ht: &home_time_widget_t) -> LvglResult<()> {
     //  Create a string buffer with max size 6 and format the time
     let mut time = heapless::String::<heapless::consts::U6>::new();
     write!(&mut time, "{:02}:{:02}", 
@@ -147,9 +146,12 @@ fn home_time_set_time_label(ht: &home_time_widget_t) -> LvglResult<()> {
 /// Create the Time Screen, populated with widgets. Called by home_time_draw() in screen_time.c.
 #[no_mangle]  //  Don't mangle the function name
 extern "C" fn screen_time_create(ht: *const home_time_widget_t) -> *mut obj::lv_obj_t {  //  Declare extern "C" because it will be called by RIOT OS firmware
+    //  Create the screen object and update the screen widget
     let scr = obj::create(ptr::null_mut(), ptr::null())
         .expect("create screen obj fail");
     (*ht).screen = scr;
+
+    //  Populate the widgets in the screen
     create_screen(&*ht)
         .expect("create_screen fail");
     scr  //  Return the screen
@@ -158,7 +160,8 @@ extern "C" fn screen_time_create(ht: *const home_time_widget_t) -> *mut obj::lv_
 /// Populate the screen with the current state. Called by home_time_update_screen() in screen_time.c and by screen_time_create() above.
 #[no_mangle]  //  Don't mangle the function name
 extern "C" fn screen_time_update_screen(widget: &widget_t) -> i32 {
-    update_screen(widget)
+    let ht_widget = from_widget(widget);  //  TODO: Create Rust binding for from_widget() from screen_time.c
+    update_screen(&ht_widget)
         .expect("update_screen fail");
     0  //  Return OK
 }
@@ -166,16 +169,16 @@ extern "C" fn screen_time_update_screen(widget: &widget_t) -> i32 {
 //  TODO
 #[repr(C)]
 struct home_time_widget_t {
-    widget: widget_t,
-    handler: control_event_handler_t,
-    screen:   *mut obj::lv_obj_t,
-    lv_time:  *mut obj::lv_obj_t,
-    lv_date:  *mut obj::lv_obj_t,
-    lv_ble:   *mut obj::lv_obj_t,
-    lv_power: *mut obj::lv_obj_t,
-    ble_state: bleman_ble_state_t,
+    widget:     widget_t,
+    handler:    control_event_handler_t,
+    screen:     *mut obj::lv_obj_t,
+    lv_time:    *mut obj::lv_obj_t,
+    lv_date:    *mut obj::lv_obj_t,
+    lv_ble:     *mut obj::lv_obj_t,
+    lv_power:   *mut obj::lv_obj_t,
+    ble_state:  bleman_ble_state_t,
     /* Shared storage between gui and control */
-    time: controller_time_spec_t,
+    time:       controller_time_spec_t,
     millivolts: u32,
     charging:   bool,
     powered:    bool,
