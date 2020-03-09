@@ -122,14 +122,23 @@ mod screen_time {
         set_power_label(htwidget)?;
         Ok(())
     }
-    /// Populate the Bluetooth Label with the Bluetooth state. Called by screen_time_update_screen() above.
+    /// Populate the Bluetooth Label with the Bluetooth status. Called by screen_time_update_screen() above.
     fn set_bt_label(htwidget: &home_time_widget_t) -> LvglResult<()> {
         if htwidget.ble_state == BLEMAN_BLE_STATE_DISCONNECTED {
             label::set_text(htwidget.lv_ble, &Strn::new(b"\x00"));
         } else {
             let color = state2color[htwidget.ble_state];
-            label::set_text_fmt(htwidget.lv_ble, &Strn::new(b"%s BT#\x00"),
-                                color);
+            let mut status = heapless::String::<heapless::consts::U16>::new();
+            (&mut status).write_fmt(::core::fmt::Arguments::new_v1(&["",
+                                                                     " \u{f293}#\u{0}"],
+                                                                   &match (&color,)
+                                                                        {
+                                                                        (arg0,)
+                                                                        =>
+                                                                        [::core::fmt::ArgumentV1::new(arg0,
+                                                                                                      ::core::fmt::Display::fmt)],
+                                                                    })).expect("bt fail");
+            label::set_text(htwidget.lv_ble, &Strn::new(status.as_bytes()));
         }
         Ok(())
     }
@@ -142,13 +151,30 @@ mod screen_time {
             } else if htwidget.powered && !(htwidget.charging) {
                 battery_full_color
             } else { battery_mid_color };
-        label::set_text_fmt(htwidget.lv_power,
-                            &Strn::new(b"%s %u%%%s#\\n(%umV)\x00"), color,
-                            percentage,
-                            if htwidget.powered {
-                                &Strn::new(b"C\x00")
-                            } else { &Strn::new(b" \x00") },
-                            htwidget.millivolts);
+        let symbol = if htwidget.powered { "\u{F0E7}" } else { " " };
+        let mut status = heapless::String::<heapless::consts::U16>::new();
+        (&mut status).write_fmt(::core::fmt::Arguments::new_v1(&["", " ", "%",
+                                                                 "#\n(",
+                                                                 "mV)\u{0}"],
+                                                               &match (&color,
+                                                                       &percentage,
+                                                                       &symbol,
+                                                                       &htwidget.millivolts)
+                                                                    {
+                                                                    (arg0,
+                                                                     arg1,
+                                                                     arg2,
+                                                                     arg3) =>
+                                                                    [::core::fmt::ArgumentV1::new(arg0,
+                                                                                                  ::core::fmt::Display::fmt),
+                                                                     ::core::fmt::ArgumentV1::new(arg1,
+                                                                                                  ::core::fmt::Display::fmt),
+                                                                     ::core::fmt::ArgumentV1::new(arg2,
+                                                                                                  ::core::fmt::Display::fmt),
+                                                                     ::core::fmt::ArgumentV1::new(arg3,
+                                                                                                  ::core::fmt::Display::fmt)],
+                                                                })).expect("batt fail");
+        label::set_text(htwidget.lv_power, &Strn::new(status.as_bytes()));
         obj::align(htwidget.lv_power, htwidget.screen,
                    obj::LV_ALIGN_IN_TOP_RIGHT, 0, 0);
         Ok(())

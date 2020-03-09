@@ -84,17 +84,19 @@ fn update_screen(htwidget: &home_time_widget_t) -> LvglResult<()> {
     Ok(())
 }
 
-/// Populate the Bluetooth Label with the Bluetooth state. Called by screen_time_update_screen() above.
+/// Populate the Bluetooth Label with the Bluetooth status. Called by screen_time_update_screen() above.
 fn set_bt_label(htwidget: &home_time_widget_t) -> LvglResult<()> {
     if htwidget.ble_state == BLEMAN_BLE_STATE_DISCONNECTED {
         label::set_text(htwidget.lv_ble, strn!(""));
     } else {
         let color = state2color[htwidget.ble_state];
-        label::set_text_fmt(htwidget.lv_ble,  //  TODO: Convert to heapless write
-            //  TODO: strn!("%s "LV_SYMBOL_BLUETOOTH"#"),  //  LV_SYMBOL_BLUETOOTH="\xef\x8a\x93"
-            strn!("%s BT#"),
-            color
-        );
+        //  Create a string buffer with max size 16 and format the Bluetooth status
+        let mut status = heapless::String::<heapless::consts::U16>::new();
+        write!(&mut status, 
+            "{} \u{F293}#\0",  //  LV_SYMBOL_BLUETOOTH. Must terminate Rust strings with null.
+            color)
+            .expect("bt fail");
+        label::set_text(htwidget.lv_ble, &Strn::new(status.as_bytes()));  //  TODO: Simplify
     }
     Ok(())
 }
@@ -102,21 +104,26 @@ fn set_bt_label(htwidget: &home_time_widget_t) -> LvglResult<()> {
 /// Populate the Power Label with the battery status. Called by screen_time_update_screen() above.
 fn set_power_label(htwidget: &home_time_widget_t) -> LvglResult<()> {
     let percentage = hal_battery_get_percentage(htwidget.millivolts);
-    let color = 
+    let color =   //  Charging color
         if percentage <= battery_low 
             { battery_low_color }
         else if htwidget.powered && !(htwidget.charging) 
             { battery_full_color }  //  Battery charge cycle finished
         else 
             { battery_mid_color };
-    label::set_text_fmt(htwidget.lv_power,  //  TODO: Convert to heapless write
-        strn!("%s %u%%%s#\n(%umV)"),
+    let symbol =  //  Charging symbol
+        if htwidget.powered { "\u{F0E7}" }  //  LV_SYMBOL_CHARGE
+        else { " " };
+    //  Create a string buffer with max size 16 and format the battery status
+    let mut status = heapless::String::<heapless::consts::U16>::new();
+    write!(&mut status, 
+        "{} {}%{}#\n({}mV)\0",  //  Must terminate Rust strings with null
         color,
         percentage,
-        if htwidget.powered { strn!("C") }  //  TODO: LV_SYMBOL_CHARGE="\xef\x83\xa7"
-            else { strn!(" ") },
-        htwidget.millivolts
-    );
+        symbol,
+        htwidget.millivolts)
+        .expect("batt fail");
+    label::set_text(htwidget.lv_power, &Strn::new(status.as_bytes()));  //  TODO: Simplify
     obj::align(htwidget.lv_power, htwidget.screen, obj::LV_ALIGN_IN_TOP_RIGHT, 0, 0);
     Ok(())
 }
