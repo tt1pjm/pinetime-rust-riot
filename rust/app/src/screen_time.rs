@@ -129,45 +129,45 @@ fn set_power_label(htwidget: &home_time_widget_t) -> LvglResult<()> {
 }
 
 /// Populate the Time and Date Labels with the time and date. Called by screen_time_update_screen() above.
-fn set_time_label(ht: &home_time_widget_t) -> LvglResult<()> {
+fn set_time_label(htwidget: &home_time_widget_t) -> LvglResult<()> {
     //  Create a string buffer with max size 6 and format the time
     let mut time = heapless::String::<heapless::consts::U6>::new();
     write!(&mut time, "{:02}:{:02}\0",  //  Must terminate Rust strings with null
-        ht.time.hour, 
-        ht.time.minute)
+        htwidget.time.hour, 
+        htwidget.time.minute)
         .expect("time fail");
-    label::set_text(ht.lv_time, &Strn::new(time.as_bytes()));  //  TODO: Simplify
+    label::set_text(htwidget.lv_time, &Strn::new(time.as_bytes()));  //  TODO: Simplify
 
     //  Create a string buffer with max size 15 and format the date
     let mut date = heapless::String::<heapless::consts::U15>::new();
     write!(&mut date, "{} {} {}\n\0",  //  Must terminate Rust strings with null
-        ht.time.dayofmonth,
-        controller_time_month_get_short_name(&ht.time),
-        ht.time.year)
+        htwidget.time.dayofmonth,
+        controller_time_month_get_short_name(&htwidget.time),
+        htwidget.time.year)
         .expect("date fail");
-    label::set_text(ht.lv_date, &Strn::new(date.as_bytes()));  //  TODO: Simplify
+    label::set_text(htwidget.lv_date, &Strn::new(date.as_bytes()));  //  TODO: Simplify
     Ok(())
 }
 
 /// Create the Time Screen, populated with widgets. Called by home_time_draw() in screen_time.c.
 #[no_mangle]  //  Don't mangle the function name
-extern "C" fn screen_time_create(ht: *const home_time_widget_t) -> *mut obj::lv_obj_t {  //  Declare extern "C" because it will be called by RIOT OS firmware
+extern "C" fn screen_time_create(htwidget: *const home_time_widget_t) -> *mut obj::lv_obj_t {  //  Declare extern "C" because it will be called by RIOT OS firmware
     //  Create the screen object and update the screen widget
     let scr = obj::create(ptr::null_mut(), ptr::null())
         .expect("create screen obj fail");
-    (*ht).screen = scr;
+    (*htwidget).screen = scr;
 
     //  Populate the widgets in the screen
-    create_screen(&*ht)
+    create_screen(&*htwidget)
         .expect("create_screen fail");
     scr  //  Return the screen
 }
 
 /// Populate the screen with the current state. Called by home_time_update_screen() in screen_time.c and by screen_time_create() above.
 #[no_mangle]  //  Don't mangle the function name
-extern "C" fn screen_time_update_screen(widget: &widget_t) -> i32 {
-    let ht_widget = from_widget(widget);  //  TODO: Create Rust binding for from_widget() from screen_time.c
-    update_screen(&ht_widget)
+extern "C" fn screen_time_update_screen(widget: *const widget_t) -> i32 {
+    let htwidget = from_widget(widget);  //  TODO: Create Rust binding for from_widget() from screen_time.c
+    update_screen(&htwidget)
         .expect("update_screen fail");
     0  //  Return OK
 }
