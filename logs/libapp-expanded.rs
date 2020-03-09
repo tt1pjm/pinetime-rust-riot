@@ -86,7 +86,7 @@ mod screen_time {
         label::set_align(label1, label::LV_LABEL_ALIGN_CENTER);
         obj::align(label1, scr, obj::LV_ALIGN_CENTER, 0, -30);
         label::set_style(label1, label::LV_LABEL_STYLE_MAIN, &style_time);
-        widgets.lv_time = label1;
+        widgets.time_label = label1;
         let l_state = label::create(scr, ptr::null())?;
         obj::set_width(l_state, 50);
         obj::set_height(l_state, 80);
@@ -94,7 +94,7 @@ mod screen_time {
         label::set_recolor(l_state, true);
         label::set_align(l_state, label::LV_LABEL_ALIGN_LEFT);
         obj::align(l_state, scr, obj::LV_ALIGN_IN_TOP_LEFT, 0, 0);
-        widgets.lv_ble = l_state;
+        widgets.ble_label = l_state;
         let l_power = label::create(scr, ptr::null())?;
         obj::set_width(l_power, 80);
         obj::set_height(l_power, 20);
@@ -102,14 +102,14 @@ mod screen_time {
         label::set_recolor(l_power, true);
         label::set_align(l_power, label::LV_LABEL_ALIGN_RIGHT);
         obj::align(l_power, scr, obj::LV_ALIGN_IN_TOP_RIGHT, 0, 0);
-        widgets.lv_power = l_power;
+        widgets.power_label = l_power;
         let label_date = label::create(scr, ptr::null())?;
         label::set_long_mode(label_date, label::LV_LABEL_LONG_BREAK);
         obj::set_width(label_date, 200);
         obj::set_height(label_date, 200);
         label::set_align(label_date, label::LV_LABEL_ALIGN_CENTER);
         obj::align(label_date, scr, obj::LV_ALIGN_CENTER, 0, 40);
-        widgets.lv_date = label_date;
+        widgets.date_label = label_date;
         obj::set_click(scr, true);
         obj::set_event_cb(scr, screen_time_pressed);
         obj::set_event_cb(label1, screen_time_pressed);
@@ -127,7 +127,7 @@ mod screen_time {
     fn set_bt_label(widgets: &WatchFaceWidgets, state: &WatchFaceState)
      -> LvglResult<()> {
         if state.ble_state == BLEMAN_BLE_STATE_DISCONNECTED {
-            label::set_text(widgets.lv_ble, &Strn::new(b"\x00"));
+            label::set_text(widgets.ble_label, &Strn::new(b"\x00"));
         } else {
             let color = state2color[state.ble_state];
             let mut status = heapless::String::<heapless::consts::U16>::new();
@@ -140,7 +140,7 @@ mod screen_time {
                                                                         [::core::fmt::ArgumentV1::new(arg0,
                                                                                                       ::core::fmt::Display::fmt)],
                                                                     })).expect("bt fail");
-            label::set_text(widgets.lv_ble, &Strn::new(status.as_bytes()));
+            label::set_text(widgets.ble_label, &Strn::new(status.as_bytes()));
         }
         Ok(())
     }
@@ -177,8 +177,8 @@ mod screen_time {
                                                                      ::core::fmt::ArgumentV1::new(arg3,
                                                                                                   ::core::fmt::Display::fmt)],
                                                                 })).expect("batt fail");
-        label::set_text(widgets.lv_power, &Strn::new(status.as_bytes()));
-        obj::align(widgets.lv_power, widgets.screen,
+        label::set_text(widgets.power_label, &Strn::new(status.as_bytes()));
+        obj::align(widgets.power_label, widgets.screen,
                    obj::LV_ALIGN_IN_TOP_RIGHT, 0, 0);
         Ok(())
     }
@@ -226,7 +226,7 @@ mod screen_time {
                                                                                                                                                ::core::fmt::rt::v1::Count::Implied,
                                                                                                                                            width:
                                                                                                                                                ::core::fmt::rt::v1::Count::Is(2usize),},}])).expect("time fail");
-        label::set_text(widgets.lv_time, &Strn::new(time.as_bytes()));
+        label::set_text(widgets.time_label, &Strn::new(time.as_bytes()));
         let mut date = heapless::String::<heapless::consts::U15>::new();
         (&mut date).write_fmt(::core::fmt::Arguments::new_v1(&["", " ", " ",
                                                                "\n\u{0}"],
@@ -243,7 +243,7 @@ mod screen_time {
                                                                    ::core::fmt::ArgumentV1::new(arg2,
                                                                                                 ::core::fmt::Display::fmt)],
                                                               })).expect("date fail");
-        label::set_text(widgets.lv_date, &Strn::new(date.as_bytes()));
+        label::set_text(widgets.date_label, &Strn::new(date.as_bytes()));
         Ok(())
     }
     /// Create the Time Screen, populated with widgets. Called by home_time_draw() in screen_time.c.
@@ -254,19 +254,19 @@ mod screen_time {
             obj::create(ptr::null_mut(),
                         ptr::null()).expect("create screen obj fail");
         (*widget).screen = screen;
-        let mut subwidgets = &widget.subwidgets;
+        let mut subwidgets = &(*widget).subwidgets;
         subwidgets.screen = screen;
         create_screen(subwidgets).expect("create_screen fail");
-        let state = &widget.state;
+        let state = &(*widget).state;
         update_screen(subwidgets, state).expect("update_screen fail");
         screen
     }
     /// Populate the Time Screen with the current status. Called by home_time_update_screen() in screen_time.c and by screen_time_create() above.
     #[no_mangle]
-    extern "C" fn screen_time_update_screen(widget: *const widget_t) -> i32 {
-        let htwidget = from_widget(widget);
-        let subwidgets = &htwidget.subwidgets;
-        let state = &htwidget.state;
+    extern "C" fn screen_time_update_screen(widget0: *const widget_t) -> i32 {
+        let widget: *const home_time_widget_t = from_widget(widget0);
+        let subwidgets = &(*widget).subwidgets;
+        let state = &(*widget).state;
         update_screen(subwidgets, state).expect("update_screen fail");
         0
     }
@@ -292,10 +292,10 @@ mod screen_time {
     #[repr(C)]
     struct WatchFaceWidgets {
         screen: *mut obj::lv_obj_t,
-        lv_time: *mut obj::lv_obj_t,
-        lv_date: *mut obj::lv_obj_t,
-        lv_ble: *mut obj::lv_obj_t,
-        lv_power: *mut obj::lv_obj_t,
+        time_label: *mut obj::lv_obj_t,
+        date_label: *mut obj::lv_obj_t,
+        ble_label: *mut obj::lv_obj_t,
+        power_label: *mut obj::lv_obj_t,
     }
     struct widget_t {
     }
