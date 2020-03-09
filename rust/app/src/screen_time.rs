@@ -99,6 +99,16 @@ struct control_event_handler_t {}
 struct controller_time_spec_t {}
 
 /* TODO
+static int _screen_time_update_screen(widget_t *widget)
+{
+    home_time_widget_t *ht = _from_widget(widget);
+
+    _home_time_set_time_label(ht);
+    _home_time_set_bt_label(ht);
+    _home_time_set_power_label(ht);
+    return 0;
+}
+
 static void _home_time_set_bt_label(home_time_widget_t *htwidget)
 {
 
@@ -153,16 +163,6 @@ static int _home_time_set_time_label(home_time_widget_t *ht)
         return -1;
     }
     lv_label_set_text(ht->lv_date, date);
-    return 0;
-}
-
-static int _screen_time_update_screen(widget_t *widget)
-{
-    home_time_widget_t *ht = _from_widget(widget);
-
-    _home_time_set_time_label(ht);
-    _home_time_set_bt_label(ht);
-    _home_time_set_power_label(ht);
     return 0;
 }
 */
