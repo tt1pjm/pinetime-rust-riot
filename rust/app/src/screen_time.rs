@@ -1,4 +1,4 @@
-//! Watch Face in Rust
+//! Watch Face in Rust, LittlevGL and RIOT OS for PineTime Smart Watch
 use core::{
     fmt::Write,
     ptr,
@@ -16,9 +16,6 @@ use lvgl::{
 use lvgl_macros::{
     strn,
 };
-
-/// Style for the Time Label
-static mut STYLE_TIME: obj::lv_style_t = fill_zero!(obj::lv_style_t);
 
 /// Create the Time Screen, populated with widgets. Called by screen_time_create() below.
 fn create_screen(widgets: &mut WatchFaceWidgets) -> LvglResult<()> {
@@ -209,6 +206,9 @@ extern "C" fn screen_time_update_screen(widget0: *const widget_t) -> i32 {
         .expect("update_screen fail");
     0  //  Return OK
 }
+
+/// Style for the Time Label
+static mut STYLE_TIME: obj::lv_style_t = fill_zero!(obj::lv_style_t);
 
 /// LVGL Widget for Watch Face. TODO: Sync with widgets/home_time/include/home_time.h
 #[repr(C)]
