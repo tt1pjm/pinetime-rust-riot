@@ -18,7 +18,7 @@ use lvgl_macros::{
 };
 
 /// Style for the Time Label
-static mut style_time: obj::lv_style_t = fill_zero!(obj::lv_style_t);
+static mut STYLE_TIME: obj::lv_style_t = fill_zero!(obj::lv_style_t);
 
 /// Create the Time Screen, populated with widgets. Called by screen_time_create() below.
 fn create_screen(widgets: &mut WatchFaceWidgets) -> LvglResult<()> {
@@ -26,47 +26,47 @@ fn create_screen(widgets: &mut WatchFaceWidgets) -> LvglResult<()> {
     assert!(!scr.is_null(), "null screen");
 
     //  Create a label for time (00:00)
-    let label1 = label::create(scr, ptr::null()) ? ;
-    label::set_long_mode(label1, label::LV_LABEL_LONG_BREAK);
-    label::set_text(label1, strn!("00:00"));  //  strn creates a null-terminated string
-    obj::set_width(label1, 240);
-    obj::set_height(label1, 200);
-    label::set_align(label1, label::LV_LABEL_ALIGN_CENTER);
-    obj::align(label1, scr, obj::LV_ALIGN_CENTER, 0, -30);
-    label::set_style(label1, label::LV_LABEL_STYLE_MAIN, unsafe { &style_time });
+    let label1 = label::create(scr, ptr::null()) ? ;  //  `?` will terminate the function in case of error
+    label::set_long_mode(label1, label::LV_LABEL_LONG_BREAK) ? ;
+    label::set_text(label1, strn!("00:00")) ? ;  //  strn creates a null-terminated string
+    obj::set_width(label1, 240) ? ;
+    obj::set_height(label1, 200) ? ;
+    label::set_align(label1, label::LV_LABEL_ALIGN_CENTER) ? ;
+    obj::align(label1, scr, obj::LV_ALIGN_CENTER, 0, -30) ? ;
+    label::set_style(label1, label::LV_LABEL_STYLE_MAIN, unsafe { &STYLE_TIME }) ? ;
     widgets.time_label = label1;
 
     //  Create a label for Bluetooth state
     let l_state = label::create(scr, ptr::null()) ? ;
-    obj::set_width(l_state, 50);
-    obj::set_height(l_state, 80);
-    label::set_text(l_state, strn!(""));  //  strn creates a null-terminated string
-    label::set_recolor(l_state, true);
-    label::set_align(l_state, label::LV_LABEL_ALIGN_LEFT);
-    obj::align(l_state, scr, obj::LV_ALIGN_IN_TOP_LEFT, 0, 0);
+    obj::set_width(l_state, 50) ? ;
+    obj::set_height(l_state, 80) ? ;
+    label::set_text(l_state, strn!("")) ? ;  //  strn creates a null-terminated string
+    label::set_recolor(l_state, true) ? ;
+    label::set_align(l_state, label::LV_LABEL_ALIGN_LEFT) ? ;
+    obj::align(l_state, scr, obj::LV_ALIGN_IN_TOP_LEFT, 0, 0) ? ;
     widgets.ble_label = l_state;
 
     //  Create a label for Power indicator
     let l_power = label::create(scr, ptr::null()) ? ;
-    obj::set_width(l_power, 80);
-    obj::set_height(l_power, 20);
-    label::set_text(l_power, strn!(""));  //  strn creates a null-terminated string
-    label::set_recolor(l_power, true);
-    label::set_align(l_power, label::LV_LABEL_ALIGN_RIGHT);
-    obj::align(l_power, scr, obj::LV_ALIGN_IN_TOP_RIGHT, 0, 0);
+    obj::set_width(l_power, 80) ? ;
+    obj::set_height(l_power, 20) ? ;
+    label::set_text(l_power, strn!("")) ? ;  //  strn creates a null-terminated string
+    label::set_recolor(l_power, true) ? ;
+    label::set_align(l_power, label::LV_LABEL_ALIGN_RIGHT) ? ;
+    obj::align(l_power, scr, obj::LV_ALIGN_IN_TOP_RIGHT, 0, 0) ? ;
     widgets.power_label = l_power;
 
     //  Create a label for Date
     let label_date = label::create(scr, ptr::null()) ? ;
-    label::set_long_mode(label_date, label::LV_LABEL_LONG_BREAK);
-    obj::set_width(label_date, 200);
-    obj::set_height(label_date, 200);
-    label::set_align(label_date, label::LV_LABEL_ALIGN_CENTER);
-    obj::align(label_date, scr, obj::LV_ALIGN_CENTER, 0, 40);
+    label::set_long_mode(label_date, label::LV_LABEL_LONG_BREAK) ? ;
+    obj::set_width(label_date, 200) ? ;
+    obj::set_height(label_date, 200) ? ;
+    label::set_align(label_date, label::LV_LABEL_ALIGN_CENTER) ? ;
+    obj::align(label_date, scr, obj::LV_ALIGN_CENTER, 0, 40) ? ;
     widgets.date_label = label_date;
 
     //  Allow touch events
-    obj::set_click(scr, true);
+    obj::set_click(scr, true) ? ;
     Ok(())
 }
 
@@ -81,7 +81,7 @@ fn update_screen(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResu
 /// Populate the Bluetooth Label with the Bluetooth status. Called by screen_time_update_screen() above.
 fn set_bt_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
     if state.ble_state == BleState::BLEMAN_BLE_STATE_DISCONNECTED {
-        label::set_text(widgets.ble_label, strn!(""));
+        label::set_text(widgets.ble_label, strn!("")) ? ;
     } else {
         //  Get the color of the Bluetooth icon
         let color = 
@@ -99,7 +99,7 @@ fn set_bt_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResul
                 "{} \u{F293}#\0",  //  LV_SYMBOL_BLUETOOTH. Must terminate Rust strings with null.
                 color)
                 .expect("bt fail");
-            label::set_text(widgets.ble_label, &Strn::new(BLUETOOTH_STATUS.as_bytes()));  //  TODO: Simplify    
+            label::set_text(widgets.ble_label, &Strn::new(BLUETOOTH_STATUS.as_bytes())) ? ;  //  TODO: Simplify    
         }
     }
     Ok(())
@@ -129,9 +129,9 @@ fn set_power_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRe
             symbol,
             state.millivolts)
             .expect("batt fail");
-        label::set_text(widgets.power_label, &Strn::new(BATTERY_STATUS.as_bytes()));  //  TODO: Simplify    
+        label::set_text(widgets.power_label, &Strn::new(BATTERY_STATUS.as_bytes())) ? ;  //  TODO: Simplify    
     }
-    obj::align(widgets.power_label, widgets.screen, obj::LV_ALIGN_IN_TOP_RIGHT, 0, 0);
+    obj::align(widgets.power_label, widgets.screen, obj::LV_ALIGN_IN_TOP_RIGHT, 0, 0) ? ;
     Ok(())
 }
 
@@ -145,7 +145,7 @@ fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRes
             state.time.hour,
             state.time.minute)
             .expect("time fail");
-        label::set_text(widgets.time_label, &Strn::new(TIME_BUF.as_bytes()));  //  TODO: Simplify
+        label::set_text(widgets.time_label, &Strn::new(TIME_BUF.as_bytes())) ? ;  //  TODO: Simplify
     }
 
     //  Get the short month name
@@ -163,7 +163,7 @@ fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRes
             month_str,
             state.time.year)
         .expect("date fail");
-        label::set_text(widgets.date_label, &Strn::new(DATE_BUF.as_bytes()));  //  TODO: Simplify
+        label::set_text(widgets.date_label, &Strn::new(DATE_BUF.as_bytes())) ? ;  //  TODO: Simplify
     }
     Ok(())
 }
@@ -185,7 +185,8 @@ extern "C" fn screen_time_create(widget: *mut home_time_widget_t) -> *mut obj::l
         .expect("create_screen fail");
 
     //  Set touch callbacks on the screen and the time label
-    obj::set_event_cb(screen, Some(screen_time_pressed));  //  TODO: Create Rust binding for screen_time_pressed() from screen_time.c
+    obj::set_event_cb(screen, Some(screen_time_pressed))  //  TODO: Create Rust binding for screen_time_pressed() from screen_time.c
+        .expect("screen cb fail");
     //  obj::set_event_cb(label1, Some(screen_time_pressed));  //  TODO: Is this needed?
     
     //  Update the screen
@@ -244,6 +245,7 @@ struct WatchFaceWidgets {
 #[repr(i32)]  //  TODO: Check size
 #[derive(PartialEq)]
 #[allow(non_camel_case_types)]
+#[allow(dead_code)]
 enum BleState {  //  bleman_ble_state_t
     BLEMAN_BLE_STATE_INACTIVE = 0,
     BLEMAN_BLE_STATE_ADVERTISING = 1,
@@ -277,10 +279,14 @@ extern {
 }
 
 //  TODO: Sync with widgets/home_time/include/home_time.h
+#[repr(C)]
 #[allow(non_camel_case_types)]
-struct widget_t {}  //  TODO: Should not be exposed to Rust
+struct widget_t { _notused: bool }  //  TODO: Should not be exposed to Rust
+
+//  TODO: Sync with widgets/home_time/include/home_time.h
+#[repr(C)]
 #[allow(non_camel_case_types)]
-struct control_event_handler_t {}  //  TODO: Should not be exposed to Rust
+struct control_event_handler_t { _notused: bool }  //  TODO: Should not be exposed to Rust
 
 /* Stack Trace for screen_time_create:
 #0  screen_time_create (ht=ht@entry=0x200008dc <home_time_widget>) at /Users/Luppy/PineTime/PineTime-apps/widgets/home_time/screen_time.c:68
