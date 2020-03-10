@@ -75,7 +75,7 @@ mod screen_time {
                                                           ::core::mem::size_of::<obj::lv_style_t>()])
         };
     /// Create the Time Screen, populated with widgets. Called by screen_time_create() below.
-    fn create_screen(widgets: &WatchFaceWidgets) -> LvglResult<()> {
+    fn create_screen(widgets: &mut WatchFaceWidgets) -> LvglResult<()> {
         let scr = widgets.screen;
         if !!scr.is_null() { ::core::panicking::panic("null screen") };
         let label1 = label::create(scr, ptr::null())?;

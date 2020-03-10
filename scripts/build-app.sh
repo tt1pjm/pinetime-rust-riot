@@ -93,10 +93,10 @@ do
 done
 
 #  Expand Rust macros for troubleshooting: logs/liblvgl-expanded.rs and libapp-expanded.rs
-set +e  # Ignore errors
-pushd rust/lvgl ; cargo rustc $rust_build_options -- -Z unstable-options --pretty expanded > ../../logs/liblvgl-expanded.rs ; popd
-pushd rust/app  ; cargo rustc $rust_build_options -- -Z unstable-options --pretty expanded > ../../logs/libapp-expanded.rs  ; popd
-set -e  # Stop on errors
+# set +e  # Ignore errors
+# pushd rust/lvgl ; cargo rustc $rust_build_options -- -Z unstable-options --pretty expanded > ../../logs/liblvgl-expanded.rs ; popd
+# pushd rust/app  ; cargo rustc $rust_build_options -- -Z unstable-options --pretty expanded > ../../logs/libapp-expanded.rs  ; popd
+# set -e  # Stop on errors
 
 #  Build the Rust app in "src" folder.
 echo ; echo "----- Build Rust app" 

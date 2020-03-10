@@ -21,7 +21,7 @@ use lvgl_macros::{
 static mut style_time: obj::lv_style_t = fill_zero!(obj::lv_style_t);
 
 /// Create the Time Screen, populated with widgets. Called by screen_time_create() below.
-fn create_screen(widgets: &WatchFaceWidgets) -> LvglResult<()> {
+fn create_screen(widgets: &mut WatchFaceWidgets) -> LvglResult<()> {
     let scr = widgets.screen;
     assert!(!scr.is_null(), "null screen");
 
@@ -83,12 +83,13 @@ fn set_bt_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResul
     if state.ble_state == BleState::BLEMAN_BLE_STATE_DISCONNECTED {
         label::set_text(widgets.ble_label, strn!(""));
     } else {
+        //  Get the color of the Bluetooth icon
         let color = 
-            match state.ble_state {
-                BLEMAN_BLE_STATE_INACTIVE => "#000000",     //  Black
-                BLEMAN_BLE_STATE_DISCONNECTED => "#f2495c", //  GUI_COLOR_LBL_BASIC_RED
-                BLEMAN_BLE_STATE_ADVERTISING => "#5794f2",  //  GUI_COLOR_LBL_BASIC_BLUE
-                BLEMAN_BLE_STATE_CONNECTED => "#37872d",    //  GUI_COLOR_LBL_DARK_GREEN
+            match &state.ble_state {
+                BleState::BLEMAN_BLE_STATE_INACTIVE     => "#000000",  //  Black
+                BleState::BLEMAN_BLE_STATE_DISCONNECTED => "#f2495c",  //  GUI_COLOR_LBL_BASIC_RED
+                BleState::BLEMAN_BLE_STATE_ADVERTISING  => "#5794f2",  //  GUI_COLOR_LBL_BASIC_BLUE
+                BleState::BLEMAN_BLE_STATE_CONNECTED    => "#37872d",  //  GUI_COLOR_LBL_DARK_GREEN
             };
         //  Create a string buffer with max size 16 and format the Bluetooth status
         let mut status = heapless::String::<heapless::consts::U16>::new();
@@ -133,8 +134,8 @@ fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRes
     //  Create a string buffer with max size 6 and format the time
     let mut time = heapless::String::<heapless::consts::U6>::new();
     write!(&mut time, "{:02}:{:02}\0",  //  Must terminate Rust strings with null
-        state.time.hour,    //  TODO: Use C accessor function
-        state.time.minute)  //  TODO: Use C accessor function
+        state.time.hour,
+        state.time.minute)
         .expect("time fail");
     label::set_text(widgets.time_label, &Strn::new(time.as_bytes()));  //  TODO: Simplify
 
@@ -146,9 +147,9 @@ fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRes
     //  Create a string buffer with max size 15 and format the date
     let mut date = heapless::String::<heapless::consts::U15>::new();
     write!(&mut date, "{} {} {}\n\0",  //  Must terminate Rust strings with null
-        state.time.dayofmonth,  //  TODO: Use C accessor function
+        state.time.dayofmonth,
         month_str,
-        state.time.year)        //  TODO: Use C accessor function
+        state.time.year)
         .expect("date fail");
     label::set_text(widgets.date_label, &Strn::new(date.as_bytes()));  //  TODO: Simplify
     Ok(())
@@ -156,14 +157,14 @@ fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRes
 
 /// Create the Time Screen, populated with widgets. Called by home_time_draw() in screen_time.c.
 #[no_mangle]  //  Don't mangle the function name
-extern "C" fn screen_time_create(widget: *const home_time_widget_t) -> *mut obj::lv_obj_t {  //  Declare extern "C" because it will be called by RIOT OS firmware
+extern "C" fn screen_time_create(widget: *mut home_time_widget_t) -> *mut obj::lv_obj_t {  //  Declare extern "C" because it will be called by RIOT OS firmware
     //  Create the screen object and update the screen widget
     let screen = obj::create(ptr::null_mut(), ptr::null())
         .expect("create screen obj fail");
     (*widget).screen = screen;
 
     //  Populate the widgets in the screen
-    let mut subwidgets = &(*widget).subwidgets;
+    let mut subwidgets = &mut (*widget).subwidgets;
     subwidgets.screen = screen;
     create_screen(subwidgets)
         .expect("create_screen fail");
