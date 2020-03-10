@@ -33,7 +33,7 @@ fn create_screen(widgets: &mut WatchFaceWidgets) -> LvglResult<()> {
     obj::set_height(label1, 200);
     label::set_align(label1, label::LV_LABEL_ALIGN_CENTER);
     obj::align(label1, scr, obj::LV_ALIGN_CENTER, 0, -30);
-    label::set_style(label1, label::LV_LABEL_STYLE_MAIN, &style_time);
+    label::set_style(label1, label::LV_LABEL_STYLE_MAIN, unsafe { &style_time });
     widgets.time_label = label1;
 
     //  Create a label for Bluetooth state
@@ -91,20 +91,23 @@ fn set_bt_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResul
                 BleState::BLEMAN_BLE_STATE_ADVERTISING  => "#5794f2",  //  GUI_COLOR_LBL_BASIC_BLUE
                 BleState::BLEMAN_BLE_STATE_CONNECTED    => "#37872d",  //  GUI_COLOR_LBL_DARK_GREEN
             };
-        //  Create a string buffer with max size 16 and format the Bluetooth status
-        let mut status = heapless::String::<heapless::consts::U16>::new();
-        write!(&mut status, 
-            "{} \u{F293}#\0",  //  LV_SYMBOL_BLUETOOTH. Must terminate Rust strings with null.
-            color)
-            .expect("bt fail");
-        label::set_text(widgets.ble_label, &Strn::new(status.as_bytes()));  //  TODO: Simplify
+        //  Create a string buffer with max size 16 to format the Bluetooth status
+        static mut BLUETOOTH_STATUS: heapless::String::<heapless::consts::U16> = heapless::String(heapless::i::String::new());
+        //  Format the Bluetooth status and set the label
+        unsafe {
+            write!(&mut BLUETOOTH_STATUS, 
+                "{} \u{F293}#\0",  //  LV_SYMBOL_BLUETOOTH. Must terminate Rust strings with null.
+                color)
+                .expect("bt fail");
+            label::set_text(widgets.ble_label, &Strn::new(BLUETOOTH_STATUS.as_bytes()));  //  TODO: Simplify    
+        }
     }
     Ok(())
 }
 
 /// Populate the Power Label with the battery status. Called by screen_time_update_screen() above.
 fn set_power_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
-    let percentage = hal_battery_get_percentage(state.millivolts);
+    let percentage = unsafe { hal_battery_get_percentage(state.millivolts) };
     let color =   //  Charging color
         if percentage <= 20  //  battery_low 
             { "#f2495c" }    //  battery_low_color
@@ -116,42 +119,52 @@ fn set_power_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRe
         if state.powered { "\u{F0E7}" }  //  LV_SYMBOL_CHARGE
         else { " " };
     //  Create a string buffer with max size 16 and format the battery status
-    let mut status = heapless::String::<heapless::consts::U16>::new();
-    write!(&mut status, 
-        "{} {}%{}#\n({}mV)\0",  //  Must terminate Rust strings with null
-        color,
-        percentage,
-        symbol,
-        state.millivolts)
-        .expect("batt fail");
-    label::set_text(widgets.power_label, &Strn::new(status.as_bytes()));  //  TODO: Simplify
+    static mut BATTERY_STATUS: heapless::String::<heapless::consts::U16> = heapless::String(heapless::i::String::new());
+    //  Format the battery status and set the label
+    unsafe {
+        write!(&mut BATTERY_STATUS, 
+            "{} {}%{}#\n({}mV)\0",  //  Must terminate Rust strings with null
+            color,
+            percentage,
+            symbol,
+            state.millivolts)
+            .expect("batt fail");
+        label::set_text(widgets.power_label, &Strn::new(BATTERY_STATUS.as_bytes()));  //  TODO: Simplify    
+    }
     obj::align(widgets.power_label, widgets.screen, obj::LV_ALIGN_IN_TOP_RIGHT, 0, 0);
     Ok(())
 }
 
 /// Populate the Time and Date Labels with the time and date. Called by screen_time_update_screen() above.
 fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
-    //  Create a string buffer with max size 6 and format the time
-    let mut time = heapless::String::<heapless::consts::U6>::new();
-    write!(&mut time, "{:02}:{:02}\0",  //  Must terminate Rust strings with null
-        state.time.hour,
-        state.time.minute)
-        .expect("time fail");
-    label::set_text(widgets.time_label, &Strn::new(time.as_bytes()));  //  TODO: Simplify
+    //  Create a string buffer with max size 6 to format the time
+    static mut TIME_BUF: heapless::String::<heapless::consts::U6> = heapless::String(heapless::i::String::new());
+    //  Format the time and set the label
+    unsafe {
+        write!(&mut TIME_BUF, "{:02}:{:02}\0",  //  Must terminate Rust strings with null
+            state.time.hour,
+            state.time.minute)
+            .expect("time fail");
+        label::set_text(widgets.time_label, &Strn::new(TIME_BUF.as_bytes()));  //  TODO: Simplify
+    }
 
     //  Get the short month name
-    let month_cstr = controller_time_month_get_short_name(&state.time);  //  Returns null-terminated C string
-    let month_str = cstr_core::CStr::from_ptr(month_cstr).to_str()       //  Convert C string to Rust string
+    let month_cstr = unsafe { controller_time_month_get_short_name(&state.time) };  //  Returns null-terminated C string
+    assert!(month_cstr.is_null(), "month null");
+    let month_str = unsafe { cstr_core::CStr::from_ptr(month_cstr).to_str() }       //  Convert C string to Rust string
         .expect("month fail");
 
-    //  Create a string buffer with max size 15 and format the date
-    let mut date = heapless::String::<heapless::consts::U15>::new();
-    write!(&mut date, "{} {} {}\n\0",  //  Must terminate Rust strings with null
-        state.time.dayofmonth,
-        month_str,
-        state.time.year)
+    //  Create a string buffer with max size 15 to format the date
+    static mut DATE_BUF: heapless::String::<heapless::consts::U15> = heapless::String(heapless::i::String::new());
+    //  Format the date and set the label
+    unsafe {
+        write!(&mut DATE_BUF, "{} {} {}\n\0",  //  Must terminate Rust strings with null
+            state.time.dayofmonth,
+            month_str,
+            state.time.year)
         .expect("date fail");
-    label::set_text(widgets.date_label, &Strn::new(date.as_bytes()));  //  TODO: Simplify
+        label::set_text(widgets.date_label, &Strn::new(DATE_BUF.as_bytes()));  //  TODO: Simplify
+    }
     Ok(())
 }
 
@@ -159,12 +172,14 @@ fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRes
 #[no_mangle]  //  Don't mangle the function name
 extern "C" fn screen_time_create(widget: *mut home_time_widget_t) -> *mut obj::lv_obj_t {  //  Declare extern "C" because it will be called by RIOT OS firmware
     //  Create the screen object and update the screen widget
+    assert!(widget.is_null(), "widget null");
     let screen = obj::create(ptr::null_mut(), ptr::null())
         .expect("create screen obj fail");
-    (*widget).screen = screen;
+    assert!(screen.is_null(), "create screen null");
+    unsafe { (*widget).screen = screen };
 
     //  Populate the widgets in the screen
-    let mut subwidgets = &mut (*widget).subwidgets;
+    let mut subwidgets = unsafe { &mut (*widget).subwidgets };
     subwidgets.screen = screen;
     create_screen(subwidgets)
         .expect("create_screen fail");
@@ -174,7 +189,7 @@ extern "C" fn screen_time_create(widget: *mut home_time_widget_t) -> *mut obj::l
     //  obj::set_event_cb(label1, Some(screen_time_pressed));  //  TODO: Is this needed?
     
     //  Update the screen
-    let state = &(*widget).state;
+    let state = unsafe { &(*widget).state };
     update_screen(subwidgets, state)
         .expect("update_screen fail");
     screen  //  Return the screen
@@ -183,9 +198,12 @@ extern "C" fn screen_time_create(widget: *mut home_time_widget_t) -> *mut obj::l
 /// Populate the Time Screen with the current status. Called by home_time_update_screen() in screen_time.c and by screen_time_create() above.
 #[no_mangle]  //  Don't mangle the function name
 extern "C" fn screen_time_update_screen(widget0: *const widget_t) -> i32 {
-    let widget: *const home_time_widget_t = from_widget(widget0);  //  TODO: Create Rust binding for from_widget() from screen_time.c
-    let subwidgets = &(*widget).subwidgets;
-    let state = &(*widget).state;
+    assert!(widget0.is_null(), "widget0 null");
+    let widget: *const home_time_widget_t = unsafe { from_widget(widget0) };  //  TODO: Create Rust binding for from_widget() from screen_time.c
+    assert!(widget.is_null(), "widget null");
+
+    let subwidgets = unsafe { &(*widget).subwidgets };
+    let state = unsafe { &(*widget).state };
     update_screen(subwidgets, state)
         .expect("update_screen fail");
     0  //  Return OK
