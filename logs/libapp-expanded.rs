@@ -231,11 +231,14 @@ mod screen_time {
                                                                                                                                            width:
                                                                                                                                                ::core::fmt::rt::v1::Count::Is(2usize),},}])).expect("time fail");
         label::set_text(widgets.time_label, &Strn::new(time.as_bytes()));
+        let month_cstr = controller_time_month_get_short_name(&state.time);
+        let month_str =
+            cstr_core::CStr::from_ptr(month_cstr).to_str().expect("month fail");
         let mut date = heapless::String::<heapless::consts::U15>::new();
         (&mut date).write_fmt(::core::fmt::Arguments::new_v1(&["", " ", " ",
                                                                "\n\u{0}"],
                                                              &match (&state.time.dayofmonth,
-                                                                     &controller_time_month_get_short_name(&state.time),
+                                                                     &month_str,
                                                                      &state.time.year)
                                                                   {
                                                                   (arg0, arg1,

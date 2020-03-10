@@ -138,11 +138,16 @@ fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRes
         .expect("time fail");
     label::set_text(widgets.time_label, &Strn::new(time.as_bytes()));  //  TODO: Simplify
 
+    //  Get the short month name
+    let month_cstr = controller_time_month_get_short_name(&state.time);  //  Returns null-terminated C string
+    let month_str = cstr_core::CStr::from_ptr(month_cstr).to_str()       //  Convert C string to Rust string
+        .expect("month fail");
+
     //  Create a string buffer with max size 15 and format the date
     let mut date = heapless::String::<heapless::consts::U15>::new();
     write!(&mut date, "{} {} {}\n\0",  //  Must terminate Rust strings with null
         state.time.dayofmonth,  //  TODO: Use C accessor function
-        controller_time_month_get_short_name(&state.time),
+        month_str,
         state.time.year)        //  TODO: Use C accessor function
         .expect("date fail");
     label::set_text(widgets.date_label, &Strn::new(date.as_bytes()));  //  TODO: Simplify
