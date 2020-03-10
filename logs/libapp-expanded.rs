@@ -111,8 +111,6 @@ mod screen_time {
         obj::align(label_date, scr, obj::LV_ALIGN_CENTER, 0, 40);
         widgets.date_label = label_date;
         obj::set_click(scr, true);
-        obj::set_event_cb(scr, screen_time_pressed);
-        obj::set_event_cb(label1, screen_time_pressed);
         Ok(())
     }
     /// Populate the screen with the current state. Called by screen_time_update_screen() below.
@@ -263,6 +261,7 @@ mod screen_time {
         let mut subwidgets = &(*widget).subwidgets;
         subwidgets.screen = screen;
         create_screen(subwidgets).expect("create_screen fail");
+        obj::set_event_cb(screen, Some(screen_time_pressed));
         let state = &(*widget).state;
         update_screen(subwidgets, state).expect("update_screen fail");
         screen
@@ -344,7 +343,23 @@ mod screen_time {
         second: u8,
         fracs: u8,
     }
+    /// Import C APIs
+    extern {
+        fn hal_battery_get_percentage(voltage: u32)
+        -> i32;
+        fn controller_time_month_get_short_name(time:
+                                                    *const controller_time_spec_t)
+        -> *const ::cty::c_char;
+        fn from_widget(widget: *const widget_t)
+        -> *const home_time_widget_t;
+        fn screen_time_pressed(obj: *mut obj::lv_obj_t,
+                               event: obj::lv_event_t);
+    }
+    #[allow(non_camel_case_types)]
     struct widget_t {
+    }
+    #[allow(non_camel_case_types)]
+    struct control_event_handler_t {
     }
 }
 use core::panic::PanicInfo;

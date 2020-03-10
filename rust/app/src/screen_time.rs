@@ -67,10 +67,6 @@ fn create_screen(widgets: &WatchFaceWidgets) -> LvglResult<()> {
 
     //  Allow touch events
     obj::set_click(scr, true);
-
-    //  Set touch callbacks on the screen and the time label
-    obj::set_event_cb(scr, screen_time_pressed);  //  TODO: Create Rust binding for screen_time_pressed() from screen_time.c
-    obj::set_event_cb(label1, screen_time_pressed);
     Ok(())
 }
 
@@ -167,6 +163,10 @@ extern "C" fn screen_time_create(widget: *const home_time_widget_t) -> *mut obj:
     create_screen(subwidgets)
         .expect("create_screen fail");
 
+    //  Set touch callbacks on the screen and the time label
+    obj::set_event_cb(screen, Some(screen_time_pressed));  //  TODO: Create Rust binding for screen_time_pressed() from screen_time.c
+    //  obj::set_event_cb(label1, Some(screen_time_pressed));  //  TODO: Is this needed?
+    
     //  Update the screen
     let state = &(*widget).state;
     update_screen(subwidgets, state)
@@ -240,8 +240,23 @@ struct controller_time_spec_t {
     fracs: u8,
 }
 
+/// Import C APIs
+extern {
+    //  TODO: Sync with modules/hal/include/hal.h
+    fn hal_battery_get_percentage(voltage: u32) -> i32;
+    //  TODO: Sync with modules/controller/include/controller/time.h
+    fn controller_time_month_get_short_name(time: *const controller_time_spec_t) -> *const ::cty::c_char;
+    //  TODO: Sync with widgets/home_time/screen_time.c
+    fn from_widget(widget: *const widget_t) -> *const home_time_widget_t;
+    //  TODO: Sync with widgets/home_time/screen_time.c
+    fn screen_time_pressed(obj: *mut obj::lv_obj_t, event: obj::lv_event_t);
+}
+
 //  TODO: Sync with widgets/home_time/include/home_time.h
+#[allow(non_camel_case_types)]
 struct widget_t {}  //  TODO: Should not be exposed to Rust
+#[allow(non_camel_case_types)]
+struct control_event_handler_t {}  //  TODO: Should not be exposed to Rust
 
 /* Stack Trace for screen_time_create:
 #0  screen_time_create (ht=ht@entry=0x200008dc <home_time_widget>) at /Users/Luppy/PineTime/PineTime-apps/widgets/home_time/screen_time.c:68
