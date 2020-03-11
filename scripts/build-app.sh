@@ -182,11 +182,16 @@ $ar_cmd s $rust_libcore_dest
 #  Run the RIOT OS build, which will link with the Rust app, Rust libraries and libcore.
 #  For verbose build: newt build -v -p $build_app
 echo ; echo "----- Build RIOT OS and link with Rust app" 
-set -x
 build_riot $build_app
 
+#  TODO: Show the firmware size
+set -x
+$HOME/PineTime/mynewt-newt/size_report/size_report \
+    apps/$build_app/bin/*/*.elf \
+    apps/$build_app/bin/*/*.map
+
 #  Copy the disassembly and linker map to the logs folder.
-$objdump_cmd -t -S --demangle --line-numbers --wide program apps/$build_app/bin/*/*.elf >logs/$build_app.S 2>&1
+$objdump_cmd -t -S --demangle --line-numbers --wide apps/$build_app/bin/*/*.elf >logs/$build_app.S 2>&1
 cp apps/$build_app/bin/*/*.map logs
 
 #  Flash the firmware
