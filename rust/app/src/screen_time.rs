@@ -17,8 +17,8 @@ use lvgl_macros::{
     strn,
 };
 
-/// Create the Time Screen, populated with widgets. Called by screen_time_create() below.
-fn create_screen(widgets: &mut WatchFaceWidgets) -> LvglResult<()> {
+/// Create the widgets for the Watch Face. Called by create_watch_face() below.
+fn create_widgets(widgets: &mut WatchFaceWidgets) -> LvglResult<()> {
     let scr = widgets.screen;
     assert!(!scr.is_null(), "null screen");
 
@@ -67,8 +67,8 @@ fn create_screen(widgets: &mut WatchFaceWidgets) -> LvglResult<()> {
     Ok(())
 }
 
-/// Populate the screen with the current state. Called by screen_time_update_screen() below.
-fn update_screen(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
+/// Update the widgets in the Watch Face with the current state. Called by update_watch_face() below.
+fn update_widgets(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
     set_time_label(widgets, state) ? ;
     set_bt_label(widgets, state) ? ;
     set_power_label(widgets, state) ? ;
@@ -147,7 +147,7 @@ fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRes
 
     //  Get the short month name
     let month_cstr = unsafe { controller_time_month_get_short_name(&state.time) };  //  Returns null-terminated C string
-    assert!(month_cstr.is_null(), "month null");
+    assert!(!month_cstr.is_null(), "month null");
     let month_str = unsafe { cstr_core::CStr::from_ptr(month_cstr).to_str() }       //  Convert C string to Rust string
         .expect("month fail");
 
@@ -165,60 +165,26 @@ fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRes
     Ok(())
 }
 
-/// Create the Time Screen, populated with widgets. Called by home_time_draw() in screen_time.c.
+/// Create the Watch Face, populated with widgets. Called by _screen_time_create() in screen_time.c.
 #[no_mangle]  //  Don't mangle the function name
-extern "C" fn screen_time_create(widget: *mut home_time_widget_t) -> *mut obj::lv_obj_t {  //  Declare extern "C" because it will be called by RIOT OS firmware
-    //  Create the screen object and update the screen widget
-    assert!(widget.is_null(), "widget null");
-    let screen = obj::create(ptr::null_mut(), ptr::null())
-        .expect("create screen obj fail");
-    assert!(screen.is_null(), "create screen null");
-    unsafe { (*widget).screen = screen };
-
-    //  Populate the widgets in the screen
-    let mut subwidgets = unsafe { &mut (*widget).subwidgets };
-    subwidgets.screen = screen;
-    create_screen(subwidgets)
+extern "C" fn create_watch_face(widgets: *mut WatchFaceWidgets) -> i32 {  //  Declare extern "C" because it will be called by RIOT OS firmware
+    assert!(!widgets.is_null(), "widgets null");
+    unsafe { create_widgets(&mut *widgets) }
         .expect("create_screen fail");
-
-    //  Set touch callbacks on the screen and the time label
-    obj::set_event_cb(screen, Some(screen_time_pressed))  //  TODO: Create Rust binding for screen_time_pressed() from screen_time.c
-        .expect("screen cb fail");
-    //  obj::set_event_cb(label1, Some(screen_time_pressed));  //  TODO: Is this needed?
-    
-    //  Update the screen
-    let state = unsafe { &(*widget).state };
-    update_screen(subwidgets, state)
-        .expect("update_screen fail");
-    screen  //  Return the screen
+    0  //  Return OK
 }
 
-/// Populate the Time Screen with the current status. Called by home_time_update_screen() in screen_time.c and by screen_time_create() above.
+/// Populate the Watch Face with the current status. Called by _screen_time_update_screen() in screen_time.c.
 #[no_mangle]  //  Don't mangle the function name
-extern "C" fn screen_time_update_screen(widget0: *const widget_t) -> i32 {
-    assert!(widget0.is_null(), "widget0 null");
-    let widget: *const home_time_widget_t = unsafe { from_widget(widget0) };  //  TODO: Create Rust binding for from_widget() from screen_time.c
-    assert!(widget.is_null(), "widget null");
-
-    let subwidgets = unsafe { &(*widget).subwidgets };
-    let state = unsafe { &(*widget).state };
-    update_screen(subwidgets, state)
-        .expect("update_screen fail");
+extern "C" fn update_watch_face(widgets: *const WatchFaceWidgets, state: *const WatchFaceState) -> i32 {
+    assert!(!widgets.is_null(), "widgets null");
+    unsafe { update_widgets(&*widgets, &*state) }
+        .expect("update_widgets fail");
     0  //  Return OK
 }
 
 /// Style for the Time Label
 static mut STYLE_TIME: obj::lv_style_t = fill_zero!(obj::lv_style_t);
-
-/// LVGL Widget for Watch Face. TODO: Sync with widgets/home_time/include/home_time.h
-#[repr(C)]
-struct home_time_widget_t {
-    widget:     widget_t,                 //  TODO: Should not be exposed to Rust
-    handler:    control_event_handler_t,  //  TODO: Should not be exposed to Rust
-    screen:     *mut obj::lv_obj_t,  //  TODO: Shared with WatchFaceWidgets
-    state:      WatchFaceState,      //  TODO: State for the Watch Face, shared between GUI and control
-    subwidgets: WatchFaceWidgets,    //  TODO: Child Widgets for the Watch Face
-}
 
 /// State for the Watch Face, shared between GUI and control. TODO: Sync with widgets/home_time/include/home_time.h
 #[repr(C)]
@@ -242,7 +208,7 @@ struct WatchFaceWidgets {
 }
 
 //  TODO: Sync with modules/bleman/include/bleman.h
-#[repr(i32)]  //  TODO: Check size
+#[repr(u8)]
 #[derive(PartialEq)]
 #[allow(non_camel_case_types)]
 #[allow(dead_code)]
@@ -257,13 +223,13 @@ enum BleState {  //  bleman_ble_state_t
 #[repr(C)]
 #[allow(non_camel_case_types)]
 struct controller_time_spec_t {
-    year: u16,
-    month: u8,
+    year:       u16,
+    month:      u8,
     dayofmonth: u8,
-    hour: u8,
-    minute: u8,
-    second: u8,
-    fracs: u8,
+    hour:       u8,
+    minute:     u8,
+    second:     u8,
+    fracs:      u8,
 }
 
 /// Import C APIs
@@ -272,21 +238,7 @@ extern {
     fn hal_battery_get_percentage(voltage: u32) -> i32;
     //  TODO: Sync with modules/controller/include/controller/time.h
     fn controller_time_month_get_short_name(time: *const controller_time_spec_t) -> *const ::cty::c_char;
-    //  TODO: Sync with widgets/home_time/screen_time.c
-    fn from_widget(widget: *const widget_t) -> *const home_time_widget_t;
-    //  TODO: Sync with widgets/home_time/screen_time.c
-    fn screen_time_pressed(obj: *mut obj::lv_obj_t, event: obj::lv_event_t);
 }
-
-//  TODO: Sync with widgets/home_time/include/home_time.h
-#[repr(C)]
-#[allow(non_camel_case_types)]
-struct widget_t { _notused: bool }  //  TODO: Should not be exposed to Rust
-
-//  TODO: Sync with widgets/home_time/include/home_time.h
-#[repr(C)]
-#[allow(non_camel_case_types)]
-struct control_event_handler_t { _notused: bool }  //  TODO: Should not be exposed to Rust
 
 /* Stack Trace for screen_time_create:
 #0  screen_time_create (ht=ht@entry=0x200008dc <home_time_widget>) at /Users/Luppy/PineTime/PineTime-apps/widgets/home_time/screen_time.c:68

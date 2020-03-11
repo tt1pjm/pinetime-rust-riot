@@ -17,22 +17,32 @@
 extern "C" {
 #endif
 
-typedef struct _home_time_widget {
-    widget_t widget;
-    control_event_handler_t handler;
-    lv_obj_t *screen;
-    lv_obj_t *lv_time;
-    lv_obj_t *lv_date;
-    lv_obj_t *lv_ble;
-    lv_obj_t *lv_power;
-    bleman_ble_state_t ble_state;
-    /* Shared storage between gui and control */
-    controller_time_spec_t time;
-    uint32_t millivolts;
-    bool charging;
-    bool powered;
-} home_time_widget_t;
+/// State for the Watch Face, shared between GUI and control. TODO: Sync with rust/app/src/screen_time.rs
+typedef struct WatchFaceStateStruct {
+    uint8_t                 ble_state;  //  Previously bleman_ble_state_t, now synced with Rust
+    controller_time_spec_t  time;
+    uint32_t                millivolts;
+    bool                    charging;
+    bool                    powered;
+} WatchFaceState;
 
+/// Widgets for the Watch Face, private to Rust. TODO: Sync with rust/app/src/screen_time.rs
+typedef struct WatchFaceWidgetsStruct {
+    lv_obj_t *screen;       //  Shared with home_time_widget_t
+    lv_obj_t *time_label;   //  TODO: Should be private to Rust
+    lv_obj_t *date_label;   //  TODO: Should be private to Rust
+    lv_obj_t *ble_label;    //  TODO: Should be private to Rust
+    lv_obj_t *power_label;  //  TODO: Should be private to Rust
+} WatchFaceWidgets;
+
+/// LVGL Widget for Watch Face
+typedef struct _home_time_widget {
+    widget_t                widget;
+    control_event_handler_t handler;
+    lv_obj_t                *screen;     //  Shared with WatchFaceWidgets
+    WatchFaceState          state;       //  State for the Watch Face, shared between GUI and control
+    WatchFaceWidgets        subwidgets;  //  Child Widgets for the Watch Face
+} home_time_widget_t;
 
 #ifdef __cplusplus
 }

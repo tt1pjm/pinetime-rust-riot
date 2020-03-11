@@ -186,9 +186,9 @@ build_riot $build_app
 #  TODO: Show the firmware size
 set -x
 set +e  # Ignore errors
-$HOME/PineTime/mynewt-newt/size_report/size_report \
-    apps/$build_app/bin/$build_app/*.elf \
-    apps/$build_app/bin/$build_app/*.map
+# $HOME/PineTime/mynewt-newt/size_report/size_report \
+#    apps/$build_app/bin/$build_app/*.elf \
+#    apps/$build_app/bin/$build_app/*.map
 set -e  # Stop on errors
 
 #  Copy the disassembly and linker map to the logs folder.
