@@ -21,26 +21,12 @@
 static const widget_spec_t home_time_spec;
 static lv_style_t style_time;
 
-static int _screen_time_update_screen(widget_t *widget);
-
-/* TODO: make configurable */
-static const unsigned battery_low = 20; /* Battery low percentage */
-static const char *battery_low_color = GUI_COLOR_LBL_BASIC_RED;
-static const char *battery_mid_color = GUI_COLOR_LBL_BASIC_YELLOW;
-static const char *battery_full_color = GUI_COLOR_LBL_BASIC_GREEN;
 /* Widget context */
 home_time_widget_t home_time_widget = {
     .widget = {.spec = &home_time_spec }
 };
 
-static const char *_state2color[] = {
-    [BLEMAN_BLE_STATE_INACTIVE] = "#000000",
-    [BLEMAN_BLE_STATE_DISCONNECTED] = GUI_COLOR_LBL_BASIC_RED,
-    [BLEMAN_BLE_STATE_ADVERTISING] = GUI_COLOR_LBL_BASIC_BLUE,
-    [BLEMAN_BLE_STATE_CONNECTED] = GUI_COLOR_LBL_DARK_GREEN,
-};
-
-static inline home_time_widget_t *_from_widget(widget_t *widget)
+home_time_widget_t *from_widget(widget_t *widget)
 {
     return container_of(widget, home_time_widget_t, widget);
 }
@@ -54,6 +40,7 @@ static inline home_time_widget_t *active_widget(void)
 
 #ifdef RUST
 lv_obj_t *screen_time_create(home_time_widget_t *ht);
+int screen_time_update_screen(widget_t *widget);
 
 //  TODO: Move this
 void screen_time_pressed(lv_obj_t *obj, lv_event_t event)
@@ -70,6 +57,21 @@ void screen_time_pressed(lv_obj_t *obj, lv_event_t event)
 }
 
 #else  //  !RUST
+/* TODO: make configurable */
+static const unsigned battery_low = 20; /* Battery low percentage */
+static const char *battery_low_color = GUI_COLOR_LBL_BASIC_RED;
+static const char *battery_mid_color = GUI_COLOR_LBL_BASIC_YELLOW;
+static const char *battery_full_color = GUI_COLOR_LBL_BASIC_GREEN;
+
+static const char *_state2color[] = {
+    [BLEMAN_BLE_STATE_INACTIVE] = "#000000",
+    [BLEMAN_BLE_STATE_DISCONNECTED] = GUI_COLOR_LBL_BASIC_RED,
+    [BLEMAN_BLE_STATE_ADVERTISING] = GUI_COLOR_LBL_BASIC_BLUE,
+    [BLEMAN_BLE_STATE_CONNECTED] = GUI_COLOR_LBL_DARK_GREEN,
+};
+
+static int _screen_time_update_screen(widget_t *widget);
+
 static void _screen_time_pressed(lv_obj_t *obj, lv_event_t event)
 {
     home_time_widget_t *ht = active_widget();
@@ -134,7 +136,6 @@ lv_obj_t *screen_time_create(home_time_widget_t *ht)
     _screen_time_update_screen(&ht->widget);
     return scr;
 }
-#endif  //  RUST
 
 static void _home_time_set_bt_label(home_time_widget_t *htwidget)
 {
@@ -202,6 +203,7 @@ static int _screen_time_update_screen(widget_t *widget)
     _home_time_set_power_label(ht);
     return 0;
 }
+#endif  //  RUST
 
 static int home_time_update_screen(widget_t *widget)
 {
@@ -209,14 +211,14 @@ static int home_time_update_screen(widget_t *widget)
         return 0;
     }
     LOG_DEBUG("[home_screen]: updating drawing\n");
-    _screen_time_update_screen(widget);
+    screen_time_update_screen(widget);
     widget_release_gui_lock(widget);
     return 1;
 }
 
 int home_time_init(widget_t *widget)
 {
-    home_time_widget_t *htwidget = _from_widget(widget);
+    home_time_widget_t *htwidget = from_widget(widget);
     widget_init_local(widget);
     htwidget->handler.events = CONTROLLER_EVENT_FLAG(CONTROLLER_EVENT_TICK) |
                                CONTROLLER_EVENT_FLAG(CONTROLLER_EVENT_BLUETOOTH);
@@ -231,7 +233,7 @@ int home_time_init(widget_t *widget)
 
 int home_time_launch(widget_t *widget)
 {
-    home_time_widget_t *htwidget = _from_widget(widget);
+    home_time_widget_t *htwidget = from_widget(widget);
     (void)htwidget;
     return 0;
 }
@@ -239,20 +241,20 @@ int home_time_launch(widget_t *widget)
 int home_time_draw(widget_t *widget, lv_obj_t *parent)
 {
     LOG_INFO("drawing time widget\n");
-    home_time_widget_t *htwidget = _from_widget(widget);
+    home_time_widget_t *htwidget = from_widget(widget);
     htwidget->screen = screen_time_create(htwidget);
     return 0;
 }
 
 lv_obj_t *home_time_get_container(widget_t *widget)
 {
-    home_time_widget_t *htwidget = _from_widget(widget);
+    home_time_widget_t *htwidget = from_widget(widget);
     return htwidget->screen;
 }
 
 int home_time_close(widget_t *widget)
 {
-    home_time_widget_t *htwidget = _from_widget(widget);
+    home_time_widget_t *htwidget = from_widget(widget);
     lv_obj_del(htwidget->screen);
     htwidget->screen = NULL;
     return 0;
@@ -267,7 +269,7 @@ static void _update_power_stats(home_time_widget_t *htwidget)
 
 int home_time_event(widget_t *widget, controller_event_t event)
 {
-    home_time_widget_t *htwidget = _from_widget(widget);
+    home_time_widget_t *htwidget = from_widget(widget);
     widget_get_control_lock(widget);
     if (event == CONTROLLER_EVENT_TICK) {
         memcpy(&htwidget->time, controller_time_get_time(controller_get()), sizeof(controller_time_spec_t));
