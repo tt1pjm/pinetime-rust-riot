@@ -18,6 +18,9 @@
 #include "bleman.h"
 #include "fonts/noto_sans_numeric_80.h"
 
+lv_obj_t *screen_time_create(home_time_widget_t *ht);
+int screen_time_update_screen(widget_t *widget);
+
 static const widget_spec_t home_time_spec;
 static lv_style_t style_time;
 
@@ -36,12 +39,100 @@ static inline home_time_widget_t *active_widget(void)
     return &home_time_widget;
 }
 
+static int home_time_update_screen(widget_t *widget)
+{
+    if (widget_get_gui_lock(widget) == 0) {
+        return 0;
+    }
+    LOG_DEBUG("[home_screen]: updating drawing\n");
+    screen_time_update_screen(widget);
+    widget_release_gui_lock(widget);
+    return 1;
+}
+
+int home_time_init(widget_t *widget)
+{
+    home_time_widget_t *htwidget = from_widget(widget);
+    widget_init_local(widget);
+    htwidget->handler.events = CONTROLLER_EVENT_FLAG(CONTROLLER_EVENT_TICK) |
+                               CONTROLLER_EVENT_FLAG(CONTROLLER_EVENT_BLUETOOTH);
+    htwidget->handler.widget = widget;
+
+    lv_style_copy(&style_time, gui_theme_get()->style.label.prim);
+    style_time.text.font = &noto_sans_numeric_80;
+
+    controller_add_control_handler(controller_get(), &htwidget->handler);
+    return 0;
+}
+
+int home_time_launch(widget_t *widget)
+{
+    home_time_widget_t *htwidget = from_widget(widget);
+    (void)htwidget;
+    return 0;
+}
+
+int home_time_draw(widget_t *widget, lv_obj_t *parent)
+{
+    LOG_INFO("drawing time widget\n");
+    home_time_widget_t *htwidget = from_widget(widget);
+    htwidget->screen = screen_time_create(htwidget);
+    return 0;
+}
+
+lv_obj_t *home_time_get_container(widget_t *widget)
+{
+    home_time_widget_t *htwidget = from_widget(widget);
+    return htwidget->screen;
+}
+
+int home_time_close(widget_t *widget)
+{
+    home_time_widget_t *htwidget = from_widget(widget);
+    lv_obj_del(htwidget->screen);
+    htwidget->screen = NULL;
+    return 0;
+}
+
+static void _update_power_stats(home_time_widget_t *htwidget)
+{
+    htwidget->powered = hal_battery_is_powered();
+    htwidget->charging = hal_battery_is_charging();
+    htwidget->millivolts = controller_get_battery_voltage(controller_get());
+}
+
+int home_time_event(widget_t *widget, controller_event_t event)
+{
+    home_time_widget_t *htwidget = from_widget(widget);
+    widget_get_control_lock(widget);
+    if (event == CONTROLLER_EVENT_TICK) {
+        memcpy(&htwidget->time, controller_time_get_time(controller_get()), sizeof(controller_time_spec_t));
+        _update_power_stats(htwidget);
+    }
+#ifdef MODULE_BLEMAN
+    if (event == CONTROLLER_EVENT_BLUETOOTH) {
+        htwidget->ble_state = bleman_get_conn_state(bleman_get(), NULL);
+    }
+#endif
+    widget_release_control_lock(widget);
+    return 0;
+}
+
+static const widget_spec_t home_time_spec = {
+    .name = "time",
+    .init = home_time_init,
+    .launch = home_time_launch,
+    .draw = home_time_draw,
+    .container = home_time_get_container,
+    .close = home_time_close,
+    .event = home_time_event,
+    .update_draw = home_time_update_screen,
+    .gui_event = widget_face_gui_event,
+};
+
 #define RUST
 
 #ifdef RUST
-lv_obj_t *screen_time_create(home_time_widget_t *ht);
-int screen_time_update_screen(widget_t *widget);
-
 //  TODO: Move this
 void screen_time_pressed(lv_obj_t *obj, lv_event_t event)
 {
@@ -204,94 +295,3 @@ static int _screen_time_update_screen(widget_t *widget)
     return 0;
 }
 #endif  //  RUST
-
-static int home_time_update_screen(widget_t *widget)
-{
-    if (widget_get_gui_lock(widget) == 0) {
-        return 0;
-    }
-    LOG_DEBUG("[home_screen]: updating drawing\n");
-    screen_time_update_screen(widget);
-    widget_release_gui_lock(widget);
-    return 1;
-}
-
-int home_time_init(widget_t *widget)
-{
-    home_time_widget_t *htwidget = from_widget(widget);
-    widget_init_local(widget);
-    htwidget->handler.events = CONTROLLER_EVENT_FLAG(CONTROLLER_EVENT_TICK) |
-                               CONTROLLER_EVENT_FLAG(CONTROLLER_EVENT_BLUETOOTH);
-    htwidget->handler.widget = widget;
-
-    lv_style_copy(&style_time, gui_theme_get()->style.label.prim);
-    style_time.text.font = &noto_sans_numeric_80;
-
-    controller_add_control_handler(controller_get(), &htwidget->handler);
-    return 0;
-}
-
-int home_time_launch(widget_t *widget)
-{
-    home_time_widget_t *htwidget = from_widget(widget);
-    (void)htwidget;
-    return 0;
-}
-
-int home_time_draw(widget_t *widget, lv_obj_t *parent)
-{
-    LOG_INFO("drawing time widget\n");
-    home_time_widget_t *htwidget = from_widget(widget);
-    htwidget->screen = screen_time_create(htwidget);
-    return 0;
-}
-
-lv_obj_t *home_time_get_container(widget_t *widget)
-{
-    home_time_widget_t *htwidget = from_widget(widget);
-    return htwidget->screen;
-}
-
-int home_time_close(widget_t *widget)
-{
-    home_time_widget_t *htwidget = from_widget(widget);
-    lv_obj_del(htwidget->screen);
-    htwidget->screen = NULL;
-    return 0;
-}
-
-static void _update_power_stats(home_time_widget_t *htwidget)
-{
-    htwidget->powered = hal_battery_is_powered();
-    htwidget->charging = hal_battery_is_charging();
-    htwidget->millivolts = controller_get_battery_voltage(controller_get());
-}
-
-int home_time_event(widget_t *widget, controller_event_t event)
-{
-    home_time_widget_t *htwidget = from_widget(widget);
-    widget_get_control_lock(widget);
-    if (event == CONTROLLER_EVENT_TICK) {
-        memcpy(&htwidget->time, controller_time_get_time(controller_get()), sizeof(controller_time_spec_t));
-        _update_power_stats(htwidget);
-    }
-#ifdef MODULE_BLEMAN
-    if (event == CONTROLLER_EVENT_BLUETOOTH) {
-        htwidget->ble_state = bleman_get_conn_state(bleman_get(), NULL);
-    }
-#endif
-    widget_release_control_lock(widget);
-    return 0;
-}
-
-static const widget_spec_t home_time_spec = {
-    .name = "time",
-    .init = home_time_init,
-    .launch = home_time_launch,
-    .draw = home_time_draw,
-    .container = home_time_get_container,
-    .close = home_time_close,
-    .event = home_time_event,
-    .update_draw = home_time_update_screen,
-    .gui_event = widget_face_gui_event,
-};
