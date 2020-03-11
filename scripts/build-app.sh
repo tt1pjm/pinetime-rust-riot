@@ -4,8 +4,8 @@
 set -e  #  Exit when any command fails
 
 set -x  #  Echo commands
-build_app=apps/pinetime
-#  build_app=apps/terminal_display
+build_app=pinetime
+#  build_app=terminal_display
 rust_build_target=thumbv7em-none-eabihf
 launch_config=launch-nrf52.json
 # TODO: For Raspberry Pi: launch_config=launch-nrf52-pi.json
@@ -20,18 +20,18 @@ rust_build_profile=debug
 #  export PATH="$PWD/xPacks/riscv-none-embed-gcc/8.2.0-3.1/bin:$PATH"
 
 #  Location of the compiled ROM image.  We will remove this to force relinking the Rust app with RIOT OS.
-app_build=$PWD/bin/targets/$build_app/app/apps/my_sensor_app/my_sensor_app.elf
+app_build=$PWD/apps/$build_app/bin/$build_app/PineTime.elf
 
 #  Location of the compiled Rust app and external libraries.  The Rust compiler generates a *.rlib archive for the Rust app and each external Rust library here.
 rust_build_dir=$PWD/target/$rust_build_target/$rust_build_profile/deps
 
 #  Location of the libs/rust_app stub library built by RIOT OS.  We will replace this stub by the Rust app and external libraries.
-rust_app_dir=$PWD/bin/targets/$build_app/app/libs/rust_app
-rust_app_dest=$rust_app_dir/libs_rust_app.a
+rust_app_dir=$PWD/apps/$build_app/bin/$build_app
+rust_app_dest=$rust_app_dir/rust_app.a
 
 #  Location of the libs/rust_libcore stub library built by RIOT OS.  We will replace this stub by the Rust core library libcore.
-rust_libcore_dir=$PWD/bin/targets/$build_app/app/libs/rust_libcore
-rust_libcore_dest=$rust_libcore_dir/libs_rust_libcore.a
+rust_libcore_dir=$rust_app_dir
+rust_libcore_dest=$rust_libcore_dir/rust_libcore.a
 
 #  Rust build options
 rust_build_options="--target $rust_build_target"
@@ -62,21 +62,21 @@ function build_riot() {
     #  Build the RIOT OS application
     local build_app=$1     # RIOT OS app to be built e.g. apps/pinetime
     set -x  #  Echo commands
-    pushd $build_app
+    pushd apps/$build_app
     make --jobs=10  # --trace
     popd
     set +x  #  Stop echo
 }
 
 #  If this is the very first build, do the RIOT OS build to generate the rust_app and rust_libcore stubs.  This build will not link successfully but it's OK.
-if [ ! -e $rust_app_dest ]; then
-    echo ; echo "----- Build RIOT OS stubs for Rust app and Rust libcore (ignore error)"
-    set +e
-    set -x
-    build_riot $build_app
-    set +x
-    set -e
-fi
+# if [ ! -e $rust_app_dest ]; then
+#     echo ; echo "----- Build RIOT OS stubs for Rust app and Rust libcore (ignore error)"
+#     set +e
+#     set -x
+#     build_riot $build_app
+#     set +x
+#     set -e
+# fi
 
 #  Delete the compiled ROM image to force the RIOT OS build to relink the Rust app with RIOT OS.
 if [ -e $app_build ]; then
@@ -186,8 +186,8 @@ set -x
 build_riot $build_app
 
 #  Copy the disassembly and linker map to the logs folder.
-$objdump_cmd -t -S --demangle --line-numbers --wide program $build_app/bin/*/*.elf >logs/PineTime.S 2>&1
-cp $build_app/bin/*/*.map logs
+$objdump_cmd -t -S --demangle --line-numbers --wide program apps/$build_app/bin/*/*.elf >logs/$build_app.S 2>&1
+cp apps/$build_app/bin/*/*.map logs
 
 #  Flash the firmware
 #  scripts/nrf52/flash-app.sh

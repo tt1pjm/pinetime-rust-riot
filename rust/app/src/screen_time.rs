@@ -30,7 +30,7 @@ fn create_screen(widgets: &mut WatchFaceWidgets) -> LvglResult<()> {
     obj::set_height(label1, 200) ? ;
     label::set_align(label1, label::LV_LABEL_ALIGN_CENTER) ? ;
     obj::align(label1, scr, obj::LV_ALIGN_CENTER, 0, -30) ? ;
-    label::set_style(label1, label::LV_LABEL_STYLE_MAIN, unsafe { &STYLE_TIME }) ? ;
+    obj::set_style(label1, unsafe { &STYLE_TIME }) ? ;  //  Previously: label::set_style
     widgets.time_label = label1;
 
     //  Create a label for Bluetooth state

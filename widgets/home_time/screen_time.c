@@ -50,6 +50,26 @@ static inline home_time_widget_t *active_widget(void)
     return &home_time_widget;
 }
 
+#define RUST
+
+#ifdef RUST
+lv_obj_t *screen_time_create(home_time_widget_t *ht);
+
+//  TODO: Move this
+void screen_time_pressed(lv_obj_t *obj, lv_event_t event)
+{
+    home_time_widget_t *ht = active_widget();
+    switch (event) {
+        case LV_EVENT_CLICKED:
+            LOG_INFO("Screen press event\n");
+            controller_action_submit_input_action(&ht->widget,
+                                                CONTROLLER_ACTION_WIDGET_MENU, NULL);
+        default:
+            break;
+    }
+}
+
+#else  //  !RUST
 static void _screen_time_pressed(lv_obj_t *obj, lv_event_t event)
 {
     home_time_widget_t *ht = active_widget();
@@ -114,6 +134,7 @@ lv_obj_t *screen_time_create(home_time_widget_t *ht)
     _screen_time_update_screen(&ht->widget);
     return scr;
 }
+#endif  //  RUST
 
 static void _home_time_set_bt_label(home_time_widget_t *htwidget)
 {
