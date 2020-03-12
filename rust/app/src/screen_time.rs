@@ -65,8 +65,8 @@ fn create_widgets(widgets: &mut WatchFaceWidgets) -> LvglResult<()> {
 /// Update the widgets in the Watch Face with the current state. Called by update_watch_face() below.
 fn update_widgets(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
     set_time_label(widgets, state) ? ;
-    ////set_bt_label(widgets, state) ? ;
-    ////set_power_label(widgets, state) ? ;
+    set_bt_label(widgets, state) ? ;
+    set_power_label(widgets, state) ? ;
     Ok(())
 }
 
@@ -111,8 +111,8 @@ fn set_power_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRe
     let symbol =  //  Charging symbol
         if state.powered { "\u{F0E7}" }  //  LV_SYMBOL_CHARGE
         else { " " };
-    //  Create a string buffer with max size 16 and format the battery status
-    static mut BATTERY_STATUS: heapless::String::<heapless::consts::U16> = heapless::String(heapless::i::String::new());
+    //  Create a string buffer with max size 26 and format the battery status
+    static mut BATTERY_STATUS: heapless::String::<heapless::consts::U26> = heapless::String(heapless::i::String::new());
     //  Format the battery status and set the label
     unsafe {
         BATTERY_STATUS.clear();
@@ -143,7 +143,6 @@ fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRes
         label::set_text(widgets.time_label, &Strn::new(TIME_BUF.as_bytes())) ? ;  //  TODO: Simplify
     }
 
-    /*
     //  Get the short month name
     let month_cstr = unsafe { controller_time_month_get_short_name(&state.time) };  //  Returns null-terminated C string
     assert!(!month_cstr.is_null(), "month null");
@@ -162,7 +161,6 @@ fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRes
         .expect("date fail");
         label::set_text(widgets.date_label, &Strn::new(DATE_BUF.as_bytes())) ? ;  //  TODO: Simplify
     }
-    */
     Ok(())
 }
 
