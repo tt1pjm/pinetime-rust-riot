@@ -111,13 +111,13 @@ fn set_power_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRe
     let symbol =  //  Charging symbol
         if state.powered { "\u{F0E7}" }  //  LV_SYMBOL_CHARGE
         else { " " };
-    //  Create a string buffer with max size 26 and format the battery status
-    static mut BATTERY_STATUS: heapless::String::<heapless::consts::U26> = heapless::String(heapless::i::String::new());
+    //  Create a string buffer with max size 50 and format the battery status
+    static mut BATTERY_STATUS: heapless::String::<heapless::consts::U50> = heapless::String(heapless::i::String::new());
     //  Format the battery status and set the label
     unsafe {
         BATTERY_STATUS.clear();
         write!(&mut BATTERY_STATUS, 
-            "{} {}%{}#\n({}mV)\0",  //  Must terminate Rust strings with null
+            "{} {}%{}#\nRUST ({}mV)\0",  //  Must terminate Rust strings with null
             color,
             percentage,
             symbol,
