@@ -64,7 +64,7 @@ fn create_widgets(widgets: &mut WatchFaceWidgets) -> LvglResult<()> {
 /// Update the widgets in the Watch Face with the current state. Called by update_watch_face() below.
 fn update_widgets(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
     set_time_label(widgets, state) ? ;
-    set_bt_label(widgets, state) ? ;
+    ////set_bt_label(widgets, state) ? ;
     ////set_power_label(widgets, state) ? ;
     Ok(())
 }
@@ -86,6 +86,7 @@ fn set_bt_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResul
         static mut BLUETOOTH_STATUS: heapless::String::<heapless::consts::U16> = heapless::String(heapless::i::String::new());
         //  Format the Bluetooth status and set the label
         unsafe {
+            BLUETOOTH_STATUS.clear();
             write!(&mut BLUETOOTH_STATUS, 
                 "{} \u{F293}#\0",  //  LV_SYMBOL_BLUETOOTH. Must terminate Rust strings with null.
                 color)
@@ -113,6 +114,7 @@ fn set_power_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRe
     static mut BATTERY_STATUS: heapless::String::<heapless::consts::U16> = heapless::String(heapless::i::String::new());
     //  Format the battery status and set the label
     unsafe {
+        BATTERY_STATUS.clear();
         write!(&mut BATTERY_STATUS, 
             "{} {}%{}#\n({}mV)\0",  //  Must terminate Rust strings with null
             color,
@@ -132,6 +134,7 @@ fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRes
     static mut TIME_BUF: heapless::String::<heapless::consts::U6> = heapless::String(heapless::i::String::new());
     //  Format the time and set the label
     unsafe {
+        TIME_BUF.clear();
         write!(&mut TIME_BUF, "{:02}:{:02}\0",  //  Must terminate Rust strings with null
             state.time.hour,
             state.time.minute)
@@ -150,6 +153,7 @@ fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRes
     static mut DATE_BUF: heapless::String::<heapless::consts::U15> = heapless::String(heapless::i::String::new());
     //  Format the date and set the label
     unsafe {
+        DATE_BUF.clear();
         write!(&mut DATE_BUF, "{} {} {}\n\0",  //  Must terminate Rust strings with null
             state.time.dayofmonth,
             month_str,
