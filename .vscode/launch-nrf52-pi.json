@@ -39,15 +39,12 @@
                 //  "symbol-file bin/targets/bluepill_my_sensor/app/apps/my_sensor_app/my_sensor_app.elf",
             ],
             "postLaunchCommands": [
-                //  After loading the Application, run these gdb commands.  The Application ELF image does not contain a valid Image Header.
-                //  If not using the Stub Bootloader boot_stub, we need to bypass the Bootloader and jump to the Application directly:
-                //  "stepi",                    //  Must step before setting PC
-                //  "set $pc = Reset_Handler",  //  Prepare to jump to the Application's Reset Handler
-                //  "stepi",                    //  Execute the Reset Handler
-                "break main",                   //  Break at main()
-                "break __assert_func",          //  Break for any C assert failures
-                "break os_default_irq",         //  Break for any Mynewt unhandled interrupts
-                "break core::panicking::panic"  //  Break for any Rust assert failures and panics
+                //  After loading the Application, run these gdb commands
+                "break main",                        //  Break at main()
+                "break __assert_func",               //  Break for any C assert failures
+                "break os_default_irq",              //  Break for any Mynewt unhandled interrupts
+                "break core::panicking::panic",      //  Break for any Rust assert failures and panics
+                "break core::result::unwrap_failed"  //  Break for any Rust unwrap and expect failures
             ],
             "preRestartCommands": [
             ],

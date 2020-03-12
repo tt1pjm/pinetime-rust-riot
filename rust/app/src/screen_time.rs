@@ -5,21 +5,14 @@ use core::{
 };
 use lvgl::{
     result::*,
-    core::{
-        obj,
-    },
-    objx::{
-        label,
-    },
+    core::obj,
+    objx::label,
     Strn, fill_zero,
 };
-use lvgl_macros::{
-    strn,
-};
+use lvgl_macros::strn;
 
 /// Create the widgets for the Watch Face. Called by create_watch_face() below.
 fn create_widgets(widgets: &mut WatchFaceWidgets) -> LvglResult<()> {
-    cortex_m::asm::bkpt(); ////
     let scr = widgets.screen;
     assert!(!scr.is_null(), "null screen");
 
@@ -70,10 +63,9 @@ fn create_widgets(widgets: &mut WatchFaceWidgets) -> LvglResult<()> {
 
 /// Update the widgets in the Watch Face with the current state. Called by update_watch_face() below.
 fn update_widgets(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
-    cortex_m::asm::bkpt(); ////
     set_time_label(widgets, state) ? ;
     set_bt_label(widgets, state) ? ;
-    set_power_label(widgets, state) ? ;
+    ////set_power_label(widgets, state) ? ;
     Ok(())
 }
 
@@ -147,6 +139,7 @@ fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRes
         label::set_text(widgets.time_label, &Strn::new(TIME_BUF.as_bytes())) ? ;  //  TODO: Simplify
     }
 
+    /*
     //  Get the short month name
     let month_cstr = unsafe { controller_time_month_get_short_name(&state.time) };  //  Returns null-terminated C string
     assert!(!month_cstr.is_null(), "month null");
@@ -164,6 +157,7 @@ fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRes
         .expect("date fail");
         label::set_text(widgets.date_label, &Strn::new(DATE_BUF.as_bytes())) ? ;  //  TODO: Simplify
     }
+    */
     Ok(())
 }
 
