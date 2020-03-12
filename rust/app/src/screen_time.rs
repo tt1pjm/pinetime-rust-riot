@@ -7,7 +7,7 @@ use lvgl::{
     result::*,
     core::obj,
     objx::label,
-    Strn, fill_zero,
+    Strn,
 };
 use lvgl_macros::strn;
 
@@ -24,7 +24,7 @@ fn create_widgets(widgets: &mut WatchFaceWidgets) -> LvglResult<()> {
     obj::set_height(label1, 200) ? ;
     label::set_align(label1, label::LV_LABEL_ALIGN_CENTER) ? ;
     obj::align(label1, scr, obj::LV_ALIGN_CENTER, 0, -30) ? ;
-    obj::set_style(label1, unsafe { &STYLE_TIME }) ? ;  //  Previously: label::set_style
+    obj::set_style(label1, unsafe { &style_time }) ? ;  //  Previously: label::set_style
     widgets.time_label = label1;
 
     //  Create a label for Bluetooth state
@@ -52,6 +52,7 @@ fn create_widgets(widgets: &mut WatchFaceWidgets) -> LvglResult<()> {
     label::set_long_mode(label_date, label::LV_LABEL_LONG_BREAK) ? ;
     obj::set_width(label_date, 200) ? ;
     obj::set_height(label_date, 200) ? ;
+    label::set_text(label_date, strn!("")) ? ;  //  strn creates a null-terminated string
     label::set_align(label_date, label::LV_LABEL_ALIGN_CENTER) ? ;
     obj::align(label_date, scr, obj::LV_ALIGN_CENTER, 0, 40) ? ;
     widgets.date_label = label_date;
@@ -183,9 +184,6 @@ extern "C" fn update_watch_face(widgets: *const WatchFaceWidgets, state: *const 
     0  //  Return OK
 }
 
-/// Style for the Time Label
-static mut STYLE_TIME: obj::lv_style_t = fill_zero!(obj::lv_style_t);
-
 /// State for the Watch Face, shared between GUI and control. TODO: Sync with widgets/home_time/include/home_time.h
 #[repr(C)]
 struct WatchFaceState {
@@ -238,6 +236,8 @@ extern {
     fn hal_battery_get_percentage(voltage: u32) -> i32;
     //  TODO: Sync with modules/controller/include/controller/time.h
     fn controller_time_month_get_short_name(time: *const controller_time_spec_t) -> *const ::cty::c_char;
+    /// Style for the Time Label. TODO: Sync with widgets/home_time/screen_time.c
+    static style_time: obj::lv_style_t;
 }
 
 /* Stack Trace for screen_time_create:

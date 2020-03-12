@@ -23,7 +23,7 @@ static int _screen_time_update_screen(widget_t *widget);
 static void _screen_time_pressed(lv_obj_t *obj, lv_event_t event);
 
 static const widget_spec_t home_time_spec;
-static lv_style_t style_time;
+lv_style_t style_time;  //  Exposed to Rust
 
 /* Widget context */
 home_time_widget_t home_time_widget = {
