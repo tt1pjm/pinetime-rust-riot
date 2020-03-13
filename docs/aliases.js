@@ -1,0 +1,17 @@
+var ALIASES = {};
+ALIASES["aligned"] = {};
+ALIASES["as_slice"] = {};
+ALIASES["bare_metal"] = {};
+ALIASES["byteorder"] = {};
+ALIASES["cortex_m"] = {};
+ALIASES["cortex_m_semihosting"] = {};
+ALIASES["cstr_core"] = {};
+ALIASES["cty"] = {};
+ALIASES["generic_array"] = {};
+ALIASES["hash32"] = {};
+ALIASES["heapless"] = {};
+ALIASES["memchr"] = {};
+ALIASES["stable_deref_trait"] = {};
+ALIASES["typenum"] = {};
+ALIASES["vcell"] = {};
+ALIASES["volatile_register"] = {};

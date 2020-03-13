@@ -254,7 +254,7 @@
                 "command": "bash",
                 "args": [
                     "-c", "-l",
-                    " set -e -x ; cargo doc --document-private-items ; echo ✅ ◾ ️Done! target/thumbv7em-none-eabihf/doc "
+                    " set -e -x ; rustdoc --output docs/articles --html-in-header scripts/rustdoc-header.html --html-before-content scripts/rustdoc-before.html rust/app/src/watch_face.md ; exit ; cargo doc --document-private-items ; echo ✅ ◾ ️Done! target/thumbv7em-none-eabihf/doc "
                 ]
             },
             "linux": {

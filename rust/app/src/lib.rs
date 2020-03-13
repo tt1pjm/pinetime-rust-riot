@@ -31,15 +31,14 @@ extern crate lvgl;                      //  Declare the LittlevGL (LVGL) library
 extern crate macros as lvgl_macros;     //  Declare the LVGL Procedural Macros library
 
 //  Declare the modules in our application
-mod screen_time;            //  Declare `screen_time.rs` as Rust module `screen_time` for Watch Face
+mod watch_face;             //  Declare `watch_face.rs` as Rust module `watch_face` for Watch Face
 
 //  Declare the system modules
 use core::panic::PanicInfo; //  Import `PanicInfo` type which is used by `panic()` below
 use cortex_m::asm::bkpt;    //  Import cortex_m assembly function to inject breakpoint
 use lvgl::console;          //  Import Semihosting Console functions
 
-///  Main program that initialises the sensor, network driver and starts reading and sending sensor data in the background.
-///  Will be called at startup.
+///  Main program, currently not used. TODO: Call at startup.
 #[no_mangle]                 //  Don't mangle the function name
 extern "C" fn rust_main() {  //  Declare extern "C" because it will be called by RIOT OS firmware
 }

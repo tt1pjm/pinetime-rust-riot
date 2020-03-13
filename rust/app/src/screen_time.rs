@@ -1,4 +1,5 @@
-//! Watch Face in Rust, LittlevGL and RIOT OS for PineTime Smart Watch
+//! Moved to watch_face.rs
+/*
 use core::{
     fmt::Write,
     ptr,
@@ -237,7 +238,7 @@ extern {
     /// Style for the Time Label. TODO: Sync with widgets/home_time/screen_time.c
     static style_time: obj::lv_style_t;
 }
-
+*/
 /* Stack Trace for screen_time_create:
 #0  screen_time_create (ht=ht@entry=0x200008dc <home_time_widget>) at /Users/Luppy/PineTime/PineTime-apps/widgets/home_time/screen_time.c:68
 #1  0x0001b36c in home_time_draw (widget=0x200008dc <home_time_widget>, parent=<optimized out>) at /Users/Luppy/PineTime/PineTime-apps/widgets/home_time/screen_time.c:222

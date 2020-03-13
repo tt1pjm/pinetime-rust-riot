@@ -5,6 +5,7 @@
 		}
 	],
 	"settings": {
-		"cortex-debug.openocdPath": "openocd/bin/openocd"
+		"cortex-debug.openocdPath": "openocd/bin/openocd",
+		"git.ignoreLimitWarning": true
 	}
 }
