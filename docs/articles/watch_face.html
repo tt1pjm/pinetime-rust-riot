@@ -50,9 +50,10 @@
 
     <h1 class="title">watch_face.rs: Porting PineTime Watch Face from C to Rust on RIOT OS with LittlevGL</h1>
     <nav id="TOC"><ul>
-<li><a href="#create-littlevgl-widget">1 Create LittlevGL Widget</a><ul></ul></li>
-<li><a href="#update-littlevgl-widget">2 Update LittlevGL Widget</a><ul></ul></li>
-<li><a href="#bindgen">3 bindgen</a><ul></ul></li></ul></nav><p><em>This article is presented in CINEMASCOPE... Rotate your phone to view the C and Rust source code side by side... Or better yet, read this article on a desktop computer</em></p>
+<li><a href="#function-declaration">1 Function Declaration</a><ul></ul></li>
+<li><a href="#variable-declaration">2 Variable Declaration</a><ul></ul></li>
+<li><a href="#update-littlevgl-widget">3 Update LittlevGL Widget</a><ul></ul></li>
+<li><a href="#bindgen">4 bindgen</a><ul></ul></li></ul></nav><p><em>This article is presented in CINEMASCOPE... Rotate your phone to view the C and Rust source code side by side... Or better yet, read this article on a desktop computer</em></p>
 <p>We'll learn step by step to convert this Embedded C code (based on LittlevGL) to Embedded Rust on RIOT OS...</p>
 <table><thead><tr><th align="left"><strong>Original C Code</strong></th><th align="left"><strong>Converted Rust Code</strong></th></tr></thead><tbody>
 <tr><td align="left"><code>lv_obj_t *screen_time_create(home_time_widget_t *ht) {</code> <br><br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    lv_obj_t *scr = lv_obj_create(NULL, NULL);</code> <br>  <code>    lv_obj_t *label1 = lv_label_create(scr, NULL);</code> <br><br>  <code>    lv_label_set_text(label1, &quot;00:00&quot;);</code> <br>  <code>    lv_obj_set_width(label1, 240);</code> <br>  <code>    lv_obj_set_height(label1, 200);</code> <br>  <code>    ht-&gt;lv_time = label1;</code> <br>  <code>    ...</code> <br>  <code>    return scr;</code> <br><code>}</code> <br></td><td align="left"><code>fn create_widgets(widgets: &amp;mut WatchFaceWidgets) -&gt; </code> <br>  <code>    LvglResult&lt;()&gt; {</code> <br><br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    let scr = widgets.screen;</code> <br>  <code>    let label1 = label::create(scr, ptr::null()) ? ;</code> <br><br>  <code>    label::set_text(label1, strn!(&quot;00:00&quot;)) ? ;</code> <br>  <code>    obj::set_width(label1, 240) ? ;</code> <br>  <code>    obj::set_height(label1, 200) ? ;</code> <br>  <code>    widgets.time_label = label1;</code> <br>  <code>    ...</code> <br>  <code>    Ok(())</code> <br><code>}</code> <br></td></tr>
@@ -63,8 +64,8 @@
 <tr><td align="left"><code>int set_time_label(home_time_widget_t *ht) {</code> <br><br>  <code>    //  Create a string buffer on stack</code> <br>  <code>    char time[6];</code> <br><br>  <code>    //  Format the time</code> <br>  <code>   int res = snprintf(time,</code> <br>    <code>       sizeof(time),</code> <br>    <code>       &quot;%02u:%02u&quot;,</code> <br>    <code>        ht-&gt;time.hour,</code> <br>    <code>        ht-&gt;time.minute);</code> <br><br>  <code>if (res != sizeof(time) - 1) {</code> <br>    <code>LOG_ERROR(&quot;overflow&quot;);</code> <br>    <code>return -1;</code> <br>  <code>}</code> <br><br>  <code>//  Set the label</code> <br>  <code>lv_label_set_text(ht-&gt;lv_time, time);</code> <br><br>  <code>//  Return OK</code> <br>  <code>return 0;</code> <br><code>}</code> <br></td><td align="left"><code>fn set_time_label(</code> <br>  <code>   widgets: &amp;WatchFaceWidgets,</code> <br>  <code>   state: &amp;WatchFaceState) -&gt;</code> <br>  <code>    LvglResult&lt;()&gt; {</code> <br><br>  <code>    //  Create a static string buffer</code> <br>  <code>    static mut TIME_BUF: HString::&lt;U6&gt; =</code><br>    <code> HString(IString::new());</code> <br><br>  <code>    unsafe {</code> <br>    <code>        //  Format the time</code> <br>    <code>        TIME_BUF.clear();</code> <br>    <code>       write!(&amp;mut TIME_BUF,</code> <br>      <code>            &quot;{:02}:{:02}\0&quot;,</code> <br>      <code>            state.time.hour,</code> <br>      <code>            state.time.minute)</code> <br>      <code>            .expect(&quot;overflow&quot;);</code> <br><br>    <code>        //  Set the label</code> <br>    <code>       label::set_text(widgets.time_label,</code> <br>      <code>            &amp;Strn::from_str(&amp;TIME_BUF) ? ;</code> <br>  <code>    }</code> <br><br>  <code>    //  Return OK</code> <br>  <code>    Ok(())</code> <br><code>}</code> <br></td></tr>
 <tr><td align="left"></td><td align="left"></td></tr>
 </tbody></table>
-<h1 id="create-littlevgl-widget" class="section-header"><a href="#create-littlevgl-widget">1 Create LittlevGL Widget</a></h1>
-<p>Here's a C function that calls the LittlevGL library to create a Label Widget.  The Label Widget displays the time of the day (like <code>23:59</code>).  This code was taken from the <a href="https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c">bosmoment /
+<h1 id="function-declaration" class="section-header"><a href="#function-declaration">1 Function Declaration</a></h1>
+<p>Here's a C function that calls the <a href="https://littlevgl.com/">LittlevGL</a> library to create a Label Widget.  The Label Widget displays the time of the day (like <code>23:59</code>).  This code was taken from the <a href="https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c">bosmoment /
 PineTime-apps</a> port of <a href="https://www.riot-os.org/">RIOT OS</a> to the <a href="https://wiki.pine64.org/index.php/PineTime">PineTime Smart Watch</a>.</p>
 <pre><code class="language-C">lv_obj_t *screen_time_create(home_time_widget_t *ht) {
     //  Create a label for time (00:00)
@@ -78,12 +79,37 @@ PineTime-apps</a> port of <a href="https://www.riot-os.org/">RIOT OS</a> to the 
     return scr;
 }
 </code></pre>
+<p><em>From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c</em></p>
+<p>Functions whose names start with <code>lv_</code> (like <code>lv_obj_create</code>) are defined in the LittlevGL library. <code>lv_obj_t</code> is a C Struct exposed by the LittlevGL library. <code>home_time_widget_t</code> is a custom C Struct defined by the RIOT OS application.</p>
+<p>Let's start by converting this function declaration from C to Rust...</p>
+<pre><code class="language-C">lv_obj_t *screen_time_create(home_time_widget_t *ht) { ...
+</code></pre>
+<p>This function accepts a pointer and returns another pointer. In Rust, functions are defined with the <code>fn</code> keyword...</p>
+<pre><code class="language-Rust">fn screen_time_create(...
+</code></pre>
+<p>The return type <code>lv_obj_t</code> goes to the end of the function declaration, marked by <code>-&gt;</code>...</p>
+<pre><code class="language-Rust">fn screen_time_create(ht: *mut home_time_widget_t) 
+    -&gt; *mut lv_obj_t { ...
+</code></pre>
+<p>Note that the names and types have been flipped, also for pointers...</p>
+<table><thead><tr><th align="left"><strong>Original C Code</strong></th><th align="left"><strong>Converted Rust Code</strong></th></tr></thead><tbody>
+<tr><td align="left"><code>lv_obj_t *</code></td><td align="left"><code>*mut lv_obj_t</code></td></tr>
+<tr><td align="left"><code>home_time_widget_t *ht</code></td><td align="left"><code>ht: *mut home_time_widget_t</code></td></tr>
+<tr><td align="left"><code>lv_obj_t *screen_time_create(...)</code></td><td align="left"><code>fn screen_time_create(...)</code> <br>   <code>-&gt; *mut lv_obj_t</code></td></tr>
+</tbody></table>
+<p>As we convert code from C to Rust, we'll find ourselves doing a lot of this Name/Type Flipping.</p>
+<p>Rust is strict about Mutability of variables (whether a variable's value may be modified). <code>*mut</code> declares that the pointer refers to an object that is Mutable (i.e. may be modified). For objects that may not be modified, we write <code>*const</code> (similar to C).</p>
+<p>Here's the C function declaration converted to Rust...</p>
+<table><thead><tr><th align="left"><strong>Original C Code</strong></th><th align="left"><strong>Converted Rust Code</strong></th></tr></thead><tbody>
+<tr><td align="left"><code>lv_obj_t *screen_time_create(</code> <br>   <code>home_time_widget_t *ht)</code></td><td align="left"><code>fn screen_time_create(</code> <br>   <code>ht: *mut home_time_widget_t)</code> <br>   <code>-&gt; *mut lv_obj_t</code></td></tr>
+</tbody></table>
+<h1 id="variable-declaration" class="section-header"><a href="#variable-declaration">2 Variable Declaration</a></h1>
+<p>TODO</p>
+<h1 id="update-littlevgl-widget" class="section-header"><a href="#update-littlevgl-widget">3 Update LittlevGL Widget</a></h1>
 <p>TODO</p>
 <p>From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c</p>
 <p>From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs</p>
-<h1 id="update-littlevgl-widget" class="section-header"><a href="#update-littlevgl-widget">2 Update LittlevGL Widget</a></h1>
-<p>TODO</p>
-<h1 id="bindgen" class="section-header"><a href="#bindgen">3 bindgen</a></h1>
+<h1 id="bindgen" class="section-header"><a href="#bindgen">4 bindgen</a></h1>
 <p>TODO</p>
 
     
