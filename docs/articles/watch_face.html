@@ -209,7 +209,7 @@ void lv_obj_set_height(lv_obj_t *obj, int16_t h);
     <span class="kw">fn</span> <span class="ident">lv_obj_set_height</span>(<span class="ident">obj</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">lv_obj_t</span>, <span class="ident">h</span>: <span class="ident">i16</span>);
 }</pre></div>
 <p><em>From https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/core/obj.rs, https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/objx/label.rs</em></p>
-<p>See the Name/Type Flipping? We used it again.</p>
+<p><em>See the Name/Type Flipping? We did it again!</em></p>
 <p>Take note of the <code>*mut</code> and <code>*const</code> pointers... Rust is very picky about Mutability!</p>
 <p>What's <code>::cty::c_char</code>? It's complicated... We'll talk about strings in the next section.</p>
 <p>Once the C functions have been imported, we may call them in Rust like this...</p>

@@ -218,7 +218,7 @@ extern "C" {
 ```
 _From https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/core/obj.rs, https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/objx/label.rs_
 
-See the Name/Type Flipping? We used it again.
+_See the Name/Type Flipping? We did it again!_
 
 Take note of the `*mut` and `*const` pointers... Rust is very picky about Mutability!
 
