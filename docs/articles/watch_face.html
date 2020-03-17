@@ -53,7 +53,7 @@
 <li><a href="#function-declaration">1 Function Declaration</a><ul></ul></li>
 <li><a href="#variable-declaration">2 Variable Declaration</a><ul></ul></li>
 <li><a href="#null-pointers">3 Null Pointers</a><ul></ul></li>
-<li><a href="#import-c-functions">4 Import C Functions</a><ul></ul></li>
+<li><a href="#import-c-functions-into-rust">4 Import C Functions into Rust</a><ul></ul></li>
 <li><a href="#strings">5 Strings</a><ul></ul></li>
 <li><a href="#error-handling">6 Error Handling</a><ul></ul></li>
 <li><a href="#update-littlevgl-widget">7 Update LittlevGL Widget</a><ul></ul></li>
@@ -177,7 +177,7 @@ lv_obj_t * lv_obj_create(lv_obj_t *parent, const lv_obj_t *copy);
 <tr><td align="left"><em>From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c</em></td><td align="left"><em>From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs</em></td></tr>
 <tr><td align="left"><br></td><td align="left"></td></tr>
 </tbody></table>
-<h1 id="import-c-functions" class="section-header"><a href="#import-c-functions">4 Import C Functions</a></h1>
+<h1 id="import-c-functions-into-rust" class="section-header"><a href="#import-c-functions-into-rust">4 Import C Functions into Rust</a></h1>
 <p>Let's look back at the C code that we're convering to Rust...</p>
 <pre><code class="language-c">//  In C: Create a label for time (00:00)
 lv_obj_t *scr = lv_obj_create(NULL, NULL);

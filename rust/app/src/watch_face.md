@@ -177,7 +177,7 @@ When we insert the `NULL` parameters into the converted Rust code, we get this..
 | _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c_ | _From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs_ |
 <br>
 
-# Import C Functions
+# Import C Functions into Rust
 
 Let's look back at the C code that we're convering to Rust...
 
