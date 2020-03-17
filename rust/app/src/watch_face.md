@@ -174,35 +174,45 @@ When we insert the `NULL` parameters into the converted Rust code, we get this..
 
 # Import C Functions
 
+Let's look back at the C code that we're convering to Rust...
+
 ```C
+//  In C: Create a label for time (00:00)
 lv_obj_t *scr = lv_obj_create(NULL, NULL);
 lv_obj_t *label1 = lv_label_create(scr, NULL);
-
+//  Set the text, width and height of the label
 lv_label_set_text(label1, "00:00");
 lv_obj_set_width(label1, 240);
 lv_obj_set_height(label1, 200);
 ```
 
+The `lv_...` functions called above come from the LittlevGL library. Here are the function declarations in C...
+
 ```C
+//  In C: LittlevGL Function Declarations
 lv_obj_t * lv_obj_create(lv_obj_t *parent, const lv_obj_t *copy);
-lv_obj_t * lv_label_create(lv_obj_t * par, const lv_obj_t * copy);
-void lv_label_set_text(lv_obj_t * label, const char * text);
-void lv_obj_set_width(lv_obj_t * obj, lv_coord_t w);
-void lv_obj_set_height(lv_obj_t * obj, lv_coord_t h);
+lv_obj_t * lv_label_create(lv_obj_t *par, const lv_obj_t *copy);
+void lv_label_set_text(lv_obj_t *label, const char *text);
+void lv_obj_set_width(lv_obj_t *obj, int16_t w);
+void lv_obj_set_height(lv_obj_t *obj, int16_t h);
 ```
 _From https://github.com/littlevgl/lvgl/blob/master/src/lv_core/lv_obj.h, https://github.com/littlevgl/lvgl/blob/master/src/lv_objx/lv_label.h_
 
+Before calling these C functions from Rust, we need to import them like this...
+
 ```Rust
-#[lvgl_macros::safe_wrap(attr)]
+//  In Rust: Import LittlevGL Functions
 extern "C" {
-    pub fn lv_obj_create(parent: *mut lv_obj_t, copy: *const lv_obj_t) -> *mut lv_obj_t;
-    pub fn lv_label_create(par: *mut lv_obj_t, copy: *const lv_obj_t) -> *mut lv_obj_t;
-    pub fn lv_label_set_text(label: *mut lv_obj_t, text: *const ::cty::c_char);
-    pub fn lv_obj_set_width(obj: *mut lv_obj_t, w: lv_coord_t);
-    pub fn lv_obj_set_height(obj: *mut lv_obj_t, h: lv_coord_t);
+    fn lv_obj_create(parent: *mut lv_obj_t, copy: *const lv_obj_t) -> *mut lv_obj_t;
+    fn lv_label_create(par: *mut lv_obj_t, copy: *const lv_obj_t) -> *mut lv_obj_t;
+    fn lv_label_set_text(label: *mut lv_obj_t, text: *const ::cty::c_char);
+    fn lv_obj_set_width(obj: *mut lv_obj_t, w: i16);
+    fn lv_obj_set_height(obj: *mut lv_obj_t, h: i16);
 }
 ```
 _From https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/core/obj.rs, https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/objx/label.rs_
+
+We applied the Name/Type Flipping TODO
 
 # Error Handling
 
@@ -224,3 +234,15 @@ From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_fac
 # bindgen
 
 TODO
+
+```Rust
+#[lvgl_macros::safe_wrap(attr)]
+extern "C" {
+    pub fn lv_obj_create(parent: *mut lv_obj_t, copy: *const lv_obj_t) -> *mut lv_obj_t;
+    pub fn lv_label_create(par: *mut lv_obj_t, copy: *const lv_obj_t) -> *mut lv_obj_t;
+    pub fn lv_label_set_text(label: *mut lv_obj_t, text: *const ::cty::c_char);
+    pub fn lv_obj_set_width(obj: *mut lv_obj_t, w: i16);
+    pub fn lv_obj_set_height(obj: *mut lv_obj_t, h: i16);
+}
+```
+_From https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/core/obj.rs, https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/objx/label.rs_
