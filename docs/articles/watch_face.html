@@ -52,8 +52,9 @@
     <nav id="TOC"><ul>
 <li><a href="#function-declaration">1 Function Declaration</a><ul></ul></li>
 <li><a href="#variable-declaration">2 Variable Declaration</a><ul></ul></li>
-<li><a href="#update-littlevgl-widget">3 Update LittlevGL Widget</a><ul></ul></li>
-<li><a href="#bindgen">4 bindgen</a><ul></ul></li></ul></nav><p><em>This article is presented in CINEMASCOPE... Rotate your phone to view the C and Rust source code side by side... Or better yet, read this article on a desktop computer</em></p>
+<li><a href="#null-pointers">3 Null Pointers</a><ul></ul></li>
+<li><a href="#update-littlevgl-widget">4 Update LittlevGL Widget</a><ul></ul></li>
+<li><a href="#bindgen">5 bindgen</a><ul></ul></li></ul></nav><p><em>This article is presented in CINEMASCOPE... Rotate your phone to view the C and Rust source code side by side... Or better yet, read this article on a desktop computer</em></p>
 <p>We'll learn step by step to convert this Embedded C code (based on LittlevGL) to Embedded Rust on RIOT OS...</p>
 <table><thead><tr><th align="left"><strong>Original C Code</strong></th><th align="left"><strong>Converted Rust Code</strong></th></tr></thead><tbody>
 <tr><td align="left"><code>lv_obj_t *screen_time_create(home_time_widget_t *ht) {</code> <br><br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    lv_obj_t *scr = lv_obj_create(NULL, NULL);</code> <br>  <code>    lv_obj_t *label1 = lv_label_create(scr, NULL);</code> <br><br>  <code>    lv_label_set_text(label1, &quot;00:00&quot;);</code> <br>  <code>    lv_obj_set_width(label1, 240);</code> <br>  <code>    lv_obj_set_height(label1, 200);</code> <br>  <code>    ht-&gt;lv_time = label1;</code> <br>  <code>    ...</code> <br>  <code>    return scr;</code> <br><code>}</code> <br></td><td align="left"><code>fn create_widgets(widgets: &amp;mut WatchFaceWidgets) -&gt; </code> <br>  <code>    LvglResult&lt;()&gt; {</code> <br><br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    let scr = widgets.screen;</code> <br>  <code>    let label1 = label::create(scr, ptr::null()) ? ;</code> <br><br>  <code>    label::set_text(label1, strn!(&quot;00:00&quot;)) ? ;</code> <br>  <code>    obj::set_width(label1, 240) ? ;</code> <br>  <code>    obj::set_height(label1, 200) ? ;</code> <br>  <code>    widgets.time_label = label1;</code> <br>  <code>    ...</code> <br>  <code>    Ok(())</code> <br><code>}</code> <br></td></tr>
@@ -85,7 +86,7 @@ PineTime-apps</a> port of <a href="https://www.riot-os.org/">RIOT OS</a> to the 
 <pre><code class="language-C">lv_obj_t *screen_time_create(home_time_widget_t *ht) { ...
 </code></pre>
 <p>This function accepts a pointer and returns another pointer. In Rust, functions are defined with the <code>fn</code> keyword...</p>
-<pre><code class="language-Rust">fn screen_time_create(...
+<pre><code class="language-Rust">fn screen_time_create( ...
 </code></pre>
 <p>The return type <code>lv_obj_t</code> goes to the end of the function declaration, marked by <code>-&gt;</code>...</p>
 <pre><code class="language-Rust">fn screen_time_create(ht: *mut home_time_widget_t) 
@@ -104,12 +105,61 @@ PineTime-apps</a> port of <a href="https://www.riot-os.org/">RIOT OS</a> to the 
 <tr><td align="left"><code>lv_obj_t *screen_time_create(</code> <br>   <code>home_time_widget_t *ht)</code></td><td align="left"><code>fn screen_time_create(</code> <br>   <code>ht: *mut home_time_widget_t)</code> <br>   <code>-&gt; *mut lv_obj_t</code></td></tr>
 </tbody></table>
 <h1 id="variable-declaration" class="section-header"><a href="#variable-declaration">2 Variable Declaration</a></h1>
+<p>Now let's convert this variable declaration from C to Rust...</p>
+<pre><code class="language-C">lv_obj_t *scr = lv_obj_create( ... ); 
+</code></pre>
+<p><code>scr</code> is a pointer to a C Struct <code>lv_obj_t</code>. <code>scr</code> is set to the value returned by the C function LittlevGL <code>lv_obj_create</code> (which creates a LittlevGL Screen).</p>
+<p>In Rust, variables are declared with the <code>let</code> keyword, followed by the variable name and type...</p>
+<pre><code class="language-Rust">let scr: *mut lv_obj_t = lv_obj_create( ... );
+</code></pre>
+<p><em>(Yep we did the Name/Type Flipping again)</em></p>
+<p>Here's a really cool thing about Rust... Types are optional in variable declarations!</p>
+<p>We may drop the type <code>*mut lv_obj_t</code>, resulting in this perfectly valid Rust declaration...</p>
+<pre><code class="language-Rust">let scr = lv_obj_create( ... );
+</code></pre>
+<p><em>What is this type dropping magic? Won't Rust complain about the missing type?</em></p>
+<p>If we think about it... <code>lv_obj_create</code> is a C function already declared somewhere. The Rust Compiler already knows that <code>lv_obj_create</code> returns a value of type <code>*mut lv_obj_t</code>.</p>
+<p>Thus the Rust Compiler uses <strong>Type Inference</strong> to deduce that <code>scr</code> must have type <code>*mut lv_obj_t</code>!</p>
+<p>This saves us a lot of rewriting when we convert C code to Rust.</p>
+<p>Here's how it looks when we convert to Rust the two variable declarations from our C function...</p>
+<table><thead><tr><th align="left"><strong>Original C Code</strong></th><th align="left"><strong>Converted Rust Code</strong></th></tr></thead><tbody>
+<tr><td align="left"><code>lv_obj_t *screen_time_create(</code> <br>   <code>home_time_widget_t *ht) {</code></td><td align="left"><code>fn screen_time_create(</code> <br>   <code>ht: *mut home_time_widget_t)</code> <br>   <code>-&gt; *mut lv_obj_t {</code> <br></td></tr>
+<tr><td align="left">  <code>//  Create a label for time (00:00)</code></td><td align="left">  <code>//  Create a label for time (00:00)</code></td></tr>
+<tr><td align="left">  <code>lv_obj_t *scr = lv_obj_create( ... );</code></td><td align="left">  <code>let scr = lv_obj_create( ... );</code></td></tr>
+<tr><td align="left">  <code>lv_obj_t *label1 = lv_label_create(scr, ... );</code></td><td align="left">  <code>let label1 = lv_label_create(scr, ... );</code></td></tr>
+<tr><td align="left"><br></td><td align="left"></td></tr>
+</tbody></table>
+<p>The parameters are missing from the above code... Let's learn to convert <code>NULL</code> to Rust.</p>
+<h1 id="null-pointers" class="section-header"><a href="#null-pointers">3 Null Pointers</a></h1>
+<p><code>NULL</code> is an unfortunate fact of life for C coders.</p>
+<pre><code class="language-C">lv_obj_t *scr = lv_obj_create(NULL, NULL); 
+</code></pre>
+<pre><code class="language-Rust">let scr: *mut lv_obj_t = lv_obj_create(ptr::null_mut(), ptr::null());
+</code></pre>
+<pre><code class="language-Rust">let scr = lv_obj_create(ptr::null_mut(), ptr::null());
+</code></pre>
+<pre><code class="language-Rust">let screen = obj::create(ptr::null_mut(), ptr::null())
+    .expect(&quot;create screen obj fail&quot;);
+</code></pre>
+<pre><code class="language-C">lv_obj_t * lv_obj_create(lv_obj_t *parent, const lv_obj_t *copy);
+</code></pre>
+<p><em>From https://github.com/littlevgl/lvgl/blob/master/src/lv_core/lv_obj.h</em></p>
+<pre><code class="language-Rust">#[lvgl_macros::safe_wrap(attr)] extern &quot;C&quot; {
+    #[doc = &quot; Create a basic object&quot;]
+    #[doc = &quot; - __`parent`__: pointer to a parent object.&quot;]
+    #[doc = &quot;                  If NULL then a screen will be created&quot;]
+    #[doc = &quot; - __`copy`__: pointer to a base object, if not NULL then the new object will be copied from it&quot;]
+    #[doc = &quot; Return: pointer to the new object&quot;]
+    pub fn lv_obj_create(parent: *mut lv_obj_t, copy: *const lv_obj_t) -&gt; *mut lv_obj_t;
+}
+</code></pre>
+<p><em>From https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/core/obj.rs</em></p>
 <p>TODO</p>
-<h1 id="update-littlevgl-widget" class="section-header"><a href="#update-littlevgl-widget">3 Update LittlevGL Widget</a></h1>
+<h1 id="update-littlevgl-widget" class="section-header"><a href="#update-littlevgl-widget">4 Update LittlevGL Widget</a></h1>
 <p>TODO</p>
 <p>From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c</p>
 <p>From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs</p>
-<h1 id="bindgen" class="section-header"><a href="#bindgen">4 bindgen</a></h1>
+<h1 id="bindgen" class="section-header"><a href="#bindgen">5 bindgen</a></h1>
 <p>TODO</p>
 
     

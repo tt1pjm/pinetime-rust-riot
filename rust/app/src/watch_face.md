@@ -47,7 +47,7 @@ lv_obj_t *screen_time_create(home_time_widget_t *ht) { ...
 This function accepts a pointer and returns another pointer. In Rust, functions are defined with the `fn` keyword...
 
 ```Rust
-fn screen_time_create(...
+fn screen_time_create( ...
 ```
 
 The return type `lv_obj_t` goes to the end of the function declaration, marked by `->`...
@@ -76,6 +76,88 @@ Here's the C function declaration converted to Rust...
 | `lv_obj_t *screen_time_create(` <br> &nbsp;&nbsp;`home_time_widget_t *ht)` | `fn screen_time_create(` <br> &nbsp;&nbsp;`ht: *mut home_time_widget_t)` <br> &nbsp;&nbsp;`-> *mut lv_obj_t` |
 
 # Variable Declaration
+
+Now let's convert this variable declaration from C to Rust...
+
+```C
+lv_obj_t *scr = lv_obj_create( ... ); 
+```
+
+`scr` is a pointer to a C Struct `lv_obj_t`. `scr` is set to the value returned by the C function LittlevGL `lv_obj_create` (which creates a LittlevGL Screen).
+
+In Rust, variables are declared with the `let` keyword, followed by the variable name and type...
+
+```Rust
+let scr: *mut lv_obj_t = lv_obj_create( ... );
+```
+
+_(Yep we did the Name/Type Flipping again)_
+
+Here's a really cool thing about Rust... Types are optional in variable declarations!
+
+We may drop the type `*mut lv_obj_t`, resulting in this perfectly valid Rust declaration...
+
+```Rust
+let scr = lv_obj_create( ... );
+```
+
+_What is this type dropping magic? Won't Rust complain about the missing type?_
+
+If we think about it... `lv_obj_create` is a C function already declared somewhere. The Rust Compiler already knows that `lv_obj_create` returns a value of type `*mut lv_obj_t`.
+
+Thus the Rust Compiler uses __Type Inference__ to deduce that `scr` must have type `*mut lv_obj_t`!
+
+This saves us a lot of rewriting when we convert C code to Rust.
+
+Here's how it looks when we convert to Rust the two variable declarations from our C function...
+
+| __Original C Code__ | __Converted Rust Code__ |
+| :--- | :--- |
+| `lv_obj_t *screen_time_create(` <br> &nbsp;&nbsp;`home_time_widget_t *ht) {` | `fn screen_time_create(` <br> &nbsp;&nbsp;`ht: *mut home_time_widget_t)` <br> &nbsp;&nbsp;`-> *mut lv_obj_t {` <br> |
+| &nbsp;&nbsp;`//  Create a label for time (00:00)` | &nbsp;&nbsp;`//  Create a label for time (00:00)` |
+| &nbsp;&nbsp;`lv_obj_t *scr = lv_obj_create( ... );` | &nbsp;&nbsp;`let scr = lv_obj_create( ... );` |
+| &nbsp;&nbsp;`lv_obj_t *label1 = lv_label_create(scr, ... );` | &nbsp;&nbsp;`let label1 = lv_label_create(scr, ... );` |
+<br>
+
+The parameters are missing from the above code... Let's learn to convert `NULL` to Rust.
+
+# Null Pointers
+
+`NULL` is an unfortunate fact of life for C coders.
+
+```C
+lv_obj_t *scr = lv_obj_create(NULL, NULL); 
+```
+
+```Rust
+let scr: *mut lv_obj_t = lv_obj_create(ptr::null_mut(), ptr::null());
+```
+
+```Rust
+let scr = lv_obj_create(ptr::null_mut(), ptr::null());
+```
+
+```Rust
+let screen = obj::create(ptr::null_mut(), ptr::null())
+    .expect("create screen obj fail");
+```
+
+```C
+lv_obj_t * lv_obj_create(lv_obj_t *parent, const lv_obj_t *copy);
+```
+_From https://github.com/littlevgl/lvgl/blob/master/src/lv_core/lv_obj.h_
+
+```Rust
+#[lvgl_macros::safe_wrap(attr)] extern "C" {
+    #[doc = " Create a basic object"]
+    #[doc = " - __`parent`__: pointer to a parent object."]
+    #[doc = "                  If NULL then a screen will be created"]
+    #[doc = " - __`copy`__: pointer to a base object, if not NULL then the new object will be copied from it"]
+    #[doc = " Return: pointer to the new object"]
+    pub fn lv_obj_create(parent: *mut lv_obj_t, copy: *const lv_obj_t) -> *mut lv_obj_t;
+}
+```
+_From https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/core/obj.rs_
 
 TODO
 
