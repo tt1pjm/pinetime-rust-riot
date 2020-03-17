@@ -249,6 +249,7 @@ Once the C functions have been imported, we may call them in Rust like this...
 | _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c_ | _From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs_ |
 <br>
 
+# Numeric Types
 
 # Strings
 
