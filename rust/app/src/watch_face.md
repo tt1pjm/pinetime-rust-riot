@@ -21,7 +21,7 @@ We'll also learn how Rust handles memory safety when calling C functions...
 Here's a C function that calls the [LittlevGL](https://littlevgl.com/) library to create a Label Widget.  The Label Widget displays the time of the day (like `23:59`).  This code was taken from the [bosmoment /
 PineTime-apps](https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c) port of [RIOT OS](https://www.riot-os.org/) to the [PineTime Smart Watch](https://wiki.pine64.org/index.php/PineTime).
 
-```C
+```c
 lv_obj_t *screen_time_create(home_time_widget_t *ht) {
     //  Create a label for time (00:00)
     lv_obj_t *scr = lv_obj_create(NULL, NULL);
@@ -40,19 +40,19 @@ Functions whose names start with `lv_` (like `lv_obj_create`) are defined in the
 
 Let's start by converting this function declaration from C to Rust...
 
-```C
+```c
 lv_obj_t *screen_time_create(home_time_widget_t *ht) { ...
 ```
 
 This function accepts a pointer and returns another pointer. In Rust, functions are defined with the `fn` keyword...
 
-```Rust
+```rust
 fn screen_time_create( ...
 ```
 
 The return type `lv_obj_t` goes to the end of the function declaration, marked by `->`...
 
-```Rust
+```rust
 fn screen_time_create(ht: *mut home_time_widget_t) 
     -> *mut lv_obj_t { ...
 ```
@@ -79,7 +79,7 @@ Here's the C function declaration converted to Rust...
 
 Now let's convert this variable declaration from C to Rust...
 
-```C
+```c
 lv_obj_t *scr = lv_obj_create( ... ); 
 ```
 
@@ -87,7 +87,7 @@ lv_obj_t *scr = lv_obj_create( ... );
 
 In Rust, variables are declared with the `let` keyword, followed by the variable name and type...
 
-```Rust
+```rust
 let scr: *mut lv_obj_t = lv_obj_create( ... );
 ```
 
@@ -123,45 +123,93 @@ The parameters are missing from the above code... Let's learn to convert `NULL` 
 
 # Null Pointers
 
-`NULL` is an unfortunate fact of life for C coders.
+`NULL` is an unfortunate fact of life for C coders. In our C code we pass two `NULL` pointers to `lv_obj_create`...
 
-```C
+```c
+//  In C: Call lv_obj_create passing 2 NULL pointers
 lv_obj_t *scr = lv_obj_create(NULL, NULL); 
 ```
 
-# Import C Functions
+Both `NULL`s look the same to C... But not to Rust! Let's look at the function declaration in C...
 
-# Error Handling
-
-```Rust
-let scr: *mut lv_obj_t = lv_obj_create(ptr::null_mut(), ptr::null());
+```c
+//  In C: Function declaration for lv_obj_create
+lv_obj_t * lv_obj_create(lv_obj_t *parent, const lv_obj_t *copy);
 ```
+_From https://github.com/littlevgl/lvgl/blob/master/src/lv_core/lv_obj.h_
 
-```Rust
+See the difference? The first parameter is a non-`const` pointer (i.e. it's Mutable), whereas the second parameter is a `const` pointer.
+
+Here's how we pass the two `NULL` pointers in Rust...
+
+```rust
+//  In Rust: Call lv_obj_create passing 2 NULL pointers: 1 mutable, 1 const
 let scr = lv_obj_create(ptr::null_mut(), ptr::null());
 ```
+
+`null_mut` creates a `NULL` Mutable pointer, `null` creates a Non-Mutable `const NULL` pointer.
+
+`ptr` references the Rust Core Library, which we import like this...
+
+```rust
+//  In Rust: Import the Rust Core Library for pointer handling
+use core::ptr;
+```
+
+When we insert the `NULL` parameters into the converted Rust code, we get this...
+
+| __Original C Code__ | __Converted Rust Code__ |
+| :--- | :--- |
+| `lv_obj_t *screen_time_create(` <br> &nbsp;&nbsp;`home_time_widget_t *ht) {` | `fn screen_time_create(` <br> &nbsp;&nbsp;`ht: *mut home_time_widget_t)` <br> &nbsp;&nbsp;`-> *mut lv_obj_t {` <br> |
+| &nbsp;&nbsp;`//  Create a label for time (00:00)` | &nbsp;&nbsp;`//  Create a label for time (00:00)` |
+| &nbsp;&nbsp;`lv_obj_t *scr = lv_obj_create(` | &nbsp;&nbsp;`let scr = lv_obj_create(` |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__`NULL,`__ | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__`ptr::null_mut(),`__ |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__`NULL`__ | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__`ptr::null()`__ |
+| &nbsp;&nbsp;`);` | &nbsp;&nbsp;`);` |
+| &nbsp;&nbsp;`lv_obj_t *label1 = lv_label_create(`&nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;`let label1 = lv_label_create(` |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`scr,` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`scr,` |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__`NULL`__ | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__`ptr::null()`__ |
+| &nbsp;&nbsp;`);` | &nbsp;&nbsp;`);` |
+<br>
+
+# Import C Functions
+
+```C
+lv_obj_t *scr = lv_obj_create(NULL, NULL);
+lv_obj_t *label1 = lv_label_create(scr, NULL);
+
+lv_label_set_text(label1, "00:00");
+lv_obj_set_width(label1, 240);
+lv_obj_set_height(label1, 200);
+```
+
+```C
+lv_obj_t * lv_obj_create(lv_obj_t *parent, const lv_obj_t *copy);
+lv_obj_t * lv_label_create(lv_obj_t * par, const lv_obj_t * copy);
+void lv_label_set_text(lv_obj_t * label, const char * text);
+void lv_obj_set_width(lv_obj_t * obj, lv_coord_t w);
+void lv_obj_set_height(lv_obj_t * obj, lv_coord_t h);
+```
+_From https://github.com/littlevgl/lvgl/blob/master/src/lv_core/lv_obj.h, https://github.com/littlevgl/lvgl/blob/master/src/lv_objx/lv_label.h_
+
+```Rust
+#[lvgl_macros::safe_wrap(attr)]
+extern "C" {
+    pub fn lv_obj_create(parent: *mut lv_obj_t, copy: *const lv_obj_t) -> *mut lv_obj_t;
+    pub fn lv_label_create(par: *mut lv_obj_t, copy: *const lv_obj_t) -> *mut lv_obj_t;
+    pub fn lv_label_set_text(label: *mut lv_obj_t, text: *const ::cty::c_char);
+    pub fn lv_obj_set_width(obj: *mut lv_obj_t, w: lv_coord_t);
+    pub fn lv_obj_set_height(obj: *mut lv_obj_t, h: lv_coord_t);
+}
+```
+_From https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/core/obj.rs, https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/objx/label.rs_
+
+# Error Handling
 
 ```Rust
 let screen = obj::create(ptr::null_mut(), ptr::null())
     .expect("create screen obj fail");
 ```
-
-```C
-lv_obj_t * lv_obj_create(lv_obj_t *parent, const lv_obj_t *copy);
-```
-_From https://github.com/littlevgl/lvgl/blob/master/src/lv_core/lv_obj.h_
-
-```Rust
-#[lvgl_macros::safe_wrap(attr)] extern "C" {
-    #[doc = " Create a basic object"]
-    #[doc = " - __`parent`__: pointer to a parent object."]
-    #[doc = "                  If NULL then a screen will be created"]
-    #[doc = " - __`copy`__: pointer to a base object, if not NULL then the new object will be copied from it"]
-    #[doc = " Return: pointer to the new object"]
-    pub fn lv_obj_create(parent: *mut lv_obj_t, copy: *const lv_obj_t) -> *mut lv_obj_t;
-}
-```
-_From https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/core/obj.rs_
 
 TODO
 
