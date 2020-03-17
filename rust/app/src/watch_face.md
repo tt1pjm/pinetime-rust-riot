@@ -2,11 +2,12 @@
 
 _This article is presented in CINEMASCOPE... Rotate your phone to view the C and Rust source code side by side... Or better yet, read this article on a desktop computer_
 
-We'll learn step by step to convert this Embedded C code (based on LittlevGL) to Embedded Rust on RIOT OS...
+We'll learn step by step to convert this [Embedded C code](https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c) (based on LittlevGL) to [Embedded Rust](https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs) on RIOT OS...
 
 | __Original C Code__ | __Converted Rust Code__ |
 | :--- | :--- |
 | `lv_obj_t *screen_time_create(home_time_widget_t *ht) {` <br><br>&nbsp;&nbsp;`    //  Create a label for time (00:00)` <br>&nbsp;&nbsp;`    lv_obj_t *scr = lv_obj_create(NULL, NULL);` <br>&nbsp;&nbsp;`    lv_obj_t *label1 = lv_label_create(scr, NULL);` <br><br>&nbsp;&nbsp;`    lv_label_set_text(label1, "00:00");` <br>&nbsp;&nbsp;`    lv_obj_set_width(label1, 240);` <br>&nbsp;&nbsp;`    lv_obj_set_height(label1, 200);` <br>&nbsp;&nbsp;`    ht->lv_time = label1;` <br>&nbsp;&nbsp;`    ...` <br>&nbsp;&nbsp;`    return scr;` <br>`}` <br> | `fn create_widgets(widgets: &mut WatchFaceWidgets) -> ` <br>&nbsp;&nbsp;`    LvglResult<()> {` <br><br>&nbsp;&nbsp;`    //  Create a label for time (00:00)` <br>&nbsp;&nbsp;`    let scr = widgets.screen;` <br>&nbsp;&nbsp;`    let label1 = label::create(scr, ptr::null()) ? ;` <br><br>&nbsp;&nbsp;`    label::set_text(label1, strn!("00:00")) ? ;` <br>&nbsp;&nbsp;`    obj::set_width(label1, 240) ? ;` <br>&nbsp;&nbsp;`    obj::set_height(label1, 200) ? ;` <br>&nbsp;&nbsp;`    widgets.time_label = label1;` <br>&nbsp;&nbsp;`    ...` <br>&nbsp;&nbsp;`    Ok(())` <br>`}` <br> |
+| _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c_ | _From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs_ |
 
 We'll also learn how Rust handles memory safety when calling C functions...
 
@@ -15,6 +16,7 @@ We'll also learn how Rust handles memory safety when calling C functions...
 |
 `int set_time_label(home_time_widget_t *ht) {` <br><br>&nbsp;&nbsp;`    //  Create a string buffer on stack` <br>&nbsp;&nbsp;`    char time[6];` <br><br>&nbsp;&nbsp;`    //  Format the time` <br>&nbsp;&nbsp;`    int res = snprintf(time, ` <br>&nbsp;&nbsp;&nbsp;&nbsp;`        sizeof(time), ` <br>&nbsp;&nbsp;&nbsp;&nbsp;`        "%02u:%02u", ` <br>&nbsp;&nbsp;&nbsp;&nbsp;`        ht->time.hour,` <br>&nbsp;&nbsp;&nbsp;&nbsp;`        ht->time.minute);` <br><br>&nbsp;&nbsp;`if (res != sizeof(time) - 1) {` <br>&nbsp;&nbsp;&nbsp;&nbsp;`LOG_ERROR("overflow");` <br>&nbsp;&nbsp;&nbsp;&nbsp;`return -1;` <br>&nbsp;&nbsp;`}` <br><br>&nbsp;&nbsp;`//  Set the label` <br>&nbsp;&nbsp;`lv_label_set_text(ht->lv_time, time);` <br><br>&nbsp;&nbsp;`//  Return OK` <br>&nbsp;&nbsp;`return 0;` <br>`}` <br>|`fn set_time_label(` <br>&nbsp;&nbsp;`    widgets: &WatchFaceWidgets, ` <br>&nbsp;&nbsp;`    state: &WatchFaceState) -> ` <br>&nbsp;&nbsp;`    LvglResult<()> {` <br><br>&nbsp;&nbsp;`    //  Create a static string buffer` <br>&nbsp;&nbsp;`    static mut TIME_BUF: HString::<U6> =`<br>&nbsp;&nbsp;&nbsp;&nbsp;` HString(IString::new());` <br><br>&nbsp;&nbsp;`    unsafe {` <br>&nbsp;&nbsp;&nbsp;&nbsp;`        //  Format the time` <br>&nbsp;&nbsp;&nbsp;&nbsp;`        TIME_BUF.clear();` <br>&nbsp;&nbsp;&nbsp;&nbsp;`        write!(&mut TIME_BUF, ` <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`            "{:02}:{:02}\0",` <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`            state.time.hour,` <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`            state.time.minute)` <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`            .expect("overflow");` <br><br>&nbsp;&nbsp;&nbsp;&nbsp;`        //  Set the label` <br>&nbsp;&nbsp;&nbsp;&nbsp;`        label::set_text(widgets.time_label, ` <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`            &Strn::from_str(&TIME_BUF) ? ;` <br>&nbsp;&nbsp;`    }` <br><br>&nbsp;&nbsp;`    //  Return OK` <br>&nbsp;&nbsp;`    Ok(())` <br>`}` <br>
 |
+| _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c_ | _From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs_ |
 
 # Function Declaration
 
@@ -74,6 +76,7 @@ Here's the C function declaration converted to Rust...
 | __Original C Code__ | __Converted Rust Code__ |
 | :--- | :--- |
 | `lv_obj_t *screen_time_create(` <br> &nbsp;&nbsp;`home_time_widget_t *ht)` | `fn screen_time_create(` <br> &nbsp;&nbsp;`ht: *mut home_time_widget_t)` <br> &nbsp;&nbsp;`-> *mut lv_obj_t` |
+| _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c_ | _From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs_ |
 
 # Variable Declaration
 
@@ -117,6 +120,7 @@ Here's how it looks when we convert to Rust the two variable declarations from o
 | &nbsp;&nbsp;`//  Create a label for time (00:00)` | &nbsp;&nbsp;`//  Create a label for time (00:00)` |
 | &nbsp;&nbsp;`lv_obj_t *scr = lv_obj_create( ... );` | &nbsp;&nbsp;`let scr = lv_obj_create( ... );` |
 | &nbsp;&nbsp;`lv_obj_t *label1 = lv_label_create(scr, ... );` | &nbsp;&nbsp;`let label1 = lv_label_create(scr, ... );` |
+| _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c_ | _From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs_ |
 <br>
 
 The parameters are missing from the above code... Let's learn to convert `NULL` to Rust.
@@ -170,16 +174,18 @@ When we insert the `NULL` parameters into the converted Rust code, we get this..
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`scr,` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`scr,` |
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__`NULL`__ | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__`ptr::null()`__ |
 | &nbsp;&nbsp;`);` | &nbsp;&nbsp;`);` |
+| _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c_ | _From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs_ |
 <br>
 
 # Import C Functions
 
 Let's look back at the C code that we're convering to Rust...
 
-```C
+```c
 //  In C: Create a label for time (00:00)
 lv_obj_t *scr = lv_obj_create(NULL, NULL);
 lv_obj_t *label1 = lv_label_create(scr, NULL);
+
 //  Set the text, width and height of the label
 lv_label_set_text(label1, "00:00");
 lv_obj_set_width(label1, 240);
@@ -188,7 +194,7 @@ lv_obj_set_height(label1, 200);
 
 The `lv_...` functions called above come from the LittlevGL library. Here are the function declarations in C...
 
-```C
+```c
 //  In C: LittlevGL Function Declarations
 lv_obj_t * lv_obj_create(lv_obj_t *parent, const lv_obj_t *copy);
 lv_obj_t * lv_label_create(lv_obj_t *par, const lv_obj_t *copy);
@@ -198,9 +204,9 @@ void lv_obj_set_height(lv_obj_t *obj, int16_t h);
 ```
 _From https://github.com/littlevgl/lvgl/blob/master/src/lv_core/lv_obj.h, https://github.com/littlevgl/lvgl/blob/master/src/lv_objx/lv_label.h_
 
-Before calling these C functions from Rust, we need to import them like this...
+To call these C functions from Rust, we need to import them with `extern "C"` like this...
 
-```Rust
+```rust
 //  In Rust: Import LittlevGL Functions
 extern "C" {
     fn lv_obj_create(parent: *mut lv_obj_t, copy: *const lv_obj_t) -> *mut lv_obj_t;
@@ -212,7 +218,39 @@ extern "C" {
 ```
 _From https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/core/obj.rs, https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/objx/label.rs_
 
-We applied the Name/Type Flipping TODO
+See the Name/Type Flipping? We used it again.
+
+Take note of the `*mut` and `*const` pointers... Rust is very picky about Mutability!
+
+What's `::cty::c_char`? It's complicated... We'll talk about strings in the next section.
+
+Once the C functions have been imported, we may call them in Rust like this...
+
+| __Original C Code__ | __Converted Rust Code__ |
+| :--- | :--- |
+| `lv_obj_t *screen_time_create(` <br> &nbsp;&nbsp;`home_time_widget_t *ht) {` | `fn screen_time_create(` <br> &nbsp;&nbsp;`ht: *mut home_time_widget_t)` <br> &nbsp;&nbsp;`-> *mut lv_obj_t {` <br> |
+| &nbsp;&nbsp;`//  Create a label for time (00:00)` | &nbsp;&nbsp;`//  Create a label for time (00:00)` |
+| &nbsp;&nbsp;`lv_obj_t *scr = lv_obj_create(` | &nbsp;&nbsp;`let scr = lv_obj_create(` |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`NULL, NULL` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`ptr::null_mut(), ptr::null()` |
+| &nbsp;&nbsp;`);` | &nbsp;&nbsp;`);` |
+| &nbsp;&nbsp;`lv_obj_t *label1 = lv_label_create(`&nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;`let label1 = lv_label_create(` |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`scr, NULL` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`scr, ptr::null()` |
+| &nbsp;&nbsp;`);` | &nbsp;&nbsp;`);` |
+| &nbsp;&nbsp;`//  Set the text, width and height` | &nbsp;&nbsp;`//  Set the text, width and height` |
+| &nbsp;&nbsp;`lv_label_set_text(` | &nbsp;&nbsp;`lv_label_set_text(` |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`label1, "00:00"` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`label1, //  TODO` |
+| &nbsp;&nbsp;`);` | &nbsp;&nbsp;`);` |
+| &nbsp;&nbsp;`lv_obj_set_width(` | &nbsp;&nbsp;`lv_obj_set_width(` |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`label1, 240` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`label1, 240` |
+| &nbsp;&nbsp;`);` | &nbsp;&nbsp;`);` |
+| &nbsp;&nbsp;`lv_obj_set_height(` | &nbsp;&nbsp;`lv_obj_set_height(` |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`label1, 200` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`label1, 200` |
+| &nbsp;&nbsp;`);` | &nbsp;&nbsp;`);` |
+| _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c_ | _From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs_ |
+<br>
+
+
+# Strings
 
 # Error Handling
 
