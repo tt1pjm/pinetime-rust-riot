@@ -129,6 +129,10 @@ The parameters are missing from the above code... Let's learn to convert `NULL` 
 lv_obj_t *scr = lv_obj_create(NULL, NULL); 
 ```
 
+# Import C Functions
+
+# Error Handling
+
 ```Rust
 let scr: *mut lv_obj_t = lv_obj_create(ptr::null_mut(), ptr::null());
 ```
