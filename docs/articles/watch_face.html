@@ -54,10 +54,17 @@
 <li><a href="#variable-declaration">2 Variable Declaration</a><ul></ul></li>
 <li><a href="#null-pointers">3 Null Pointers</a><ul></ul></li>
 <li><a href="#import-c-functions-into-rust">4 Import C Functions into Rust</a><ul></ul></li>
-<li><a href="#strings">5 Strings</a><ul></ul></li>
-<li><a href="#error-handling">6 Error Handling</a><ul></ul></li>
-<li><a href="#update-littlevgl-widget">7 Update LittlevGL Widget</a><ul></ul></li>
-<li><a href="#bindgen">8 bindgen</a><ul></ul></li></ul></nav><p><em>This article is presented in CINEMASCOPE... Rotate your phone to view the C and Rust source code side by side... Or better yet, read this article on a desktop computer</em></p>
+<li><a href="#numeric-types">5 Numeric Types</a><ul></ul></li>
+<li><a href="#strings">6 Strings</a><ul></ul></li>
+<li><a href="#error-handling">7 Error Handling</a><ul></ul></li>
+<li><a href="#return-value">8 Return Value</a><ul></ul></li>
+<li><a href="#lifetime">9 Lifetime</a><ul></ul></li>
+<li><a href="#unsafe">10 Unsafe</a><ul></ul></li>
+<li><a href="#generate-rust-bindings-automatically-with-bindgen">11 Generate Rust Bindings Automatically with bindgen</a><ul></ul></li>
+<li><a href="#riot-os-bindings">12 RIOT OS Bindings</a><ul></ul></li>
+<li><a href="#build-and-link-with-riot-os">13 Build and link with RIOT OS</a><ul></ul></li>
+<li><a href="#vscode-development">14 VSCode Development</a><ul></ul></li>
+<li><a href="#vscode-debugging">15 VSCode Debugging</a><ul></ul></li></ul></nav><p><em>This article is presented in CINEMASCOPE... Rotate your phone to view the C and Rust source code side by side... Or better yet, read this article on a desktop computer</em></p>
 <p>We'll learn step by step to convert this <a href="https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c">Embedded C code</a> (based on LittlevGL) to <a href="https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs">Embedded Rust</a> on RIOT OS...</p>
 <table><thead><tr><th align="left"><strong>Original C Code</strong></th><th align="left"><strong>Converted Rust Code</strong></th></tr></thead><tbody>
 <tr><td align="left"><code>lv_obj_t *screen_time_create(home_time_widget_t *ht) {</code> <br><br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    lv_obj_t *scr = lv_obj_create(NULL, NULL);</code> <br>  <code>    lv_obj_t *label1 = lv_label_create(scr, NULL);</code> <br><br>  <code>    lv_label_set_text(label1, &quot;00:00&quot;);</code> <br>  <code>    lv_obj_set_width(label1, 240);</code> <br>  <code>    lv_obj_set_height(label1, 200);</code> <br>  <code>    ht-&gt;lv_time = label1;</code> <br>  <code>    ...</code> <br>  <code>    return scr;</code> <br><code>}</code> <br></td><td align="left"><code>fn create_widgets(widgets: &amp;mut WatchFaceWidgets) -&gt; </code> <br>  <code>    LvglResult&lt;()&gt; {</code> <br><br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    let scr = widgets.screen;</code> <br>  <code>    let label1 = label::create(scr, ptr::null()) ? ;</code> <br><br>  <code>    label::set_text(label1, strn!(&quot;00:00&quot;)) ? ;</code> <br>  <code>    obj::set_width(label1, 240) ? ;</code> <br>  <code>    obj::set_height(label1, 200) ? ;</code> <br>  <code>    widgets.time_label = label1;</code> <br>  <code>    ...</code> <br>  <code>    Ok(())</code> <br><code>}</code> <br></td></tr>
@@ -235,16 +242,51 @@ void lv_obj_set_height(lv_obj_t *obj, int16_t h);
 <tr><td align="left"><em>From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c</em></td><td align="left"><em>From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs</em></td></tr>
 <tr><td align="left"><br></td><td align="left"></td></tr>
 </tbody></table>
-<h1 id="strings" class="section-header"><a href="#strings">5 Strings</a></h1><h1 id="error-handling" class="section-header"><a href="#error-handling">6 Error Handling</a></h1>
+<h1 id="numeric-types" class="section-header"><a href="#numeric-types">5 Numeric Types</a></h1>
+<p>Something interesting happened when we took this C function declaration...</p>
+<pre><code class="language-c">//  In C: Function declaration for lv_obj_set_width
+void lv_obj_set_width(lv_obj_t *obj, int16_t w);
+</code></pre>
+<p>And imported it into Rust...</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="comment">//  In Rust: Import lv_obj_set_width function from C</span>
+<span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
+    <span class="kw">fn</span> <span class="ident">lv_obj_set_width</span>(<span class="ident">obj</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">lv_obj_t</span>, <span class="ident">w</span>: <span class="ident">i16</span>);
+}</pre></div>
+<p><em>Look at the second parameter... How did <code>int16_t</code> in C (16-bit signed integer) become <code>i16</code> in Rust?</em></p>
+<p>You might have guessed... Numeric Types in Rust have no-nonsense, super-compact names!</p>
+<p>So <code>int16_t</code> gets shortened to <code>i16</code>. <code>uint16_t</code> (unsigned 16-bit integer) gets shortened to <code>u16</code>.</p>
+<p>Numeric Types are such a joy to write!  And there's no need to <code>#include &lt;stdint.h&gt;</code></p>
+<table><thead><tr><th align="left"><strong>C Numeric Type</strong>   </th><th align="center"><strong>Rust Numeric Type</strong></th></tr></thead><tbody>
+<tr><td align="left"><code>int8_t</code></td><td align="center"><code>i8</code></td></tr>
+<tr><td align="left"><code>uint8_t</code></td><td align="center"><code>u8</code></td></tr>
+<tr><td align="left"><code>int16_t</code></td><td align="center"><code>i16</code></td></tr>
+<tr><td align="left"><code>uint16_t</code></td><td align="center"><code>u16</code></td></tr>
+<tr><td align="left"><code>int32_t</code></td><td align="center"><code>i32</code></td></tr>
+<tr><td align="left"><code>uint32_t</code></td><td align="center"><code>u32</code></td></tr>
+<tr><td align="left"><code>int64_t</code></td><td align="center"><code>i64</code></td></tr>
+<tr><td align="left"><code>uint64_t</code></td><td align="center"><code>u64</code></td></tr>
+<tr><td align="left"><code>float</code></td><td align="center"><code>f32</code></td></tr>
+<tr><td align="left"><code>double</code></td><td align="center"><code>f64</code></td></tr>
+<tr><td align="left"><br></td><td align="center"></td></tr>
+</tbody></table>
+<p>In Rust we use <code>u8</code> to refer to a byte.</p>
+<h1 id="strings" class="section-header"><a href="#strings">6 Strings</a></h1>
+<p>TODO</p>
+<h1 id="error-handling" class="section-header"><a href="#error-handling">7 Error Handling</a></h1>
+<p>TODO</p>
 <pre><code class="language-Rust">let screen = obj::create(ptr::null_mut(), ptr::null())
     .expect(&quot;create screen obj fail&quot;);
 </code></pre>
 <p>TODO</p>
-<h1 id="update-littlevgl-widget" class="section-header"><a href="#update-littlevgl-widget">7 Update LittlevGL Widget</a></h1>
+<h1 id="return-value" class="section-header"><a href="#return-value">8 Return Value</a></h1>
 <p>TODO</p>
-<p>From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c</p>
-<p>From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs</p>
-<h1 id="bindgen" class="section-header"><a href="#bindgen">8 bindgen</a></h1>
+<h1 id="lifetime" class="section-header"><a href="#lifetime">9 Lifetime</a></h1>
+<p>TODO</p>
+<h1 id="unsafe" class="section-header"><a href="#unsafe">10 Unsafe</a></h1>
+<p>TODO</p>
+<h1 id="generate-rust-bindings-automatically-with-bindgen" class="section-header"><a href="#generate-rust-bindings-automatically-with-bindgen">11 Generate Rust Bindings Automatically with bindgen</a></h1>
 <p>TODO</p>
 <pre><code class="language-Rust">#[lvgl_macros::safe_wrap(attr)]
 extern &quot;C&quot; {
@@ -256,6 +298,14 @@ extern &quot;C&quot; {
 }
 </code></pre>
 <p><em>From https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/core/obj.rs, https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/objx/label.rs</em></p>
+<h1 id="riot-os-bindings" class="section-header"><a href="#riot-os-bindings">12 RIOT OS Bindings</a></h1>
+<p>TODO</p>
+<h1 id="build-and-link-with-riot-os" class="section-header"><a href="#build-and-link-with-riot-os">13 Build and link with RIOT OS</a></h1>
+<p>TODO</p>
+<h1 id="vscode-development" class="section-header"><a href="#vscode-development">14 VSCode Development</a></h1>
+<p>TODO</p>
+<h1 id="vscode-debugging" class="section-header"><a href="#vscode-debugging">15 VSCode Debugging</a></h1>
+<p>TODO</p>
 
     
 </body>

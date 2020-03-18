@@ -251,9 +251,53 @@ Once the C functions have been imported, we may call them in Rust like this...
 
 # Numeric Types
 
+Something interesting happened when we took this C function declaration...
+
+```c
+//  In C: Function declaration for lv_obj_set_width
+void lv_obj_set_width(lv_obj_t *obj, int16_t w);
+```
+
+And imported it into Rust...
+
+```rust
+//  In Rust: Import lv_obj_set_width function from C
+extern "C" {
+    fn lv_obj_set_width(obj: *mut lv_obj_t, w: i16);
+}
+```
+
+_Look at the second parameter... How did `int16_t` in C (16-bit signed integer) become `i16` in Rust?_
+
+You might have guessed... Numeric Types in Rust have no-nonsense, super-compact names!
+
+So `int16_t` gets shortened to `i16`. `uint16_t` (unsigned 16-bit integer) gets shortened to `u16`.
+
+Numeric Types are such a joy to write!  And there's no need to `#include <stdint.h>`
+
+| __C Numeric Type__ &nbsp;&nbsp; | __Rust Numeric Type__ |
+| :--- | :---: |
+| `int8_t` | `i8` |
+| `uint8_t` | `u8` |
+| `int16_t` | `i16` |
+| `uint16_t` | `u16` |
+| `int32_t` | `i32` |
+| `uint32_t` | `u32` |
+| `int64_t` | `i64` |
+| `uint64_t` | `u64` |
+| `float` | `f32` |
+| `double` | `f64` |
+<br>
+
+In Rust we use `u8` to refer to a byte.
+
 # Strings
 
+TODO
+
 # Error Handling
+
+TODO
 
 ```Rust
 let screen = obj::create(ptr::null_mut(), ptr::null())
@@ -262,15 +306,19 @@ let screen = obj::create(ptr::null_mut(), ptr::null())
 
 TODO
 
-# Update LittlevGL Widget
+# Return Value
 
 TODO
 
-From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c
+# Lifetime
 
-From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs
+TODO
 
-# bindgen
+# Unsafe
+
+TODO
+
+# Generate Rust Bindings Automatically with bindgen
 
 TODO
 
@@ -285,3 +333,19 @@ extern "C" {
 }
 ```
 _From https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/core/obj.rs, https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/objx/label.rs_
+
+# RIOT OS Bindings
+
+TODO
+
+# Build and link with RIOT OS
+
+TODO
+
+# VSCode Development
+
+TODO
+
+# VSCode Debugging
+
+TODO
