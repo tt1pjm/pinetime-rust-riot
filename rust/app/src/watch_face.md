@@ -291,7 +291,7 @@ Numeric Types are such a joy to write!  And there's no need to `#include <stdint
 
 In Rust we use `u8` to refer to a byte.
 
-# Strings
+# Pass Strings from Rust to C
 
 Rust has a powerful `String` type for manipulating strings (stored in heap memory)... But we'll look at a simpler way to pass strings from Rust to C.
 
