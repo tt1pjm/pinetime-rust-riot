@@ -211,7 +211,7 @@ To call these C functions from Rust, we need to import them with `extern "C"` li
 extern "C" {
     fn lv_obj_create(parent: *mut lv_obj_t, copy: *const lv_obj_t) -> *mut lv_obj_t;
     fn lv_label_create(par: *mut lv_obj_t, copy: *const lv_obj_t) -> *mut lv_obj_t;
-    fn lv_label_set_text(label: *mut lv_obj_t, text: *const ::cty::c_char);
+    fn lv_label_set_text(label: *mut lv_obj_t, text: *const u8);
     fn lv_obj_set_width(obj: *mut lv_obj_t, w: i16);
     fn lv_obj_set_height(obj: *mut lv_obj_t, h: i16);
 }
@@ -222,7 +222,7 @@ _See the Name/Type Flipping? We did it again!_
 
 Take note of the `*mut` and `*const` pointers... Rust is very picky about Mutability!
 
-What's `::cty::c_char`? It's complicated... We'll talk about strings in the next section.
+What's `*const u8`? It's complicated... We'll talk about strings in a while.
 
 Once the C functions have been imported, we may call them in Rust like this...
 
@@ -293,7 +293,65 @@ In Rust we use `u8` to refer to a byte.
 
 # Strings
 
-TODO
+Rust has a powerful `String` type for manipulating strings (stored in heap memory)... But we'll look at a simpler way to pass strings from Rust to C.
+
+This is our original C code...
+
+```c
+//  In C: Declare function lv_label_set_text
+void lv_label_set_text(lv_obj_t *label, const char *text);
+...
+//  Set the text of the label to "00:00"
+lv_label_set_text(label1, "00:00");
+```
+
+Here's how we pass the string `"00:00"` from Rust to C...
+
+```rust
+//  In Rust: Import function lv_label_set_text from C
+extern "C" {
+    fn lv_label_set_text(label: *mut lv_obj_t, text: *const u8);
+}
+...
+//  Set the text of the label to "00:00"
+lv_label_set_text(
+    label1,
+    b"00:00\0".as_ptr()
+);
+```
+
+Remember that `u8` in Rust means unsigned byte, so `*const u8` in Rust is similar to `const char *` in C.
+
+Let's compare the C string and its Rust equivalent...
+
+| __C String__ &nbsp;&nbsp; | __Rust Equivalent__ |
+| :--- | :--- |
+| `"00:00"` | `b"00:00\0".as_ptr()` |
+<br>
+
+The `b"`...`"` notation creates a Rust [Byte String](https://doc.rust-lang.org/reference/tokens.html#byte-string-literals). A Byte String is an array of bytes, similar to strings in C.
+
+Unlike C, strings in Rust don't have a terminating null. So we manually added the null: `\0`
+
+In C, arrays and pointers are interchangeable, so `char *` behaves like `char[]`... But not in Rust! 
+
+Rust arrays have an internal counter that remembers the length of the array. Which explains why Rust strings don't have a terminating null... Rust internally tracks the length of each string.
+
+To convert a Rust array to a pointer, we use `as_ptr()` as shown above.
+
+_What happens if we forget to add the terminating null `\0`? Catastrophe!_
+
+The C function `lv_label_set_text` will get very confused without the terminating null. So the above Byte String notation `b"`...`"` is prone to problems.
+
+Later we'll see an easier, safer way to write strings... With a Rust Macro.
+
+```rust
+//  In Rust: Set the label text with a macro
+lv_label_set_text(
+    label1,
+    strn!("00:00")
+);
+```
 
 # Error Handling
 

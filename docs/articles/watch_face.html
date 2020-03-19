@@ -211,14 +211,14 @@ void lv_obj_set_height(lv_obj_t *obj, int16_t h);
 <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
     <span class="kw">fn</span> <span class="ident">lv_obj_create</span>(<span class="ident">parent</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">lv_obj_t</span>, <span class="ident">copy</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">lv_obj_t</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">lv_obj_t</span>;
     <span class="kw">fn</span> <span class="ident">lv_label_create</span>(<span class="ident">par</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">lv_obj_t</span>, <span class="ident">copy</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">lv_obj_t</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">lv_obj_t</span>;
-    <span class="kw">fn</span> <span class="ident">lv_label_set_text</span>(<span class="ident">label</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">lv_obj_t</span>, <span class="ident">text</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">cty</span>::<span class="ident">c_char</span>);
+    <span class="kw">fn</span> <span class="ident">lv_label_set_text</span>(<span class="ident">label</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">lv_obj_t</span>, <span class="ident">text</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u8</span>);
     <span class="kw">fn</span> <span class="ident">lv_obj_set_width</span>(<span class="ident">obj</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">lv_obj_t</span>, <span class="ident">w</span>: <span class="ident">i16</span>);
     <span class="kw">fn</span> <span class="ident">lv_obj_set_height</span>(<span class="ident">obj</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">lv_obj_t</span>, <span class="ident">h</span>: <span class="ident">i16</span>);
 }</pre></div>
 <p><em>From https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/core/obj.rs, https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/objx/label.rs</em></p>
 <p><em>See the Name/Type Flipping? We did it again!</em></p>
 <p>Take note of the <code>*mut</code> and <code>*const</code> pointers... Rust is very picky about Mutability!</p>
-<p>What's <code>::cty::c_char</code>? It's complicated... We'll talk about strings in the next section.</p>
+<p>What's <code>*const u8</code>? It's complicated... We'll talk about strings in a while.</p>
 <p>Once the C functions have been imported, we may call them in Rust like this...</p>
 <table><thead><tr><th align="left"><strong>Original C Code</strong></th><th align="left"><strong>Converted Rust Code</strong></th></tr></thead><tbody>
 <tr><td align="left"><code>lv_obj_t *screen_time_create(</code> <br>   <code>home_time_widget_t *ht) {</code></td><td align="left"><code>fn screen_time_create(</code> <br>   <code>ht: *mut home_time_widget_t)</code> <br>   <code>-&gt; *mut lv_obj_t {</code> <br></td></tr>
@@ -273,7 +273,48 @@ void lv_obj_set_width(lv_obj_t *obj, int16_t w);
 </tbody></table>
 <p>In Rust we use <code>u8</code> to refer to a byte.</p>
 <h1 id="strings" class="section-header"><a href="#strings">6 Strings</a></h1>
-<p>TODO</p>
+<p>Rust has a powerful <code>String</code> type for manipulating strings (stored in heap memory)... But we'll look at a simpler way to pass strings from Rust to C.</p>
+<p>This is our original C code...</p>
+<pre><code class="language-c">//  In C: Declare function lv_label_set_text
+void lv_label_set_text(lv_obj_t *label, const char *text);
+...
+//  Set the text of the label to &quot;00:00&quot;
+lv_label_set_text(label1, &quot;00:00&quot;);
+</code></pre>
+<p>Here's how we pass the string <code>&quot;00:00&quot;</code> from Rust to C...</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="comment">//  In Rust: Import function lv_label_set_text from C</span>
+<span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
+    <span class="kw">fn</span> <span class="ident">lv_label_set_text</span>(<span class="ident">label</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">lv_obj_t</span>, <span class="ident">text</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u8</span>);
+}
+...
+<span class="comment">//  Set the text of the label to &quot;00:00&quot;</span>
+<span class="ident">lv_label_set_text</span>(
+    <span class="ident">label1</span>,
+    <span class="string">b&quot;00:00\0&quot;</span>.<span class="ident">as_ptr</span>()
+);</pre></div>
+<p>Remember that <code>u8</code> in Rust means unsigned byte, so <code>*const u8</code> in Rust is similar to <code>const char *</code> in C.</p>
+<p>Let's compare the C string and its Rust equivalent...</p>
+<table><thead><tr><th align="left"><strong>C String</strong>   </th><th align="left"><strong>Rust Equivalent</strong></th></tr></thead><tbody>
+<tr><td align="left"><code>&quot;00:00&quot;</code></td><td align="left"><code>b&quot;00:00\0&quot;.as_ptr()</code></td></tr>
+<tr><td align="left"><br></td><td align="left"></td></tr>
+</tbody></table>
+<p>The <code>b&quot;</code>...<code>&quot;</code> notation creates a Rust <a href="https://doc.rust-lang.org/reference/tokens.html#byte-string-literals">Byte String</a>. A Byte String is an array of bytes, similar to strings in C.</p>
+<p>Unlike C, strings in Rust don't have a terminating null. So we manually added the null: <code>\0</code></p>
+<p>In C, arrays and pointers are interchangeable, so <code>char *</code> behaves like <code>char[]</code>... But not in Rust! </p>
+<p>Rust arrays have an internal counter that remembers the length of the array. Which explains why Rust strings don't have a terminating null... Rust internally tracks the length of each string.</p>
+<p>To convert a Rust array to a pointer, we use <code>as_ptr()</code> as shown above.</p>
+<p><em>What happens if we forget to add the terminating null <code>\0</code>? Catastrophe!</em></p>
+<p>The C function <code>lv_label_set_text</code> will get very confused without the terminating null. So the above Byte String notation <code>b&quot;</code>...<code>&quot;</code> is prone to problems.</p>
+<p>Later we'll see an easier, safer way to write strings... With a Rust Macro.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="comment">//  In Rust: Set the label text with a macro</span>
+<span class="ident">lv_label_set_text</span>(
+    <span class="ident">label1</span>,
+    <span class="macro">strn</span><span class="macro">!</span>(<span class="string">&quot;00:00&quot;</span>)
+);</pre></div>
 <h1 id="error-handling" class="section-header"><a href="#error-handling">7 Error Handling</a></h1>
 <p>TODO</p>
 <pre><code class="language-Rust">let screen = obj::create(ptr::null_mut(), ptr::null())

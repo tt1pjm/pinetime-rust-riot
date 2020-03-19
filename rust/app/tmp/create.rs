@@ -12,3 +12,12 @@
 &nbsp;&nbsp;`    ...` <br>
 &nbsp;&nbsp;`    Ok(())` <br>
 `}` <br>
+
+unsafe { lv_label_set_text(
+    b"abc\0".as_ptr(), 
+    [b'a', b'b', b'c', 0].as_ptr()) }; ////
+}
+
+extern "C" {
+fn lv_label_set_text(label: *const u8, text: *const u8); ////
+}
