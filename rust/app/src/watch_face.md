@@ -326,7 +326,7 @@ Let's compare the C string and its Rust equivalent...
 
 | __C String__ &nbsp;&nbsp; | __Rust Equivalent__ |
 | :--- | :--- |
-| `"00:00"` | `b"00:00\0".as_ptr()` |
+| `"00:00"`&nbsp;&nbsp;&nbsp;&nbsp; | `b"00:00\0".as_ptr()` |
 <br>
 
 The `b"`...`"` notation creates a Rust [Byte String](https://doc.rust-lang.org/reference/tokens.html#byte-string-literals). A Byte String is an array of bytes, similar to strings in C.

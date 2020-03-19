@@ -297,7 +297,7 @@ lv_label_set_text(label1, &quot;00:00&quot;);
 <p>Remember that <code>u8</code> in Rust means unsigned byte, so <code>*const u8</code> in Rust is similar to <code>const char *</code> in C.</p>
 <p>Let's compare the C string and its Rust equivalent...</p>
 <table><thead><tr><th align="left"><strong>C String</strong>   </th><th align="left"><strong>Rust Equivalent</strong></th></tr></thead><tbody>
-<tr><td align="left"><code>&quot;00:00&quot;</code></td><td align="left"><code>b&quot;00:00\0&quot;.as_ptr()</code></td></tr>
+<tr><td align="left"><code>&quot;00:00&quot;</code>    </td><td align="left"><code>b&quot;00:00\0&quot;.as_ptr()</code></td></tr>
 <tr><td align="left"><br></td><td align="left"></td></tr>
 </tbody></table>
 <p>The <code>b&quot;</code>...<code>&quot;</code> notation creates a Rust <a href="https://doc.rust-lang.org/reference/tokens.html#byte-string-literals">Byte String</a>. A Byte String is an array of bytes, similar to strings in C.</p>
