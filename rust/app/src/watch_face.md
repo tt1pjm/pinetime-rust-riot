@@ -404,6 +404,18 @@ If we use this convention, the last expression of the function should not end wi
 
 # Import C Types
 
+```rust
+#[repr(C)]
+struct home_time_widget_t {
+    //  TODO
+    screen:      *mut obj::lv_obj_t,
+    time_label:  *mut obj::lv_obj_t,
+    date_label:  *mut obj::lv_obj_t,
+    ble_label:   *mut obj::lv_obj_t,
+    power_label: *mut obj::lv_obj_t,
+}
+```
+
 TODO
 
 # Unsafe
