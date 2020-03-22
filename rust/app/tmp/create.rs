@@ -21,3 +21,22 @@ unsafe { lv_label_set_text(
 extern "C" {
 fn lv_label_set_text(label: *const u8, text: *const u8); ////
 }
+
+////
+fn zzz_screen_time_create(ht: *mut home_time_widget_t) -> *mut obj::lv_obj_t {  //  Declare extern "C" because it will be called by RIOT OS firmware
+    let scr = lv_obj_create(ptr::null_mut(), ptr::null());
+    let label1 = lv_label_create(scr, ptr::null());
+    (*ht).lv_time = label1;
+    scr
+}
+struct home_time_widget_t {
+    lv_time: *mut obj::lv_obj_t,
+}
+extern "C" {
+    fn lv_obj_create(parent: *mut obj::lv_obj_t, copy: *const obj::lv_obj_t) -> *mut obj::lv_obj_t;
+    fn lv_label_create(par: *mut obj::lv_obj_t, copy: *const obj::lv_obj_t) -> *mut obj::lv_obj_t;
+    fn lv_label_set_text(label: *mut obj::lv_obj_t, text: *const u8);
+    fn lv_obj_set_width(obj: *mut obj::lv_obj_t, w: i16);
+    fn lv_obj_set_height(obj: *mut obj::lv_obj_t, h: i16);
+}
+////

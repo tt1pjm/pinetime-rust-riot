@@ -352,6 +352,43 @@ lv_label_set_text(
     strn!("00:00")
 );
 ```
+# Pointer Dereferencing
+
+In C we write `->` to dereference a pointer...
+
+```c
+//  In C: Dereference the pointer ht and set the lv_time field
+ht->lv_time = label1;
+```
+
+Rust doesn't have an operator for pointer deferencing. We use the `*` and `.` operators (similar to C) to dereference a pointer...
+
+```rust
+//  In Rust: Dereference the pointer ht and set the lv_time field
+(*ht).lv_time = label1;
+```
+
+# Return Value
+
+
+
+```rust
+screen  //  Return the screen
+```
+
+TODO
+
+# Import C Types
+
+TODO
+
+# Unsafe
+
+TODO
+
+# No Mangle
+
+# Expose Rust functions to C
 
 # Error Handling
 
@@ -364,15 +401,7 @@ let screen = obj::create(ptr::null_mut(), ptr::null())
 
 TODO
 
-# Return Value
-
-TODO
-
 # Lifetime
-
-TODO
-
-# Unsafe
 
 TODO
 
