@@ -354,14 +354,14 @@ lv_label_set_text(
 ```
 # Pointer Dereferencing
 
-In C we write `->` to dereference a pointer...
+In C we write `->` to dereference a pointer and access a field...
 
 ```c
 //  In C: Dereference the pointer ht and set the lv_time field
 ht->lv_time = label1;
 ```
 
-Rust doesn't have an operator for pointer deferencing. We use the `*` and `.` operators (similar to C) to dereference a pointer...
+Rust doesn't have an operator for pointer dereferencing and field access. Instead, we use the `*` and `.` operators, which are used the same way as in C...
 
 ```rust
 //  In Rust: Dereference the pointer ht and set the lv_time field
@@ -370,13 +370,27 @@ Rust doesn't have an operator for pointer deferencing. We use the `*` and `.` op
 
 # Return Value
 
+In C we use the `return` keyword to set the return value of the current function...
 
-
-```rust
-screen  //  Return the screen
+```c
+//  In C: Return scr as the value of the function
+return scr;
 ```
 
-TODO
+In Rust the `return` keyword works the same way...
+
+```rust
+//  In Rust: Return scr as the value of the function
+return scr;
+```
+
+Rust also allows us to set the return value of the current function by writing the value as the last expression of the function...
+
+```rust
+    //  In Rust: Return scr as the value of the function
+    scr
+}  //  End of function
+```
 
 # Import C Types
 
