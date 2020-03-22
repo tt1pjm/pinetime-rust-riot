@@ -373,24 +373,34 @@ Rust doesn't have an operator for pointer dereferencing and field access. Instea
 In C we use the `return` keyword to set the return value of the current function...
 
 ```c
-//  In C: Return scr as the value of the function
-return scr;
+lv_obj_t *screen_time_create(home_time_widget_t *ht) {
+    ...
+    //  In C: Return scr as the value of the function
+    return scr;
+}
 ```
 
 In Rust the `return` keyword works the same way...
 
 ```rust
-//  In Rust: Return scr as the value of the function
-return scr;
+fn screen_time_create(ht: *mut home_time_widget_t) -> *mut lv_obj_t { 
+    ...
+    //  In Rust: Return scr as the value of the function
+    return scr;
+}   //  End of function
 ```
 
 Rust also allows us to set the return value of the current function by writing the value as the last expression of the function...
 
 ```rust
-    //  In Rust: Return scr as the value of the function
+fn screen_time_create(ht: *mut home_time_widget_t) -> *mut lv_obj_t { 
+    ...
+    //  In Rust: Return scr as the value of the function. Note: No semicolon ";" at the end
     scr
-}  //  End of function
+}   //  End of function
 ```
+
+If we use this convention, the last expression of the function should not end with a semicolon.
 
 # Import C Types
 
