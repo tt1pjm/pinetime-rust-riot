@@ -470,40 +470,63 @@ To fix this, we specify `#[repr(C)]`. This tells the Rust Compiler that the Stru
 
 # Import C Enums into Rust
 
-typedef enum {
-    BLEMAN_BLE_STATE_INACTIVE,
-    BLEMAN_BLE_STATE_ADVERTISING,
-    BLEMAN_BLE_STATE_DISCONNECTED,
-    BLEMAN_BLE_STATE_CONNECTED,
-} bleman_ble_state_t;
-_From https://github.com/bosmoment/PineTime-apps/blob/master/modules/bleman/include/bleman.h_
+The Struct above contains a C Enum `bleman_ble_state_t`. Here's how we import `bleman_ble_state_t` into Rust...
 
-#[repr(u8)]
-#[derive(PartialEq)]
-enum bleman_ble_state_t {
-    BLEMAN_BLE_STATE_INACTIVE = 0,
-    BLEMAN_BLE_STATE_ADVERTISING = 1,
-    BLEMAN_BLE_STATE_DISCONNECTED = 2,
-    BLEMAN_BLE_STATE_CONNECTED = 3,
-}
+| __Original C Code__ | __Converted Rust Code__ |
+| :--- | :--- |
+| `typedef enum {` | `#[repr(u8)]` <br> `#[derive(PartialEq)]` <br> `enum bleman_ble_state_t {` |
+| &nbsp;&nbsp;`BLEMAN_BLE_STATE_INACTIVE,` | &nbsp;&nbsp;`BLEMAN_BLE_STATE_INACTIVE = 0,` |
+| &nbsp;&nbsp;`BLEMAN_BLE_STATE_ADVERTISING,` | &nbsp;&nbsp;`BLEMAN_BLE_STATE_ADVERTISING = 1,` |
+| &nbsp;&nbsp;`BLEMAN_BLE_STATE_DISCONNECTED,` | &nbsp;&nbsp;`BLEMAN_BLE_STATE_DISCONNECTED = 2,` |
+| &nbsp;&nbsp;`BLEMAN_BLE_STATE_CONNECTED,` | &nbsp;&nbsp;`BLEMAN_BLE_STATE_CONNECTED = 3,` |
+| `} bleman_ble_state_t;` | `}` |
+| _From https://github.com/bosmoment/PineTime-apps/blob/master/modules/bleman/include/bleman.h_ | _From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs_ |
+<br>
 
-_Is there a better way to import C functions and types into Rust?_
+Note that we specified in Rust the Enum values `0, 1, 2, 3` to avoid any possible ambiguity.
 
-TODO
+_What's `#[repr(u8)]`?_
+
+Recall that `u8` refers to an unsigned byte. When we specify `#[repr(u8)]`, we tell the Rust Compiler that this Enum uses 8 bits to [store the value of the Enum](https://doc.rust-lang.org/nomicon/other-reprs.html#repru-repri).
+
+Thus the code above assumes that the C Enum value passed into our Rust function is 8 bits wide.
+
+_What's the size of a C Enum? 8 bits, 16 bits, 32 bits, ...?_
+
+That depends on the values in the C Enum. Check this article for details: [_"How Big Is An Enum?"_](https://embedded.fm/blog/2016/6/28/how-big-is-an-enum)
+
+_What's `#[derive(PartialEq)]`?_
+
+`#[derive(PartialEq)]` is needed so that we may [compare Enum values](https://doc.rust-lang.org/std/cmp/trait.PartialEq.html) like this...
+
+```rust
+//  In Rust: Compare an enum value
+if state.ble_state == bleman_ble_state_t::BLEMAN_BLE_STATE_DISCONNECTED { ...
+```
+_From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs_
+
+Note that Enum values are prefixed by the Enum type name, like `bleman_ble_state_t::...`
+
+_Importing of C functions and types looks tedious and error-prone... Is there a better way to import C functions and types into Rust?_
+
+Yes! Later we'll look at an automated way to import C functions and types: `bindgen`
 
 # Unsafe
 
 TODO
 
-# No Mangle
-
 # Expose Rust functions to C
+
+```rust
+#[no_mangle]
+extern "C" fn create_watch_face(widgets: *mut WatchFaceWidgets) -> i32 { ...
+```
 
 # Error Handling
 
 TODO
 
-```Rust
+```rust
 let screen = obj::create(ptr::null_mut(), ptr::null())
     .expect("create screen obj fail");
 ```
@@ -514,11 +537,27 @@ TODO
 
 TODO
 
+```rust
+/// Populate the Time and Date Labels with the time and date. Called by screen_time_update_screen() above.
+fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
+    //  Create a string buffer with max size 6 to format the time
+    static mut TIME_BUF: heapless::String::<heapless::consts::U6> = heapless::String(heapless::i::String::new());
+    //  Format the time and set the label
+    unsafe {
+        TIME_BUF.clear();
+        write!(&mut TIME_BUF, "{:02}:{:02}\0",  //  Must terminate Rust strings with null
+            state.time.hour,
+            state.time.minute)
+            .expect("time fail");
+        label::set_text(widgets.time_label, &Strn::new(TIME_BUF.as_bytes())) ? ;  //  TODO: Simplify
+    }
+```
+
 # Generate Rust Bindings Automatically with bindgen
 
 TODO
 
-```Rust
+```rust
 #[lvgl_macros::safe_wrap(attr)]
 extern "C" {
     pub fn lv_obj_create(parent: *mut lv_obj_t, copy: *const lv_obj_t) -> *mut lv_obj_t;
