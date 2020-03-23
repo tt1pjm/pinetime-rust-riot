@@ -362,7 +362,7 @@ In C we write `->` to dereference a pointer and access a Struct field...
 ht->lv_time = label1;
 ```
 
-Rust doesn't have a combined operator for dereferencing pointers and accessing Struct fields. Instead, we use the `*` and `.` operators, which have the same meaning in C...
+Rust doesn't have a combined operator for dereferencing pointers and accessing Struct fields. Instead, we use the `*` and `.` operators, which have the same meanings as in C...
 
 ```rust
 //  In Rust: Dereference the pointer ht and set the lv_time field
@@ -403,19 +403,116 @@ fn screen_time_create(ht: *mut home_time_widget_t) -> *mut lv_obj_t {
 
 If we use this convention, the last expression of the function should not end with a semicolon.
 
-# Import C Types
+# C to Rust Conversion: First Version
+
+Following the steps above, we'll get this line-by-line conversion from C to Rust...
+
+| __Original C Code__ | __Converted Rust Code__ |
+| :--- | :--- |
+| `lv_obj_t *screen_time_create(` <br> &nbsp;&nbsp;`home_time_widget_t *ht) {` | `fn screen_time_create(` <br> &nbsp;&nbsp;`ht: *mut home_time_widget_t)` <br> &nbsp;&nbsp;`-> *mut lv_obj_t {` <br> |
+| &nbsp;&nbsp;`//  Create a label for time (00:00)` | &nbsp;&nbsp;`//  Create a label for time (00:00)` |
+| &nbsp;&nbsp;`lv_obj_t *scr = lv_obj_create(` | &nbsp;&nbsp;`let scr = lv_obj_create(` |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`NULL, NULL` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`ptr::null_mut(), ptr::null()` |
+| &nbsp;&nbsp;`);` | &nbsp;&nbsp;`);` |
+| &nbsp;&nbsp;`lv_obj_t *label1 = lv_label_create(`&nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;`let label1 = lv_label_create(` |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`scr, NULL` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`scr, ptr::null()` |
+| &nbsp;&nbsp;`);` | &nbsp;&nbsp;`);` |
+| &nbsp;&nbsp;`//  Set the text, width and height` | &nbsp;&nbsp;`//  Set the text, width and height` |
+| &nbsp;&nbsp;`lv_label_set_text(` | &nbsp;&nbsp;`lv_label_set_text(` |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`label1, "00:00"` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`label1, b"00:00\0".as_ptr()` |
+| &nbsp;&nbsp;`);` | &nbsp;&nbsp;`);` |
+| &nbsp;&nbsp;`lv_obj_set_width(` | &nbsp;&nbsp;`lv_obj_set_width(` |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`label1, 240` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`label1, 240` |
+| &nbsp;&nbsp;`);` | &nbsp;&nbsp;`);` |
+| &nbsp;&nbsp;`lv_obj_set_height(` | &nbsp;&nbsp;`lv_obj_set_height(` |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`label1, 200` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`label1, 200` |
+| &nbsp;&nbsp;`);` | &nbsp;&nbsp;`);` |
+| &nbsp;&nbsp;`ht->lv_time = label1;` | &nbsp;&nbsp;`(*ht).lv_time = label1;` |
+| &nbsp;&nbsp;`return scr;` | &nbsp;&nbsp;`scr` |
+| `}` | `}` |
+| _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c_ | _From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs_ |
+<br>
+
+The importing of C functions into Rust has been omitted from the code above. Now let's learn to import C Structs and Enums into Rust.
+
+# Import C Structs into Rust
+
+`home_time_widget_t` is a C Struct that's passed as a parameter into our Rust function. Here's how we import `home_time_widget_t` in Rust...
+
+| __Original C Code__ | __Converted Rust Code__ |
+| :--- | :--- |
+| `lv_obj_t *screen_time_create(` <br> &nbsp;&nbsp;`home_time_widget_t *ht) {` | `fn screen_time_create(` <br> &nbsp;&nbsp;`ht: *mut home_time_widget_t)` <br> &nbsp;&nbsp;`-> *mut lv_obj_t {` <br> |
+| &nbsp;&nbsp;`//  Create a label for time (00:00)` | &nbsp;&nbsp;`//  Create a label for time (00:00)` |
+| &nbsp;&nbsp;`lv_obj_t *scr = lv_obj_create(` | &nbsp;&nbsp;`let scr = lv_obj_create(` |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`NULL, NULL` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`ptr::null_mut(), ptr::null()` |
+| &nbsp;&nbsp;`);` | &nbsp;&nbsp;`);` |
+| &nbsp;&nbsp;`lv_obj_t *label1 = lv_label_create(`&nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;`let label1 = lv_label_create(` |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`scr, NULL` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`scr, ptr::null()` |
+| &nbsp;&nbsp;`);` | &nbsp;&nbsp;`);` |
+| &nbsp;&nbsp;`//  Set the text, width and height` | &nbsp;&nbsp;`//  Set the text, width and height` |
+| &nbsp;&nbsp;`lv_label_set_text(` | &nbsp;&nbsp;`lv_label_set_text(` |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`label1, "00:00"` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`label1, b"00:00\0".as_ptr()` |
+| &nbsp;&nbsp;`);` | &nbsp;&nbsp;`);` |
+| &nbsp;&nbsp;`lv_obj_set_width(` | &nbsp;&nbsp;`lv_obj_set_width(` |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`label1, 240` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`label1, 240` |
+| &nbsp;&nbsp;`);` | &nbsp;&nbsp;`);` |
+| &nbsp;&nbsp;`lv_obj_set_height(` | &nbsp;&nbsp;`lv_obj_set_height(` |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`label1, 200` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`label1, 200` |
+| &nbsp;&nbsp;`);` | &nbsp;&nbsp;`);` |
+| &nbsp;&nbsp;`ht->lv_time = label1;` | &nbsp;&nbsp;`(*ht).lv_time = label1;` |
+| &nbsp;&nbsp;`return scr;` | &nbsp;&nbsp;`scr` |
+| `}` | `}` |
+| _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/include/home_time.h_ | _From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs_ |
+<br>
+
+```c
+typedef struct _home_time_widget {
+    widget_t widget;
+    control_event_handler_t handler;
+    lv_obj_t *screen;
+    lv_obj_t *lv_time;
+    lv_obj_t *lv_date;
+    lv_obj_t *lv_ble;
+    lv_obj_t *lv_power;
+    bleman_ble_state_t ble_state;
+    controller_time_spec_t time;
+    uint32_t millivolts;
+    bool charging;
+    bool powered;
+} home_time_widget_t;
+```
+_From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/include/home_time.h_
 
 ```rust
 #[repr(C)]
 struct home_time_widget_t {
-    //  TODO
-    screen:      *mut obj::lv_obj_t,
-    time_label:  *mut obj::lv_obj_t,
-    date_label:  *mut obj::lv_obj_t,
-    ble_label:   *mut obj::lv_obj_t,
-    power_label: *mut obj::lv_obj_t,
+    widget: widget_t,
+    handler: control_event_handler_t,
+    screen:   *mut lv_obj_t,
+    lv_time:  *mut lv_obj_t,
+    lv_date:  *mut lv_obj_t,
+    lv_ble:   *mut lv_obj_t,
+    lv_power: *mut lv_obj_t,
+    ble_state: bleman_ble_state_t,
+    time: controller_time_spec_t,
+    millivolts: u32,
+    charging: bool,
+    powered: bool,
 }
 ```
+_From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs_
+
+Note the Name/Type Flipping. Also semicolons "`;`" have been replaced by commas "`,`".
+
+_What's `#[repr(C)]`?_
+
+The Rust Compiler is really clever in [laying out Struct fields to save storage space](https://doc.rust-lang.org/nomicon/repr-rust.html).  Unfortunately this optimised layout is not compatible with C... Rust would not be able to access correctly the Struct fields passed from C.
+
+To fix this, we specify `#[repr(C)]`. This tells the Rust Compiler that the Struct uses the C layout for fields instead of the Rust layout.
+
+# Import C Enums into Rust
+
+_Is there a better way to import C functions and types into Rust?_
 
 TODO
 
