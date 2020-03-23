@@ -58,17 +58,19 @@
 <li><a href="#pass-strings-from-rust-to-c">6 Pass Strings from Rust to C</a><ul></ul></li>
 <li><a href="#pointer-dereferencing">7 Pointer Dereferencing</a><ul></ul></li>
 <li><a href="#return-value">8 Return Value</a><ul></ul></li>
-<li><a href="#import-c-types">9 Import C Types</a><ul></ul></li>
-<li><a href="#unsafe">10 Unsafe</a><ul></ul></li>
-<li><a href="#no-mangle">11 No Mangle</a><ul></ul></li>
-<li><a href="#expose-rust-functions-to-c">12 Expose Rust functions to C</a><ul></ul></li>
-<li><a href="#error-handling">13 Error Handling</a><ul></ul></li>
-<li><a href="#lifetime">14 Lifetime</a><ul></ul></li>
-<li><a href="#generate-rust-bindings-automatically-with-bindgen">15 Generate Rust Bindings Automatically with bindgen</a><ul></ul></li>
-<li><a href="#riot-os-bindings">16 RIOT OS Bindings</a><ul></ul></li>
-<li><a href="#build-and-link-with-riot-os">17 Build and link with RIOT OS</a><ul></ul></li>
-<li><a href="#vscode-development">18 VSCode Development</a><ul></ul></li>
-<li><a href="#vscode-debugging">19 VSCode Debugging</a><ul></ul></li></ul></nav><p><em>This article is presented in CINEMASCOPE... Rotate your phone to view the C and Rust source code side by side... Or better yet, read this article on a desktop computer</em></p>
+<li><a href="#c-to-rust-conversion-first-version">9 C to Rust Conversion: First Version</a><ul></ul></li>
+<li><a href="#import-c-structs-into-rust">10 Import C Structs into Rust</a><ul></ul></li>
+<li><a href="#import-c-enums-into-rust">11 Import C Enums into Rust</a><ul></ul></li>
+<li><a href="#unsafe">12 Unsafe</a><ul></ul></li>
+<li><a href="#no-mangle">13 No Mangle</a><ul></ul></li>
+<li><a href="#expose-rust-functions-to-c">14 Expose Rust functions to C</a><ul></ul></li>
+<li><a href="#error-handling">15 Error Handling</a><ul></ul></li>
+<li><a href="#lifetime">16 Lifetime</a><ul></ul></li>
+<li><a href="#generate-rust-bindings-automatically-with-bindgen">17 Generate Rust Bindings Automatically with bindgen</a><ul></ul></li>
+<li><a href="#riot-os-bindings">18 RIOT OS Bindings</a><ul></ul></li>
+<li><a href="#build-and-link-with-riot-os">19 Build and link with RIOT OS</a><ul></ul></li>
+<li><a href="#vscode-development">20 VSCode Development</a><ul></ul></li>
+<li><a href="#vscode-debugging">21 VSCode Debugging</a><ul></ul></li></ul></nav><p><em>This article is presented in CINEMASCOPE... Rotate your phone to view the C and Rust source code side by side... Or better yet, read this article on a desktop computer</em></p>
 <p>We'll learn step by step to convert this <a href="https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c">Embedded C code</a> (based on LittlevGL) to <a href="https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs">Embedded Rust</a> on RIOT OS...</p>
 <table><thead><tr><th align="left"><strong>Original C Code</strong></th><th align="left"><strong>Converted Rust Code</strong></th></tr></thead><tbody>
 <tr><td align="left"><code>lv_obj_t *screen_time_create(home_time_widget_t *ht) {</code> <br><br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    lv_obj_t *scr = lv_obj_create(NULL, NULL);</code> <br>  <code>    lv_obj_t *label1 = lv_label_create(scr, NULL);</code> <br><br>  <code>    lv_label_set_text(label1, &quot;00:00&quot;);</code> <br>  <code>    lv_obj_set_width(label1, 240);</code> <br>  <code>    lv_obj_set_height(label1, 200);</code> <br>  <code>    ht-&gt;lv_time = label1;</code> <br>  <code>    ...</code> <br>  <code>    return scr;</code> <br><code>}</code> <br></td><td align="left"><code>fn create_widgets(widgets: &amp;mut WatchFaceWidgets) -&gt; </code> <br>  <code>    LvglResult&lt;()&gt; {</code> <br><br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    let scr = widgets.screen;</code> <br>  <code>    let label1 = label::create(scr, ptr::null()) ? ;</code> <br><br>  <code>    label::set_text(label1, strn!(&quot;00:00&quot;)) ? ;</code> <br>  <code>    obj::set_width(label1, 240) ? ;</code> <br>  <code>    obj::set_height(label1, 200) ? ;</code> <br>  <code>    widgets.time_label = label1;</code> <br>  <code>    ...</code> <br>  <code>    Ok(())</code> <br><code>}</code> <br></td></tr>
@@ -324,7 +326,7 @@ lv_label_set_text(label1, &quot;00:00&quot;);
 <pre><code class="language-c">//  In C: Dereference the pointer ht and set the lv_time field
 ht-&gt;lv_time = label1;
 </code></pre>
-<p>Rust doesn't have a combined operator for dereferencing pointers and accessing Struct fields. Instead, we use the <code>*</code> and <code>.</code> operators, which have the same meaning in C...</p>
+<p>Rust doesn't have a combined operator for dereferencing pointers and accessing Struct fields. Instead, we use the <code>*</code> and <code>.</code> operators, which have the same meanings as in C...</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered">
 <span class="comment">//  In Rust: Dereference the pointer ht and set the lv_time field</span>
@@ -354,29 +356,73 @@ ht-&gt;lv_time = label1;
     <span class="ident">scr</span>
 }</pre></div>
 <p>If we use this convention, the last expression of the function should not end with a semicolon.</p>
-<h1 id="import-c-types" class="section-header"><a href="#import-c-types">9 Import C Types</a></h1>
-<div class="example-wrap"><pre class="rust rust-example-rendered">
-<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="kw">struct</span> <span class="ident">home_time_widget_t</span> {
-    <span class="comment">//  TODO</span>
-    <span class="ident">screen</span>:      <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">obj</span>::<span class="ident">lv_obj_t</span>,
-    <span class="ident">time_label</span>:  <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">obj</span>::<span class="ident">lv_obj_t</span>,
-    <span class="ident">date_label</span>:  <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">obj</span>::<span class="ident">lv_obj_t</span>,
-    <span class="ident">ble_label</span>:   <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">obj</span>::<span class="ident">lv_obj_t</span>,
-    <span class="ident">power_label</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">obj</span>::<span class="ident">lv_obj_t</span>,
-}</pre></div>
+<h1 id="c-to-rust-conversion-first-version" class="section-header"><a href="#c-to-rust-conversion-first-version">9 C to Rust Conversion: First Version</a></h1>
+<p>Following the steps above, we'll get this line-by-line conversion from C to Rust...</p>
+<table><thead><tr><th align="left"><strong>Original C Code</strong></th><th align="left"><strong>Converted Rust Code</strong></th></tr></thead><tbody>
+<tr><td align="left"><code>lv_obj_t *screen_time_create(</code> <br>   <code>home_time_widget_t *ht) {</code></td><td align="left"><code>fn screen_time_create(</code> <br>   <code>ht: *mut home_time_widget_t)</code> <br>   <code>-&gt; *mut lv_obj_t {</code> <br></td></tr>
+<tr><td align="left">  <code>//  Create a label for time (00:00)</code></td><td align="left">  <code>//  Create a label for time (00:00)</code></td></tr>
+<tr><td align="left">  <code>lv_obj_t *scr = lv_obj_create(</code></td><td align="left">  <code>let scr = lv_obj_create(</code></td></tr>
+<tr><td align="left">      <code>NULL, NULL</code></td><td align="left">      <code>ptr::null_mut(), ptr::null()</code></td></tr>
+<tr><td align="left">  <code>);</code></td><td align="left">  <code>);</code></td></tr>
+<tr><td align="left">  <code>lv_obj_t *label1 = lv_label_create(</code>    </td><td align="left">  <code>let label1 = lv_label_create(</code></td></tr>
+<tr><td align="left">      <code>scr, NULL</code></td><td align="left">      <code>scr, ptr::null()</code></td></tr>
+<tr><td align="left">  <code>);</code></td><td align="left">  <code>);</code></td></tr>
+<tr><td align="left">  <code>//  Set the text, width and height</code></td><td align="left">  <code>//  Set the text, width and height</code></td></tr>
+<tr><td align="left">  <code>lv_label_set_text(</code></td><td align="left">  <code>lv_label_set_text(</code></td></tr>
+<tr><td align="left">      <code>label1, &quot;00:00&quot;</code></td><td align="left">      <code>label1, b&quot;00:00\0&quot;.as_ptr()</code></td></tr>
+<tr><td align="left">  <code>);</code></td><td align="left">  <code>);</code></td></tr>
+<tr><td align="left">  <code>lv_obj_set_width(</code></td><td align="left">  <code>lv_obj_set_width(</code></td></tr>
+<tr><td align="left">      <code>label1, 240</code></td><td align="left">      <code>label1, 240</code></td></tr>
+<tr><td align="left">  <code>);</code></td><td align="left">  <code>);</code></td></tr>
+<tr><td align="left">  <code>lv_obj_set_height(</code></td><td align="left">  <code>lv_obj_set_height(</code></td></tr>
+<tr><td align="left">      <code>label1, 200</code></td><td align="left">      <code>label1, 200</code></td></tr>
+<tr><td align="left">  <code>);</code></td><td align="left">  <code>);</code></td></tr>
+<tr><td align="left">  <code>ht-&gt;lv_time = label1;</code></td><td align="left">  <code>(*ht).lv_time = label1;</code></td></tr>
+<tr><td align="left">  <code>return scr;</code></td><td align="left">  <code>scr</code></td></tr>
+<tr><td align="left"><code>}</code></td><td align="left"><code>}</code></td></tr>
+<tr><td align="left"><em>From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c</em></td><td align="left"><em>From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs</em></td></tr>
+<tr><td align="left"><br></td><td align="left"></td></tr>
+</tbody></table>
+<p>The importing of C functions into Rust has been omitted from the code above. Now let's learn to import C Structs and Enums into Rust.</p>
+<h1 id="import-c-structs-into-rust" class="section-header"><a href="#import-c-structs-into-rust">10 Import C Structs into Rust</a></h1>
+<p><code>home_time_widget_t</code> is a C Struct that's passed as a parameter into our Rust function. Here's how we import <code>home_time_widget_t</code> into Rust...</p>
+<table><thead><tr><th align="left"><strong>Original C Code</strong></th><th align="left"><strong>Converted Rust Code</strong></th></tr></thead><tbody>
+<tr><td align="left"><code>typedef struct _home_time_widget {</code></td><td align="left"><code>#[repr(C)]</code> <br> <code>struct home_time_widget_t {</code></td></tr>
+<tr><td align="left">  <code>widget_t widget;</code></td><td align="left">  <code>widget: widget_t,</code></td></tr>
+<tr><td align="left">  <code>control_event_handler_t handler;</code></td><td align="left">  <code>handler: control_event_handler_t,</code></td></tr>
+<tr><td align="left">  <code>lv_obj_t *screen;</code></td><td align="left">  <code>screen:   *mut lv_obj_t,</code></td></tr>
+<tr><td align="left">  <code>lv_obj_t *lv_time;</code></td><td align="left">  <code>lv_time:  *mut lv_obj_t,</code></td></tr>
+<tr><td align="left">  <code>lv_obj_t *lv_date;</code></td><td align="left">  <code>lv_date:  *mut lv_obj_t,</code></td></tr>
+<tr><td align="left">  <code>lv_obj_t *lv_ble;</code></td><td align="left">  <code>lv_ble:   *mut lv_obj_t,</code></td></tr>
+<tr><td align="left">  <code>lv_obj_t *lv_power;</code></td><td align="left">  <code>lv_power: *mut lv_obj_t,</code></td></tr>
+<tr><td align="left">  <code>bleman_ble_state_t ble_state;</code></td><td align="left">  <code>ble_state: bleman_ble_state_t,</code></td></tr>
+<tr><td align="left">  <code>controller_time_spec_t time;</code></td><td align="left">  <code>time: controller_time_spec_t,</code></td></tr>
+<tr><td align="left">  <code>uint32_t millivolts;</code></td><td align="left">  <code>millivolts: u32,</code></td></tr>
+<tr><td align="left">  <code>bool charging;</code></td><td align="left">  <code>charging: bool,</code></td></tr>
+<tr><td align="left">  <code>bool powered;</code></td><td align="left">  <code>powered: bool,</code></td></tr>
+<tr><td align="left"><code>} home_time_widget_t;</code></td><td align="left"><code>}</code></td></tr>
+<tr><td align="left"><em>From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/include/home_time.h</em></td><td align="left"><em>From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs</em></td></tr>
+<tr><td align="left"><br></td><td align="left"></td></tr>
+</tbody></table>
+<p>Note the Name/Type Flipping. Also semicolons &quot;<code>;</code>&quot; have been replaced by commas &quot;<code>,</code>&quot;.</p>
+<p>We'll need to import the C types <code>widget_t</code>, <code>control_event_handler_t</code>, <code>lv_obj_t</code>, <code>bleman_ble_state_t</code> and <code>controller_time_spec_t</code> the same way.</p>
+<p><em>What's <code>#[repr(C)]</code>?</em></p>
+<p>The Rust Compiler is really clever in <a href="https://doc.rust-lang.org/nomicon/repr-rust.html">laying out Struct fields to save storage space</a>.  Unfortunately this optimised layout is not compatible with C... Rust would not be able to access correctly the Struct fields passed from C.</p>
+<p>To fix this, we specify <code>#[repr(C)]</code>. This tells the Rust Compiler that the Struct uses the C layout for fields instead of the Rust layout.</p>
+<h1 id="import-c-enums-into-rust" class="section-header"><a href="#import-c-enums-into-rust">11 Import C Enums into Rust</a></h1>
+<p><em>Is there a better way to import C functions and types into Rust?</em></p>
 <p>TODO</p>
-<h1 id="unsafe" class="section-header"><a href="#unsafe">10 Unsafe</a></h1>
+<h1 id="unsafe" class="section-header"><a href="#unsafe">12 Unsafe</a></h1>
 <p>TODO</p>
-<h1 id="no-mangle" class="section-header"><a href="#no-mangle">11 No Mangle</a></h1><h1 id="expose-rust-functions-to-c" class="section-header"><a href="#expose-rust-functions-to-c">12 Expose Rust functions to C</a></h1><h1 id="error-handling" class="section-header"><a href="#error-handling">13 Error Handling</a></h1>
+<h1 id="no-mangle" class="section-header"><a href="#no-mangle">13 No Mangle</a></h1><h1 id="expose-rust-functions-to-c" class="section-header"><a href="#expose-rust-functions-to-c">14 Expose Rust functions to C</a></h1><h1 id="error-handling" class="section-header"><a href="#error-handling">15 Error Handling</a></h1>
 <p>TODO</p>
 <pre><code class="language-Rust">let screen = obj::create(ptr::null_mut(), ptr::null())
     .expect(&quot;create screen obj fail&quot;);
 </code></pre>
 <p>TODO</p>
-<h1 id="lifetime" class="section-header"><a href="#lifetime">14 Lifetime</a></h1>
+<h1 id="lifetime" class="section-header"><a href="#lifetime">16 Lifetime</a></h1>
 <p>TODO</p>
-<h1 id="generate-rust-bindings-automatically-with-bindgen" class="section-header"><a href="#generate-rust-bindings-automatically-with-bindgen">15 Generate Rust Bindings Automatically with bindgen</a></h1>
+<h1 id="generate-rust-bindings-automatically-with-bindgen" class="section-header"><a href="#generate-rust-bindings-automatically-with-bindgen">17 Generate Rust Bindings Automatically with bindgen</a></h1>
 <p>TODO</p>
 <pre><code class="language-Rust">#[lvgl_macros::safe_wrap(attr)]
 extern &quot;C&quot; {
@@ -388,13 +434,13 @@ extern &quot;C&quot; {
 }
 </code></pre>
 <p><em>From https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/core/obj.rs, https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/objx/label.rs</em></p>
-<h1 id="riot-os-bindings" class="section-header"><a href="#riot-os-bindings">16 RIOT OS Bindings</a></h1>
+<h1 id="riot-os-bindings" class="section-header"><a href="#riot-os-bindings">18 RIOT OS Bindings</a></h1>
 <p>TODO</p>
-<h1 id="build-and-link-with-riot-os" class="section-header"><a href="#build-and-link-with-riot-os">17 Build and link with RIOT OS</a></h1>
+<h1 id="build-and-link-with-riot-os" class="section-header"><a href="#build-and-link-with-riot-os">19 Build and link with RIOT OS</a></h1>
 <p>TODO</p>
-<h1 id="vscode-development" class="section-header"><a href="#vscode-development">18 VSCode Development</a></h1>
+<h1 id="vscode-development" class="section-header"><a href="#vscode-development">20 VSCode Development</a></h1>
 <p>TODO</p>
-<h1 id="vscode-debugging" class="section-header"><a href="#vscode-debugging">19 VSCode Debugging</a></h1>
+<h1 id="vscode-debugging" class="section-header"><a href="#vscode-debugging">21 VSCode Debugging</a></h1>
 <p>TODO</p>
 
     

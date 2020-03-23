@@ -437,72 +437,30 @@ The importing of C functions into Rust has been omitted from the code above. Now
 
 # Import C Structs into Rust
 
-`home_time_widget_t` is a C Struct that's passed as a parameter into our Rust function. Here's how we import `home_time_widget_t` in Rust...
+`home_time_widget_t` is a C Struct that's passed as a parameter into our Rust function. Here's how we import `home_time_widget_t` into Rust...
 
 | __Original C Code__ | __Converted Rust Code__ |
 | :--- | :--- |
-| `lv_obj_t *screen_time_create(` <br> &nbsp;&nbsp;`home_time_widget_t *ht) {` | `fn screen_time_create(` <br> &nbsp;&nbsp;`ht: *mut home_time_widget_t)` <br> &nbsp;&nbsp;`-> *mut lv_obj_t {` <br> |
-| &nbsp;&nbsp;`//  Create a label for time (00:00)` | &nbsp;&nbsp;`//  Create a label for time (00:00)` |
-| &nbsp;&nbsp;`lv_obj_t *scr = lv_obj_create(` | &nbsp;&nbsp;`let scr = lv_obj_create(` |
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`NULL, NULL` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`ptr::null_mut(), ptr::null()` |
-| &nbsp;&nbsp;`);` | &nbsp;&nbsp;`);` |
-| &nbsp;&nbsp;`lv_obj_t *label1 = lv_label_create(`&nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;`let label1 = lv_label_create(` |
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`scr, NULL` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`scr, ptr::null()` |
-| &nbsp;&nbsp;`);` | &nbsp;&nbsp;`);` |
-| &nbsp;&nbsp;`//  Set the text, width and height` | &nbsp;&nbsp;`//  Set the text, width and height` |
-| &nbsp;&nbsp;`lv_label_set_text(` | &nbsp;&nbsp;`lv_label_set_text(` |
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`label1, "00:00"` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`label1, b"00:00\0".as_ptr()` |
-| &nbsp;&nbsp;`);` | &nbsp;&nbsp;`);` |
-| &nbsp;&nbsp;`lv_obj_set_width(` | &nbsp;&nbsp;`lv_obj_set_width(` |
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`label1, 240` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`label1, 240` |
-| &nbsp;&nbsp;`);` | &nbsp;&nbsp;`);` |
-| &nbsp;&nbsp;`lv_obj_set_height(` | &nbsp;&nbsp;`lv_obj_set_height(` |
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`label1, 200` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`label1, 200` |
-| &nbsp;&nbsp;`);` | &nbsp;&nbsp;`);` |
-| &nbsp;&nbsp;`ht->lv_time = label1;` | &nbsp;&nbsp;`(*ht).lv_time = label1;` |
-| &nbsp;&nbsp;`return scr;` | &nbsp;&nbsp;`scr` |
-| `}` | `}` |
+| `typedef struct _home_time_widget {` | `#[repr(C)]` <br> `struct home_time_widget_t {` |
+|    &nbsp;&nbsp;`widget_t widget;` | &nbsp;&nbsp;`widget: widget_t,` |
+|    &nbsp;&nbsp;`control_event_handler_t handler;` | &nbsp;&nbsp;`handler: control_event_handler_t,` |
+|    &nbsp;&nbsp;`lv_obj_t *screen;` | &nbsp;&nbsp;`screen:   *mut lv_obj_t,` |
+|    &nbsp;&nbsp;`lv_obj_t *lv_time;` | &nbsp;&nbsp;`lv_time:  *mut lv_obj_t,` |
+|    &nbsp;&nbsp;`lv_obj_t *lv_date;` | &nbsp;&nbsp;`lv_date:  *mut lv_obj_t,` |
+|    &nbsp;&nbsp;`lv_obj_t *lv_ble;` | &nbsp;&nbsp;`lv_ble:   *mut lv_obj_t,` |
+|    &nbsp;&nbsp;`lv_obj_t *lv_power;` | &nbsp;&nbsp;`lv_power: *mut lv_obj_t,` |
+|    &nbsp;&nbsp;`bleman_ble_state_t ble_state;` | &nbsp;&nbsp;`ble_state: bleman_ble_state_t,` |
+|    &nbsp;&nbsp;`controller_time_spec_t time;` | &nbsp;&nbsp;`time: controller_time_spec_t,` |
+|    &nbsp;&nbsp;`uint32_t millivolts;` | &nbsp;&nbsp;`millivolts: u32,` |
+|    &nbsp;&nbsp;`bool charging;` | &nbsp;&nbsp;`charging: bool,` |
+|    &nbsp;&nbsp;`bool powered;` | &nbsp;&nbsp;`powered: bool,` |
+|`} home_time_widget_t;` | `}` |
 | _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/include/home_time.h_ | _From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs_ |
 <br>
 
-```c
-typedef struct _home_time_widget {
-    widget_t widget;
-    control_event_handler_t handler;
-    lv_obj_t *screen;
-    lv_obj_t *lv_time;
-    lv_obj_t *lv_date;
-    lv_obj_t *lv_ble;
-    lv_obj_t *lv_power;
-    bleman_ble_state_t ble_state;
-    controller_time_spec_t time;
-    uint32_t millivolts;
-    bool charging;
-    bool powered;
-} home_time_widget_t;
-```
-_From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/include/home_time.h_
-
-```rust
-#[repr(C)]
-struct home_time_widget_t {
-    widget: widget_t,
-    handler: control_event_handler_t,
-    screen:   *mut lv_obj_t,
-    lv_time:  *mut lv_obj_t,
-    lv_date:  *mut lv_obj_t,
-    lv_ble:   *mut lv_obj_t,
-    lv_power: *mut lv_obj_t,
-    ble_state: bleman_ble_state_t,
-    time: controller_time_spec_t,
-    millivolts: u32,
-    charging: bool,
-    powered: bool,
-}
-```
-_From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs_
-
 Note the Name/Type Flipping. Also semicolons "`;`" have been replaced by commas "`,`".
+
+We'll need to import the C types `widget_t`, `control_event_handler_t`, `lv_obj_t`, `bleman_ble_state_t` and `controller_time_spec_t` the same way.
 
 _What's `#[repr(C)]`?_
 
