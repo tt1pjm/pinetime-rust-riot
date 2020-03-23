@@ -56,15 +56,19 @@
 <li><a href="#import-c-functions-into-rust">4 Import C Functions into Rust</a><ul></ul></li>
 <li><a href="#numeric-types">5 Numeric Types</a><ul></ul></li>
 <li><a href="#pass-strings-from-rust-to-c">6 Pass Strings from Rust to C</a><ul></ul></li>
-<li><a href="#error-handling">7 Error Handling</a><ul></ul></li>
+<li><a href="#pointer-dereferencing">7 Pointer Dereferencing</a><ul></ul></li>
 <li><a href="#return-value">8 Return Value</a><ul></ul></li>
-<li><a href="#lifetime">9 Lifetime</a><ul></ul></li>
+<li><a href="#import-c-types">9 Import C Types</a><ul></ul></li>
 <li><a href="#unsafe">10 Unsafe</a><ul></ul></li>
-<li><a href="#generate-rust-bindings-automatically-with-bindgen">11 Generate Rust Bindings Automatically with bindgen</a><ul></ul></li>
-<li><a href="#riot-os-bindings">12 RIOT OS Bindings</a><ul></ul></li>
-<li><a href="#build-and-link-with-riot-os">13 Build and link with RIOT OS</a><ul></ul></li>
-<li><a href="#vscode-development">14 VSCode Development</a><ul></ul></li>
-<li><a href="#vscode-debugging">15 VSCode Debugging</a><ul></ul></li></ul></nav><p><em>This article is presented in CINEMASCOPE... Rotate your phone to view the C and Rust source code side by side... Or better yet, read this article on a desktop computer</em></p>
+<li><a href="#no-mangle">11 No Mangle</a><ul></ul></li>
+<li><a href="#expose-rust-functions-to-c">12 Expose Rust functions to C</a><ul></ul></li>
+<li><a href="#error-handling">13 Error Handling</a><ul></ul></li>
+<li><a href="#lifetime">14 Lifetime</a><ul></ul></li>
+<li><a href="#generate-rust-bindings-automatically-with-bindgen">15 Generate Rust Bindings Automatically with bindgen</a><ul></ul></li>
+<li><a href="#riot-os-bindings">16 RIOT OS Bindings</a><ul></ul></li>
+<li><a href="#build-and-link-with-riot-os">17 Build and link with RIOT OS</a><ul></ul></li>
+<li><a href="#vscode-development">18 VSCode Development</a><ul></ul></li>
+<li><a href="#vscode-debugging">19 VSCode Debugging</a><ul></ul></li></ul></nav><p><em>This article is presented in CINEMASCOPE... Rotate your phone to view the C and Rust source code side by side... Or better yet, read this article on a desktop computer</em></p>
 <p>We'll learn step by step to convert this <a href="https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c">Embedded C code</a> (based on LittlevGL) to <a href="https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs">Embedded Rust</a> on RIOT OS...</p>
 <table><thead><tr><th align="left"><strong>Original C Code</strong></th><th align="left"><strong>Converted Rust Code</strong></th></tr></thead><tbody>
 <tr><td align="left"><code>lv_obj_t *screen_time_create(home_time_widget_t *ht) {</code> <br><br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    lv_obj_t *scr = lv_obj_create(NULL, NULL);</code> <br>  <code>    lv_obj_t *label1 = lv_label_create(scr, NULL);</code> <br><br>  <code>    lv_label_set_text(label1, &quot;00:00&quot;);</code> <br>  <code>    lv_obj_set_width(label1, 240);</code> <br>  <code>    lv_obj_set_height(label1, 200);</code> <br>  <code>    ht-&gt;lv_time = label1;</code> <br>  <code>    ...</code> <br>  <code>    return scr;</code> <br><code>}</code> <br></td><td align="left"><code>fn create_widgets(widgets: &amp;mut WatchFaceWidgets) -&gt; </code> <br>  <code>    LvglResult&lt;()&gt; {</code> <br><br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    let scr = widgets.screen;</code> <br>  <code>    let label1 = label::create(scr, ptr::null()) ? ;</code> <br><br>  <code>    label::set_text(label1, strn!(&quot;00:00&quot;)) ? ;</code> <br>  <code>    obj::set_width(label1, 240) ? ;</code> <br>  <code>    obj::set_height(label1, 200) ? ;</code> <br>  <code>    widgets.time_label = label1;</code> <br>  <code>    ...</code> <br>  <code>    Ok(())</code> <br><code>}</code> <br></td></tr>
@@ -315,19 +319,64 @@ lv_label_set_text(label1, &quot;00:00&quot;);
     <span class="ident">label1</span>,
     <span class="macro">strn</span><span class="macro">!</span>(<span class="string">&quot;00:00&quot;</span>)
 );</pre></div>
-<h1 id="error-handling" class="section-header"><a href="#error-handling">7 Error Handling</a></h1>
+<h1 id="pointer-dereferencing" class="section-header"><a href="#pointer-dereferencing">7 Pointer Dereferencing</a></h1>
+<p>In C we write <code>-&gt;</code> to dereference a pointer and access a Struct field...</p>
+<pre><code class="language-c">//  In C: Dereference the pointer ht and set the lv_time field
+ht-&gt;lv_time = label1;
+</code></pre>
+<p>Rust doesn't have a combined operator for dereferencing pointers and accessing Struct fields. Instead, we use the <code>*</code> and <code>.</code> operators, which have the same meaning in C...</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="comment">//  In Rust: Dereference the pointer ht and set the lv_time field</span>
+(<span class="kw-2">*</span><span class="ident">ht</span>).<span class="ident">lv_time</span> <span class="op">=</span> <span class="ident">label1</span>;</pre></div>
+<h1 id="return-value" class="section-header"><a href="#return-value">8 Return Value</a></h1>
+<p>In C we use the <code>return</code> keyword to set the return value of the current function...</p>
+<pre><code class="language-c">lv_obj_t *screen_time_create(home_time_widget_t *ht) {
+    ...
+    //  In C: Return scr as the value of the function
+    return scr;
+}
+</code></pre>
+<p>In Rust the <code>return</code> keyword works the same way...</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="kw">fn</span> <span class="ident">screen_time_create</span>(<span class="ident">ht</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">home_time_widget_t</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">lv_obj_t</span> { 
+    ...
+    <span class="comment">//  In Rust: Return scr as the value of the function</span>
+    <span class="kw">return</span> <span class="ident">scr</span>;
+}</pre></div>
+<p>Another way to set the return value in Rust: Just write the value as the last expression of the function...</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="kw">fn</span> <span class="ident">screen_time_create</span>(<span class="ident">ht</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">home_time_widget_t</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">lv_obj_t</span> { 
+    ...
+    <span class="comment">//  In Rust: Return scr as the value of the function. Note: No semicolon &quot;;&quot; at the end</span>
+    <span class="ident">scr</span>
+}</pre></div>
+<p>If we use this convention, the last expression of the function should not end with a semicolon.</p>
+<h1 id="import-c-types" class="section-header"><a href="#import-c-types">9 Import C Types</a></h1>
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
+<span class="kw">struct</span> <span class="ident">home_time_widget_t</span> {
+    <span class="comment">//  TODO</span>
+    <span class="ident">screen</span>:      <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">obj</span>::<span class="ident">lv_obj_t</span>,
+    <span class="ident">time_label</span>:  <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">obj</span>::<span class="ident">lv_obj_t</span>,
+    <span class="ident">date_label</span>:  <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">obj</span>::<span class="ident">lv_obj_t</span>,
+    <span class="ident">ble_label</span>:   <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">obj</span>::<span class="ident">lv_obj_t</span>,
+    <span class="ident">power_label</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">obj</span>::<span class="ident">lv_obj_t</span>,
+}</pre></div>
+<p>TODO</p>
+<h1 id="unsafe" class="section-header"><a href="#unsafe">10 Unsafe</a></h1>
+<p>TODO</p>
+<h1 id="no-mangle" class="section-header"><a href="#no-mangle">11 No Mangle</a></h1><h1 id="expose-rust-functions-to-c" class="section-header"><a href="#expose-rust-functions-to-c">12 Expose Rust functions to C</a></h1><h1 id="error-handling" class="section-header"><a href="#error-handling">13 Error Handling</a></h1>
 <p>TODO</p>
 <pre><code class="language-Rust">let screen = obj::create(ptr::null_mut(), ptr::null())
     .expect(&quot;create screen obj fail&quot;);
 </code></pre>
 <p>TODO</p>
-<h1 id="return-value" class="section-header"><a href="#return-value">8 Return Value</a></h1>
+<h1 id="lifetime" class="section-header"><a href="#lifetime">14 Lifetime</a></h1>
 <p>TODO</p>
-<h1 id="lifetime" class="section-header"><a href="#lifetime">9 Lifetime</a></h1>
-<p>TODO</p>
-<h1 id="unsafe" class="section-header"><a href="#unsafe">10 Unsafe</a></h1>
-<p>TODO</p>
-<h1 id="generate-rust-bindings-automatically-with-bindgen" class="section-header"><a href="#generate-rust-bindings-automatically-with-bindgen">11 Generate Rust Bindings Automatically with bindgen</a></h1>
+<h1 id="generate-rust-bindings-automatically-with-bindgen" class="section-header"><a href="#generate-rust-bindings-automatically-with-bindgen">15 Generate Rust Bindings Automatically with bindgen</a></h1>
 <p>TODO</p>
 <pre><code class="language-Rust">#[lvgl_macros::safe_wrap(attr)]
 extern &quot;C&quot; {
@@ -339,13 +388,13 @@ extern &quot;C&quot; {
 }
 </code></pre>
 <p><em>From https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/core/obj.rs, https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/objx/label.rs</em></p>
-<h1 id="riot-os-bindings" class="section-header"><a href="#riot-os-bindings">12 RIOT OS Bindings</a></h1>
+<h1 id="riot-os-bindings" class="section-header"><a href="#riot-os-bindings">16 RIOT OS Bindings</a></h1>
 <p>TODO</p>
-<h1 id="build-and-link-with-riot-os" class="section-header"><a href="#build-and-link-with-riot-os">13 Build and link with RIOT OS</a></h1>
+<h1 id="build-and-link-with-riot-os" class="section-header"><a href="#build-and-link-with-riot-os">17 Build and link with RIOT OS</a></h1>
 <p>TODO</p>
-<h1 id="vscode-development" class="section-header"><a href="#vscode-development">14 VSCode Development</a></h1>
+<h1 id="vscode-development" class="section-header"><a href="#vscode-development">18 VSCode Development</a></h1>
 <p>TODO</p>
-<h1 id="vscode-debugging" class="section-header"><a href="#vscode-debugging">15 VSCode Debugging</a></h1>
+<h1 id="vscode-debugging" class="section-header"><a href="#vscode-debugging">19 VSCode Debugging</a></h1>
 <p>TODO</p>
 
     

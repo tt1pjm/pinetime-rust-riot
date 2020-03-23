@@ -352,16 +352,17 @@ lv_label_set_text(
     strn!("00:00")
 );
 ```
+
 # Pointer Dereferencing
 
-In C we write `->` to dereference a pointer and access a field...
+In C we write `->` to dereference a pointer and access a Struct field...
 
 ```c
 //  In C: Dereference the pointer ht and set the lv_time field
 ht->lv_time = label1;
 ```
 
-Rust doesn't have an operator for pointer dereferencing and field access. Instead, we use the `*` and `.` operators, which are used the same way as in C...
+Rust doesn't have a combined operator for dereferencing pointers and accessing Struct fields. Instead, we use the `*` and `.` operators, which have the same meaning in C...
 
 ```rust
 //  In Rust: Dereference the pointer ht and set the lv_time field
@@ -387,17 +388,17 @@ fn screen_time_create(ht: *mut home_time_widget_t) -> *mut lv_obj_t {
     ...
     //  In Rust: Return scr as the value of the function
     return scr;
-}   //  End of function
+}
 ```
 
-Rust also allows us to set the return value of the current function by writing the value as the last expression of the function...
+Another way to set the return value in Rust: Just write the value as the last expression of the function...
 
 ```rust
 fn screen_time_create(ht: *mut home_time_widget_t) -> *mut lv_obj_t { 
     ...
     //  In Rust: Return scr as the value of the function. Note: No semicolon ";" at the end
     scr
-}   //  End of function
+}
 ```
 
 If we use this convention, the last expression of the function should not end with a semicolon.
