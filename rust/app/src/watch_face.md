@@ -470,6 +470,23 @@ To fix this, we specify `#[repr(C)]`. This tells the Rust Compiler that the Stru
 
 # Import C Enums into Rust
 
+typedef enum {
+    BLEMAN_BLE_STATE_INACTIVE,
+    BLEMAN_BLE_STATE_ADVERTISING,
+    BLEMAN_BLE_STATE_DISCONNECTED,
+    BLEMAN_BLE_STATE_CONNECTED,
+} bleman_ble_state_t;
+_From https://github.com/bosmoment/PineTime-apps/blob/master/modules/bleman/include/bleman.h_
+
+#[repr(u8)]
+#[derive(PartialEq)]
+enum bleman_ble_state_t {
+    BLEMAN_BLE_STATE_INACTIVE = 0,
+    BLEMAN_BLE_STATE_ADVERTISING = 1,
+    BLEMAN_BLE_STATE_DISCONNECTED = 2,
+    BLEMAN_BLE_STATE_CONNECTED = 3,
+}
+
 _Is there a better way to import C functions and types into Rust?_
 
 TODO
