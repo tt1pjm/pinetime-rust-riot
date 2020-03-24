@@ -61,7 +61,7 @@
 <li><a href="#c-to-rust-conversion-first-version">9 C to Rust Conversion: First Version</a><ul></ul></li>
 <li><a href="#import-c-structs-into-rust">10 Import C Structs into Rust</a><ul></ul></li>
 <li><a href="#import-c-enums-into-rust">11 Import C Enums into Rust</a><ul></ul></li>
-<li><a href="#unsafe">12 Unsafe</a><ul></ul></li>
+<li><a href="#unsafe-code-in-embedded-rust">12 Unsafe Code in Embedded Rust</a><ul></ul></li>
 <li><a href="#expose-rust-functions-to-c">13 Expose Rust functions to C</a><ul></ul></li>
 <li><a href="#error-handling">14 Error Handling</a><ul></ul></li>
 <li><a href="#lifetime">15 Lifetime</a><ul></ul></li>
@@ -436,8 +436,53 @@ ht-&gt;lv_time = label1;
 <p>Note that Enum values are prefixed by the Enum type name, like <code>bleman_ble_state_t::...</code></p>
 <p><em>Importing of C functions and types looks tedious and error-prone... Is there a better way to import C functions and types into Rust?</em></p>
 <p>Yes! Later we'll look at an automated way to import C functions and types: <code>bindgen</code></p>
-<h1 id="unsafe" class="section-header"><a href="#unsafe">12 Unsafe</a></h1>
-<p>TODO</p>
+<h1 id="unsafe-code-in-embedded-rust" class="section-header"><a href="#unsafe-code-in-embedded-rust">12 Unsafe Code in Embedded Rust</a></h1>
+<p>Earlier we took this C code...</p>
+<pre><code class="language-c">//  In C: Declare function lv_label_set_text
+void lv_label_set_text(lv_obj_t *label, const char *text);
+...
+//  Set the text of the label to &quot;00:00&quot;
+lv_label_set_text(label1, &quot;00:00&quot;);
+</code></pre>
+<p>And converted it to Rust...</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="comment">//  In Rust: Import function lv_label_set_text from C</span>
+<span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
+    <span class="kw">fn</span> <span class="ident">lv_label_set_text</span>(<span class="ident">label</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">lv_obj_t</span>, <span class="ident">text</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u8</span>);
+}
+...
+<span class="comment">//  Set the text of the label to &quot;00:00&quot;</span>
+<span class="ident">lv_label_set_text</span>(
+    <span class="ident">label1</span>,
+    <span class="string">b&quot;00:00\0&quot;</span>.<span class="ident">as_ptr</span>()
+);</pre></div>
+<p>Recall that <code>b&quot;00:00\0&quot;.as_ptr()</code> is the Rust Byte String equivalent of <code>&quot;00:00&quot;</code> in C.  This is the string that's passed by the above Rust code to the C function <code>lv_label_set_text</code>.</p>
+<p><em>What happens when we remove <code>\0</code> from the Rust Byte String?</em></p>
+<p><code>lv_label_set_text</code> will receive an invalid string that's not terminated by null.</p>
+<p><code>lv_label_set_text</code> may get stuck forever searching for the terminating null. Or it may attempt to copy a ridiculously huge string and corrupt the system memory.</p>
+<p><em>Surely the Rust Compiler can verify that all Rust Byte Strings as null terminated... Right?</em></p>
+<p>Well if we look at the calling contract that we have agreed with C...</p>
+<pre><code class="language-c">//  In C: Declare function lv_label_set_text
+void lv_label_set_text(lv_obj_t *label, const char *text);
+</code></pre>
+<p>It doesn't say that <code>text</code> requires a terminating null... Legally we may pass in any <code>const char *</code> pointer!</p>
+<p>Calling <code>lv_label_set_text</code> is an example of <strong>Unsafe Code</strong> in Rust.  That's the Rust Compiler saying...</p>
+<blockquote>
+<p>I'm sorry, Dave. I'm afraid I can't do that. I won't let you call function <code>lv_label_set_text</code> because I'm not sure whether the C function will cause memory corruption or cause the system to crash. I'm not even sure if the function <code>lv_label_set_text</code> will ever return!</p>
+</blockquote>
+<p>To override HAL... er... the Rust Compiler, we need to wrap the Unsafe Code with the <code>unsafe</code> keyword...</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="comment">//  In Rust: Set the text of the label to &quot;00:00&quot;</span>
+<span class="kw">unsafe</span> {
+    <span class="ident">lv_label_set_text</span>(
+        <span class="ident">label1</span>,
+        <span class="string">b&quot;00:00\0&quot;</span>.<span class="ident">as_ptr</span>()
+    );
+}</pre></div>
+<p>This needs to be done for <em>every C function</em> that we call from Rust. Which will look incredibly messy.</p>
+<p>Later we'll see the fix for this: Safe Wrappers. </p>
 <h1 id="expose-rust-functions-to-c" class="section-header"><a href="#expose-rust-functions-to-c">13 Expose Rust functions to C</a></h1>
 <div class="example-wrap"><pre class="rust rust-example-rendered">
 <span class="attribute">#[<span class="ident">no_mangle</span>]</span>

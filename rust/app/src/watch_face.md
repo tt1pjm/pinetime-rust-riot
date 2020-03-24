@@ -538,11 +538,13 @@ lv_label_set_text(
 );
 ```
 
-Recall that `b"00:00\0".as_ptr()` is the Rust Byte String equivalent of `"00:00"` in C.  That's the string that's passed by the above Rust code to the C function `lv_label_set_text`.
+Recall that `b"00:00\0".as_ptr()` is the Rust Byte String equivalent of `"00:00"` in C.  This is the string that's passed by the above Rust code to the C function `lv_label_set_text`.
 
 _What happens when we remove `\0` from the Rust Byte String?_
 
-`lv_label_set_text` will receive an invalid string that's not terminated by null. `lv_label_set_text` may get stuck forever searching for the terminating null. Or it may attempt to copy a ridiculously huge string and corrupt the system memory.
+`lv_label_set_text` will receive an invalid string that's not terminated by null.
+
+`lv_label_set_text` may get stuck forever searching for the terminating null. Or it may attempt to copy a ridiculously huge string and corrupt the system memory.
 
 _Surely the Rust Compiler can verify that all Rust Byte Strings as null terminated... Right?_
 
@@ -559,8 +561,21 @@ Calling `lv_label_set_text` is an example of __Unsafe Code__ in Rust.  That's th
 
 > I'm sorry, Dave. I'm afraid I can't do that. I won't let you call function `lv_label_set_text` because I'm not sure whether the C function will cause memory corruption or cause the system to crash. I'm not even sure if the function `lv_label_set_text` will ever return!
 
+To override HAL... er... the Rust Compiler, we need to wrap the Unsafe Code with the `unsafe` keyword...
 
-TODO
+```rust
+//  In Rust: Set the text of the label to "00:00"
+unsafe {
+    lv_label_set_text(
+        label1,
+        b"00:00\0".as_ptr()
+    );
+}
+```
+
+This needs to be done for _every C function_ that we call from Rust. Which will look incredibly messy.
+
+Later we'll see the fix for this: Safe Wrappers. 
 
 # Expose Rust functions to C
 
