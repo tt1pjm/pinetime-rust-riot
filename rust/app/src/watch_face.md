@@ -511,7 +511,54 @@ _Importing of C functions and types looks tedious and error-prone... Is there a 
 
 Yes! Later we'll look at an automated way to import C functions and types: `bindgen`
 
-# Unsafe
+# Unsafe Code in Embedded Rust
+
+Earlier we took this C code...
+
+```c
+//  In C: Declare function lv_label_set_text
+void lv_label_set_text(lv_obj_t *label, const char *text);
+...
+//  Set the text of the label to "00:00"
+lv_label_set_text(label1, "00:00");
+```
+
+And converted it to Rust...
+
+```rust
+//  In Rust: Import function lv_label_set_text from C
+extern "C" {
+    fn lv_label_set_text(label: *mut lv_obj_t, text: *const u8);
+}
+...
+//  Set the text of the label to "00:00"
+lv_label_set_text(
+    label1,
+    b"00:00\0".as_ptr()
+);
+```
+
+Recall that `b"00:00\0".as_ptr()` is the Rust Byte String equivalent of `"00:00"` in C.  That's the string that's passed by the above Rust code to the C function `lv_label_set_text`.
+
+_What happens when we remove `\0` from the Rust Byte String?_
+
+`lv_label_set_text` will receive an invalid string that's not terminated by null. `lv_label_set_text` may get stuck forever searching for the terminating null. Or it may attempt to copy a ridiculously huge string and corrupt the system memory.
+
+_Surely the Rust Compiler can verify that all Rust Byte Strings as null terminated... Right?_
+
+Well if we look at the calling contract that we have agreed with C...
+
+```c
+//  In C: Declare function lv_label_set_text
+void lv_label_set_text(lv_obj_t *label, const char *text);
+```
+
+It doesn't say that `text` requires a terminating null... Legally we may pass in any `const char *` pointer!
+
+Calling `lv_label_set_text` is an example of __Unsafe Code__ in Rust.  That's the Rust Compiler saying...
+
+> I'm sorry, Dave. I'm afraid I can't do that. I won't let you call function `lv_label_set_text` because I'm not sure whether the C function will cause memory corruption or cause the system to crash. I'm not even sure if the function `lv_label_set_text` will ever return!
+
 
 TODO
 
