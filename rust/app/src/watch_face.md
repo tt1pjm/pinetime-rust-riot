@@ -579,6 +579,143 @@ Later we'll see the fix for this: Safe Wrappers.
 
 # Generate Rust Bindings with bindgen
 
+```
+bindgen \
+--verbose \
+--use-core \
+--ctypes-prefix "::cty" \
+--with-derive-default \
+--no-derive-copy \
+--no-derive-debug \
+--no-layout-tests \
+apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_core/lv_obj.h \
+-- \
+-Dstatic="" \
+-Dinline="" \
+-Ibaselibc/include/ \
+-Iapps/pinetime/bin/pkg/pinetime/ \
+-Iapps/pinetime  \
+-DDEVELHELP \
+-Werror  \
+-DCPU_FAM_NRF52 \
+-mlittle-endian \
+-ffunction-sections \
+-fdata-sections \
+-fno-builtin \
+-fshort-enums \
+-ggdb \
+-g3 \
+-DCPU_MODEL_NRF52832XXAA  \
+-DCPU_ARCH_CORTEX_M4F  \
+-DRIOT_BOARD=BOARD_PINETIME  \
+-DRIOT_CPU=CPU_NRF52  \
+-DRIOT_MCU=MCU_NRF52 \
+-std=c99 \
+-fno-common \
+-DLV_CONF_INCLUDE_SIMPLE  \
+-DLV_LVGL_H_INCLUDE_SIMPLE  \
+-DNIMBLE_CFG_CONTROLLER=1  \
+-DMYNEWT_VAL_OS_CPUTIME_FREQ=32768  \
+-DMYNEWT_VAL_BLE_SM_LEGACY=0  \
+-DMYNEWT_VAL_BLE_SM_SC=1  \
+-DMYNEWT_VAL_BLE_SM_MITM=1  \
+-DMYNEWT_VAL_BLE_SM_BONDING=1  \
+-DMYNEWT_VAL_BLE_SM_MAX_PROCS=1  \
+-DMYNEWT_VAL_BLE_GATT_MAX_PROCS=8  \
+-DMYNEWT_VAL_BLE_L2CAP_MAX_CHANS=8  \
+-DMYNEWT_VAL_BLE_L2CAP_COC_MAX_NUM=1  \
+-DMYNEWT_VAL_BLE_STORE_MAX_BONDS=5 \
+-DMYNEWT_VAL_BLE_SM_OUR_KEY_DIST=0x6  \
+-DMYNEWT_VAL_BLE_SM_THEIR_KEY_DIST=0x6  \
+-DMYNEWT_VAL_MSYS_1_BLOCK_COUNT=32  \
+-DMYNEWT_VAL_MSYS_1_BLOCK_SIZE=292  \
+-DMYNEWT_VAL_BLE_EXT_ADV_MAX_SIZE=31  \
+-DMYNEWT_VAL_BLE_MAX_CONNECTIONS=1  \
+-DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 \
+-DMYNEWT_VAL_BLE_MULTI_ADV_INSTANCES=5  \
+-DMYNEWT_VAL_BLE_STORE_MAX_CCCDS=8  \
+-DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 \
+-DMYNEWT_VAL_BLE_MULTI_ADV_INSTANCES=5  \
+-DMYNEWT_VAL_BLE_LL_CFG_FEAT_LE_ENCRYPTION=1  \
+-DMYNEWT_VAL_BLE_LL_CFG_FEAT_LL_PRIVACY=1  \
+-DMYNEWT_VAL_BLE_LL_CFG_FEAT_DATA_LEN_EXT=1  \
+-DMYNEWT_VAL_BLE_LL_CFG_FEAT_LL_EXT_ADV=1  \
+-DMYNEWT_VAL_BLE_LL_SCHED_SCAN_AUX_PDU_LEN=41  \
+-DMYNEWT_VAL_BLE_LL_SCHED_SCAN_SYNC_PDU_LEN=32  \
+-DMYNEWT_VAL_BLE_SM_IO_CAP=BLE_HS_IO_DISPLAY_YESNO  \
+-DNIMBLE_HOST_STACKSIZE=3072  \
+-DVFS_FILE_BUFFER_SIZE=84  \
+-DVFS_DIR_BUFFER_SIZE=52  \
+-include 'apps/pinetime/bin/pinetime/riotbuild/riotbuild.h'   \
+-isystem /usr/local/Cellar/arm-none-eabi-gcc/7-2018-q2-update/gcc/arm-none-eabi/include/newlib-nano  \
+-Iapps/pinetime/../../modules/include  \
+-Iapps/pinetime/../../modules/bleman/include  \
+-Iapps/pinetime/../../modules/gui/include  \
+-Iapps/pinetime/../../modules/controller/include  \
+-Iapps/pinetime/../../modules/fonts/include  \
+-Iapps/pinetime/../../modules/hal/include  \
+-Iapps/pinetime/../../modules/storage/include  \
+-Iapps/pinetime/../../modules/util/include  \
+-Iapps/pinetime/../../modules/widget/include  \
+-Iapps/pinetime/../../widgets/home_time/include  \
+-Iapps/pinetime/../../widgets/menu_tiles/include  \
+-Iapps/pinetime/../../widgets/sysinfo/include  \
+-Iapps/pinetime/../../widgets/face_notification/include  \
+-Iapps/pinetime/../../widgets/face_sports/include  \
+-IRIOT/core/include  \
+-IRIOT/drivers/include  \
+-IRIOT/sys/include  \
+-IRIOT/boards/pinetime/include  \
+-IRIOT/boards/common/nrf52/include  \
+-IRIOT/cpu/nrf52/include  \
+-IRIOT/cpu/nrf5x_common/include  \
+-IRIOT/cpu/cortexm_common/include  \
+-IRIOT/cpu/cortexm_common/include/vendor  \
+-IRIOT/sys/libc/include  \
+-Iapps/pinetime/bin/pkg/pinetime/littlefs  \
+-Iapps/pinetime/bin/pkg/pinetime/lvgl  \
+-IRIOT/pkg/nimble/contrib/include  \
+-Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/include  \
+-Iapps/pinetime/bin/pkg/pinetime/nimble/porting/npl/riot/include  \
+-Iapps/pinetime/bin/pkg/pinetime/nimble/porting/nimble/include  \
+-Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/controller/include  \
+-Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/drivers/nrf52/include  \
+-Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/include  \
+-Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/store/ram/include  \
+-Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/util/include  \
+-Iapps/pinetime/bin/pkg/pinetime/nimble/ext/tinycrypt/include  \
+-Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/transport/ram/include  \
+-Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gap/include  \
+-Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gatt/include  \
+-Iapps/pinetime/../../modules/include  \
+-Iapps/pinetime/../../modules/bleman/include  \
+-Iapps/pinetime/../../modules/gui/include  \
+-Iapps/pinetime/../../modules/controller/include  \
+-Iapps/pinetime/../../modules/fonts/include  \
+-Iapps/pinetime/../../modules/hal/include  \
+-Iapps/pinetime/../../modules/storage/include  \
+-Iapps/pinetime/../../modules/util/include  \
+-Iapps/pinetime/../../modules/widget/include  \
+-Iapps/pinetime/../../widgets/home_time/include  \
+-Iapps/pinetime/../../widgets/menu_tiles/include  \
+-Iapps/pinetime/../../widgets/sysinfo/include  \
+-Iapps/pinetime/../../widgets/face_notification/include  \
+-Iapps/pinetime/../../widgets/face_sports/include  \
+-Iapps/pinetime/../../modules/bleman/include  \
+-Iapps/pinetime/../../modules/gui/include  \
+-Iapps/pinetime/../../modules/controller/include  \
+-Iapps/pinetime/../../modules/fonts/include  \
+-Iapps/pinetime/../../modules/hal/include  \
+-Iapps/pinetime/../../modules/storage/include  \
+-Iapps/pinetime/../../modules/util/include  \
+-Iapps/pinetime/../../modules/widget/include  \
+-IRIOT/sys/posix/include  \
+-IRIOT/drivers/cst816s/include  \
+-IRIOT/drivers/ili9341/include  \
+-DEND_OF_OPTIONS
+```
+From https://github.com/lupyuen/PineTime-apps/blob/master/scripts/gen-bindings.sh
+
 ```bash
 bindgen apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_core/lv_obj.h -- -Dstatic= -Dinline= -Ibaselibc/include/ -Iapps/pinetime/bin/pkg/pinetime/ -Iapps/pinetime -DDEVELHELP -Werror -DCPU_FAM_NRF52 -mlittle-endian -ffunction-sections -fdata-sections -fno-builtin -fshort-enums -ggdb -g3 -DCPU_MODEL_NRF52832XXAA -DCPU_ARCH_CORTEX_M4F -DRIOT_BOARD=BOARD_PINETIME -DRIOT_CPU=CPU_NRF52 -DRIOT_MCU=MCU_NRF52 -std=c99 -fno-common -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DNIMBLE_CFG_CONTROLLER=1 -DMYNEWT_VAL_OS_CPUTIME_FREQ=32768 -DMYNEWT_VAL_BLE_SM_LEGACY=0 -DMYNEWT_VAL_BLE_SM_SC=1 -DMYNEWT_VAL_BLE_SM_MITM=1 -DMYNEWT_VAL_BLE_SM_BONDING=1 -DMYNEWT_VAL_BLE_SM_MAX_PROCS=1 -DMYNEWT_VAL_BLE_GATT_MAX_PROCS=8 -DMYNEWT_VAL_BLE_L2CAP_MAX_CHANS=8 -DMYNEWT_VAL_BLE_L2CAP_COC_MAX_NUM=1 -DMYNEWT_VAL_BLE_STORE_MAX_BONDS=5 -DMYNEWT_VAL_BLE_SM_OUR_KEY_DIST=0x6 -DMYNEWT_VAL_BLE_SM_THEIR_KEY_DIST=0x6 -DMYNEWT_VAL_MSYS_1_BLOCK_COUNT=32 -DMYNEWT_VAL_MSYS_1_BLOCK_SIZE=292 -DMYNEWT_VAL_BLE_EXT_ADV_MAX_SIZE=31 -DMYNEWT_VAL_BLE_MAX_CONNECTIONS=1 -DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 -DMYNEWT_VAL_BLE_MULTI_ADV_INSTANCES=5 -DMYNEWT_VAL_BLE_STORE_MAX_CCCDS=8 -DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 -DMYNEWT_VAL_BLE_MULTI_ADV_INSTANCES=5 -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LE_ENCRYPTION=1 -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LL_PRIVACY=1 -DMYNEWT_VAL_BLE_LL_CFG_FEAT_DATA_LEN_EXT=1 -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LL_EXT_ADV=1 -DMYNEWT_VAL_BLE_LL_SCHED_SCAN_AUX_PDU_LEN=41 -DMYNEWT_VAL_BLE_LL_SCHED_SCAN_SYNC_PDU_LEN=32 -DMYNEWT_VAL_BLE_SM_IO_CAP=BLE_HS_IO_DISPLAY_YESNO -DNIMBLE_HOST_STACKSIZE=3072 -DVFS_FILE_BUFFER_SIZE=84 -DVFS_DIR_BUFFER_SIZE=52 -include apps/pinetime/bin/pinetime/riotbuild/riotbuild.h -isystem /usr/local/Cellar/arm-none-eabi-gcc/7-2018-q2-update/gcc/arm-none-eabi/include/newlib-nano -Iapps/pinetime/../../modules/include -Iapps/pinetime/../../modules/bleman/include -Iapps/pinetime/../../modules/gui/include -Iapps/pinetime/../../modules/controller/include -Iapps/pinetime/../../modules/fonts/include -Iapps/pinetime/../../modules/hal/include -Iapps/pinetime/../../modules/storage/include -Iapps/pinetime/../../modules/util/include -Iapps/pinetime/../../modules/widget/include -Iapps/pinetime/../../widgets/home_time/include -Iapps/pinetime/../../widgets/menu_tiles/include -Iapps/pinetime/../../widgets/sysinfo/include -Iapps/pinetime/../../widgets/face_notification/include -Iapps/pinetime/../../widgets/face_sports/include -IRIOT/core/include -IRIOT/drivers/include -IRIOT/sys/include -IRIOT/boards/pinetime/include -IRIOT/boards/common/nrf52/include -IRIOT/cpu/nrf52/include -IRIOT/cpu/nrf5x_common/include -IRIOT/cpu/cortexm_common/include -IRIOT/cpu/cortexm_common/include/vendor -IRIOT/sys/libc/include -Iapps/pinetime/bin/pkg/pinetime/littlefs -Iapps/pinetime/bin/pkg/pinetime/lvgl -IRIOT/pkg/nimble/contrib/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/include -Iapps/pinetime/bin/pkg/pinetime/nimble/porting/npl/riot/include -Iapps/pinetime/bin/pkg/pinetime/nimble/porting/nimble/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/controller/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/drivers/nrf52/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/store/ram/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/util/include -Iapps/pinetime/bin/pkg/pinetime/nimble/ext/tinycrypt/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/transport/ram/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gap/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gatt/include -Iapps/pinetime/../../modules/include -Iapps/pinetime/../../modules/bleman/include -Iapps/pinetime/../../modules/gui/include -Iapps/pinetime/../../modules/controller/include -Iapps/pinetime/../../modules/fonts/include -Iapps/pinetime/../../modules/hal/include -Iapps/pinetime/../../modules/storage/include -Iapps/pinetime/../../modules/util/include -Iapps/pinetime/../../modules/widget/include -Iapps/pinetime/../../widgets/home_time/include -Iapps/pinetime/../../widgets/menu_tiles/include -Iapps/pinetime/../../widgets/sysinfo/include -Iapps/pinetime/../../widgets/face_notification/include -Iapps/pinetime/../../widgets/face_sports/include -Iapps/pinetime/../../modules/bleman/include -Iapps/pinetime/../../modules/gui/include -Iapps/pinetime/../../modules/controller/include -Iapps/pinetime/../../modules/fonts/include -Iapps/pinetime/../../modules/hal/include -Iapps/pinetime/../../modules/storage/include -Iapps/pinetime/../../modules/util/include -Iapps/pinetime/../../modules/widget/include -IRIOT/sys/posix/include -IRIOT/drivers/cst816s/include -IRIOT/drivers/ili9341/include -DEND_OF_OPTIONS
 ```
