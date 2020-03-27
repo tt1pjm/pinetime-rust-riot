@@ -857,9 +857,9 @@ extern "C" {
 
 Gets passed into our `safe_wrap` function for us to manipulate!
 
-1. `safe_wrap` inspects the imported function name (`lv_label_set_text`), parameter types (`lv_obj_t`, `c_char`) and return type (none). 
+1. `safe_wrap` inspects the imported function name (`lv_label_set_text`), parameter types (`lv_obj_t`, `c_char`) and return type (none)
 
-1. Then `safe_wrap` replaces the chunk of code by the Safe Wrapper function `set_text`, populated with the right parameter types and return type.
+1. Then `safe_wrap` replaces the chunk of code by the Safe Wrapper function `set_text`, populated with the right parameter types and return type
 
 Note that `*const ::cty::c_char` (pointer to a C string) has been replaced by the safer `&Strn` (reference to a null-terminated string object).
 
@@ -867,7 +867,7 @@ That's how we automatically generate Safe Wrapper functions (described in the pr
 
 _What's `LvglResult<()>` and `Ok(())`?_
 
-We'll learn about Rust Error Handling in the next section.
+We'll find out in the next section: Rust Error Handling.
 
 # Error Handling in Rust
 
