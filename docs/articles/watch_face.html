@@ -65,15 +65,14 @@
 <li><a href="#import-c-types-and-functions-into-rust-with-bindgen">13 Import C Types and Functions into Rust with <code>bindgen</code></a><ul></ul></li>
 <li><a href="#whitelist-and-blacklist-c-types-and-functions-in-bindgen">14 Whitelist and Blacklist C Types and Functions in <code>bindgen</code></a><ul></ul></li>
 <li><a href="#safe-wrappers-for-imported-c-functions">15 Safe Wrappers for Imported C Functions</a><ul></ul></li>
-<li><a href="#generate-safe-wrappers-with-procedural-macros">16 Generate Safe Wrappers with Procedural Macros</a><ul></ul></li>
-<li><a href="#expose-rust-functions-to-c">17 Expose Rust functions to C</a><ul></ul></li>
-<li><a href="#error-handling">18 Error Handling</a><ul></ul></li>
-<li><a href="#lifetime">19 Lifetime</a><ul></ul></li>
-<li><a href="#generate-rust-bindings-automatically-with-bindgen">20 Generate Rust Bindings Automatically with bindgen</a><ul></ul></li>
-<li><a href="#riot-os-bindings">21 RIOT OS Bindings</a><ul></ul></li>
-<li><a href="#build-and-link-with-riot-os">22 Build and link with RIOT OS</a><ul></ul></li>
-<li><a href="#vscode-development">23 VSCode Development</a><ul></ul></li>
-<li><a href="#vscode-debugging">24 VSCode Debugging</a><ul></ul></li></ul></nav><p><em>This article is presented in CINEMASCOPE... Rotate your phone to view the C and Rust source code side by side... Or better yet, read this article on a desktop computer</em></p>
+<li><a href="#generate-safe-wrappers-with-rust-procedural-macros">16 Generate Safe Wrappers with Rust Procedural Macros</a><ul></ul></li>
+<li><a href="#error-handling-in-rust">17 Error Handling in Rust</a><ul></ul></li>
+<li><a href="#lifetime">18 Lifetime</a><ul></ul></li>
+<li><a href="#generate-rust-bindings-automatically-with-bindgen">19 Generate Rust Bindings Automatically with bindgen</a><ul></ul></li>
+<li><a href="#riot-os-bindings">20 RIOT OS Bindings</a><ul></ul></li>
+<li><a href="#build-and-link-with-riot-os">21 Build and link with RIOT OS</a><ul></ul></li>
+<li><a href="#vscode-development">22 VSCode Development</a><ul></ul></li>
+<li><a href="#vscode-debugging">23 VSCode Debugging</a><ul></ul></li></ul></nav><p><em>This article is presented in CINEMASCOPE... Rotate your phone to view the C and Rust source code side by side... Or better yet, read this article on a desktop computer</em></p>
 <p>We'll learn step by step to convert this <a href="https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c">Embedded C code</a> (based on LittlevGL) to <a href="https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs">Embedded Rust</a> on RIOT OS...</p>
 <table><thead><tr><th align="left"><strong>Original C Code</strong></th><th align="left"><strong>Converted Rust Code</strong></th></tr></thead><tbody>
 <tr><td align="left"><code>lv_obj_t *screen_time_create(home_time_widget_t *ht) {</code> <br><br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    lv_obj_t *scr = lv_obj_create(NULL, NULL);</code> <br>  <code>    lv_obj_t *label1 = lv_label_create(scr, NULL);</code> <br><br>  <code>    lv_label_set_text(label1, &quot;00:00&quot;);</code> <br>  <code>    lv_obj_set_width(label1, 240);</code> <br>  <code>    lv_obj_set_height(label1, 200);</code> <br>  <code>    ht-&gt;lv_time = label1;</code> <br>  <code>    ...</code> <br>  <code>    return scr;</code> <br><code>}</code> <br></td><td align="left"><code>fn create_widgets(widgets: &amp;mut WatchFaceWidgets) -&gt; </code> <br>  <code>    LvglResult&lt;()&gt; {</code> <br><br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    let scr = widgets.screen;</code> <br>  <code>    let label1 = label::create(scr, ptr::null()) ? ;</code> <br><br>  <code>    label::set_text(label1, strn!(&quot;00:00&quot;)) ? ;</code> <br>  <code>    obj::set_width(label1, 240) ? ;</code> <br>  <code>    obj::set_height(label1, 200) ? ;</code> <br>  <code>    widgets.time_label = label1;</code> <br>  <code>    ...</code> <br>  <code>    Ok(())</code> <br><code>}</code> <br></td></tr>
@@ -661,243 +660,91 @@ bindgen --verbose --use-core --ctypes-prefix ::cty --with-derive-default --no-de
 <p>The Wrapper Function always checks to ensure that <a href="https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/lib.rs#L181-L190">the string is null-terminated</a> before calling the C function. Crashing Watches Averted!</p>
 <p><em>But do we need to write this Wrapper Function ourselves for every C function?</em></p>
 <p>Not necessary... The Safe Wrappers may be automatically generated! Let's learn how with a Rust Procedural Macro.</p>
-<h1 id="generate-safe-wrappers-with-procedural-macros" class="section-header"><a href="#generate-safe-wrappers-with-procedural-macros">16 Generate Safe Wrappers with Procedural Macros</a></h1>
+<h1 id="generate-safe-wrappers-with-rust-procedural-macros" class="section-header"><a href="#generate-safe-wrappers-with-rust-procedural-macros">16 Generate Safe Wrappers with Rust Procedural Macros</a></h1>
+<p>As we have seen, to create a PineTime Watch Face we need to...</p>
+<ol>
+<li>
+<p>Run <code>bindgen</code> to import the LittlevGL function <code>lv_label_set_text</code> from C into Rust</p>
+</li>
+<li>
+<p>Create a Safe Wrapper function in Rust to call <code>lv_label_set_text</code> safely</p>
+</li>
+</ol>
+<p>Trick Question: What's the difference between this Rust Binding code generated by <code>bindgen</code>...</p>
+
 <div class="example-wrap"><pre class="rust rust-example-rendered">
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_text</span>(<span class="ident">label</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">lv_obj_t</span>, <span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">Strn</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">LvglResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-            <span class="string">&quot;----------Insert Extern Decl: `extern C { pub fn ... }`----------&quot;</span>;
-            <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
-                <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span>
-                  <span class="string">&quot; Set a new text for a label. Memory will be allocated to store the text by the label.&quot;</span>]</span>
-                <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; - __`label`__: pointer to a label object&quot;</span>]</span>
-                <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span>
-                  <span class="string">&quot; - __`text`__: &#39;\\0&#39; terminated character string. NULL to refresh with the current text.&quot;</span>]</span>
-                <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lv_label_set_text</span>(<span class="ident">label</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">lv_obj_t</span>,
-                                         <span class="ident">text</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">cty</span>::<span class="ident">c_char</span>);
-            }
-            <span class="string">&quot;----------Insert Validation: `Strn::validate_bytestr(name.bytestr)`----------&quot;</span>;
-            <span class="ident">text</span>.<span class="ident">validate</span>();
-            <span class="kw">unsafe</span> {
-                <span class="string">&quot;----------Insert Call: `let result_value = os_task_init(`----------&quot;</span>;
-                <span class="ident">lv_label_set_text</span>(<span class="ident">label</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">lv_obj_t</span>,
-                                  <span class="ident">text</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">cty</span>::<span class="ident">c_char</span>);
-                <span class="string">&quot;----------Insert Result: `Ok(Strn::from_cstr(result_value))`----------&quot;</span>;
-                <span class="prelude-val">Ok</span>(())
-            }
-        }</pre></div>
+<span class="comment">//  In Rust: Import function lv_label_set_text from C to set the text of a label</span>
+<span class="attribute">#[<span class="ident">lvgl_macros</span>::<span class="ident">safe_wrap</span>(<span class="ident">attr</span>)]</span>
+<span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lv_label_set_text</span>(
+        <span class="ident">label</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">lv_obj_t</span>, 
+        <span class="ident">text</span>:  <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">cty</span>::<span class="ident">c_char</span>
+    );
+}</pre></div>
+<p><em>From https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/objx/label.rs</em></p>
+<p>And this Safe Wrapper function (that calls <code>lv_label_set_text</code> safely)?</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="comment">//  In Rust: Safe Wrapper function to set the text of a label</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_text</span>(
+    <span class="ident">label</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">lv_obj_t</span>, 
+    <span class="ident">text</span>:  <span class="kw-2">&amp;</span><span class="ident">Strn</span>
+) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">LvglResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lv_label_set_text</span>(
+            <span class="ident">label</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">lv_obj_t</span>,
+            <span class="ident">text</span>:  <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">cty</span>::<span class="ident">c_char</span>
+        );
+    }
+    <span class="ident">text</span>.<span class="ident">validate</span>();  <span class="comment">//  Validate that the string is null-terminated</span>
+    <span class="kw">unsafe</span> {
+        <span class="ident">lv_label_set_text</span>(
+            <span class="ident">label</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">lv_obj_t</span>,
+            <span class="ident">text</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">cty</span>::<span class="ident">c_char</span>
+        );
+        <span class="prelude-val">Ok</span>(())  <span class="comment">//  Return OK</span>
+    }
+}</pre></div>
 <p><em>From https://github.com/lupyuen/PineTime-apps/blob/master/logs/liblvgl-expanded.rs#L9239-L9259</em></p>
-<p>TODO</p>
-<pre><code class="language-bash">bindgen \
---verbose \
---use-core \
---ctypes-prefix &quot;::cty&quot; \
---with-derive-default \
---no-derive-copy \
---no-derive-debug \
---no-layout-tests \
-apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_core/lv_obj.h \
--- \
--Dstatic=&quot;&quot; \
--Dinline=&quot;&quot; \
--Ibaselibc/include/ \
--Iapps/pinetime/bin/pkg/pinetime/ \
--Iapps/pinetime  \
--DDEVELHELP \
--Werror  \
--DCPU_FAM_NRF52 \
--mlittle-endian \
--ffunction-sections \
--fdata-sections \
--fno-builtin \
--fshort-enums \
--ggdb \
--g3 \
--DCPU_MODEL_NRF52832XXAA  \
--DCPU_ARCH_CORTEX_M4F  \
--DRIOT_BOARD=BOARD_PINETIME  \
--DRIOT_CPU=CPU_NRF52  \
--DRIOT_MCU=MCU_NRF52 \
--std=c99 \
--fno-common \
--DLV_CONF_INCLUDE_SIMPLE  \
--DLV_LVGL_H_INCLUDE_SIMPLE  \
--DNIMBLE_CFG_CONTROLLER=1  \
--DMYNEWT_VAL_OS_CPUTIME_FREQ=32768  \
--DMYNEWT_VAL_BLE_SM_LEGACY=0  \
--DMYNEWT_VAL_BLE_SM_SC=1  \
--DMYNEWT_VAL_BLE_SM_MITM=1  \
--DMYNEWT_VAL_BLE_SM_BONDING=1  \
--DMYNEWT_VAL_BLE_SM_MAX_PROCS=1  \
--DMYNEWT_VAL_BLE_GATT_MAX_PROCS=8  \
--DMYNEWT_VAL_BLE_L2CAP_MAX_CHANS=8  \
--DMYNEWT_VAL_BLE_L2CAP_COC_MAX_NUM=1  \
--DMYNEWT_VAL_BLE_STORE_MAX_BONDS=5 \
--DMYNEWT_VAL_BLE_SM_OUR_KEY_DIST=0x6  \
--DMYNEWT_VAL_BLE_SM_THEIR_KEY_DIST=0x6  \
--DMYNEWT_VAL_MSYS_1_BLOCK_COUNT=32  \
--DMYNEWT_VAL_MSYS_1_BLOCK_SIZE=292  \
--DMYNEWT_VAL_BLE_EXT_ADV_MAX_SIZE=31  \
--DMYNEWT_VAL_BLE_MAX_CONNECTIONS=1  \
--DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 \
--DMYNEWT_VAL_BLE_MULTI_ADV_INSTANCES=5  \
--DMYNEWT_VAL_BLE_STORE_MAX_CCCDS=8  \
--DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 \
--DMYNEWT_VAL_BLE_MULTI_ADV_INSTANCES=5  \
--DMYNEWT_VAL_BLE_LL_CFG_FEAT_LE_ENCRYPTION=1  \
--DMYNEWT_VAL_BLE_LL_CFG_FEAT_LL_PRIVACY=1  \
--DMYNEWT_VAL_BLE_LL_CFG_FEAT_DATA_LEN_EXT=1  \
--DMYNEWT_VAL_BLE_LL_CFG_FEAT_LL_EXT_ADV=1  \
--DMYNEWT_VAL_BLE_LL_SCHED_SCAN_AUX_PDU_LEN=41  \
--DMYNEWT_VAL_BLE_LL_SCHED_SCAN_SYNC_PDU_LEN=32  \
--DMYNEWT_VAL_BLE_SM_IO_CAP=BLE_HS_IO_DISPLAY_YESNO  \
--DNIMBLE_HOST_STACKSIZE=3072  \
--DVFS_FILE_BUFFER_SIZE=84  \
--DVFS_DIR_BUFFER_SIZE=52  \
--include 'apps/pinetime/bin/pinetime/riotbuild/riotbuild.h'   \
--isystem /usr/local/Cellar/arm-none-eabi-gcc/7-2018-q2-update/gcc/arm-none-eabi/include/newlib-nano  \
--Iapps/pinetime/../../modules/include  \
--Iapps/pinetime/../../modules/bleman/include  \
--Iapps/pinetime/../../modules/gui/include  \
--Iapps/pinetime/../../modules/controller/include  \
--Iapps/pinetime/../../modules/fonts/include  \
--Iapps/pinetime/../../modules/hal/include  \
--Iapps/pinetime/../../modules/storage/include  \
--Iapps/pinetime/../../modules/util/include  \
--Iapps/pinetime/../../modules/widget/include  \
--Iapps/pinetime/../../widgets/home_time/include  \
--Iapps/pinetime/../../widgets/menu_tiles/include  \
--Iapps/pinetime/../../widgets/sysinfo/include  \
--Iapps/pinetime/../../widgets/face_notification/include  \
--Iapps/pinetime/../../widgets/face_sports/include  \
--IRIOT/core/include  \
--IRIOT/drivers/include  \
--IRIOT/sys/include  \
--IRIOT/boards/pinetime/include  \
--IRIOT/boards/common/nrf52/include  \
--IRIOT/cpu/nrf52/include  \
--IRIOT/cpu/nrf5x_common/include  \
--IRIOT/cpu/cortexm_common/include  \
--IRIOT/cpu/cortexm_common/include/vendor  \
--IRIOT/sys/libc/include  \
--Iapps/pinetime/bin/pkg/pinetime/littlefs  \
--Iapps/pinetime/bin/pkg/pinetime/lvgl  \
--IRIOT/pkg/nimble/contrib/include  \
--Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/include  \
--Iapps/pinetime/bin/pkg/pinetime/nimble/porting/npl/riot/include  \
--Iapps/pinetime/bin/pkg/pinetime/nimble/porting/nimble/include  \
--Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/controller/include  \
--Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/drivers/nrf52/include  \
--Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/include  \
--Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/store/ram/include  \
--Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/util/include  \
--Iapps/pinetime/bin/pkg/pinetime/nimble/ext/tinycrypt/include  \
--Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/transport/ram/include  \
--Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gap/include  \
--Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gatt/include  \
--Iapps/pinetime/../../modules/include  \
--Iapps/pinetime/../../modules/bleman/include  \
--Iapps/pinetime/../../modules/gui/include  \
--Iapps/pinetime/../../modules/controller/include  \
--Iapps/pinetime/../../modules/fonts/include  \
--Iapps/pinetime/../../modules/hal/include  \
--Iapps/pinetime/../../modules/storage/include  \
--Iapps/pinetime/../../modules/util/include  \
--Iapps/pinetime/../../modules/widget/include  \
--Iapps/pinetime/../../widgets/home_time/include  \
--Iapps/pinetime/../../widgets/menu_tiles/include  \
--Iapps/pinetime/../../widgets/sysinfo/include  \
--Iapps/pinetime/../../widgets/face_notification/include  \
--Iapps/pinetime/../../widgets/face_sports/include  \
--Iapps/pinetime/../../modules/bleman/include  \
--Iapps/pinetime/../../modules/gui/include  \
--Iapps/pinetime/../../modules/controller/include  \
--Iapps/pinetime/../../modules/fonts/include  \
--Iapps/pinetime/../../modules/hal/include  \
--Iapps/pinetime/../../modules/storage/include  \
--Iapps/pinetime/../../modules/util/include  \
--Iapps/pinetime/../../modules/widget/include  \
--IRIOT/sys/posix/include  \
--IRIOT/drivers/cst816s/include  \
--IRIOT/drivers/ili9341/include  \
--DEND_OF_OPTIONS
-</code></pre>
-<p>From https://github.com/lupyuen/PineTime-apps/blob/master/scripts/gen-bindings.sh</p>
-<pre><code class="language-bash">bindgen apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_core/lv_obj.h -- -Dstatic= -Dinline= -Ibaselibc/include/ -Iapps/pinetime/bin/pkg/pinetime/ -Iapps/pinetime -DDEVELHELP -Werror -DCPU_FAM_NRF52 -mlittle-endian -ffunction-sections -fdata-sections -fno-builtin -fshort-enums -ggdb -g3 -DCPU_MODEL_NRF52832XXAA -DCPU_ARCH_CORTEX_M4F -DRIOT_BOARD=BOARD_PINETIME -DRIOT_CPU=CPU_NRF52 -DRIOT_MCU=MCU_NRF52 -std=c99 -fno-common -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DNIMBLE_CFG_CONTROLLER=1 -DMYNEWT_VAL_OS_CPUTIME_FREQ=32768 -DMYNEWT_VAL_BLE_SM_LEGACY=0 -DMYNEWT_VAL_BLE_SM_SC=1 -DMYNEWT_VAL_BLE_SM_MITM=1 -DMYNEWT_VAL_BLE_SM_BONDING=1 -DMYNEWT_VAL_BLE_SM_MAX_PROCS=1 -DMYNEWT_VAL_BLE_GATT_MAX_PROCS=8 -DMYNEWT_VAL_BLE_L2CAP_MAX_CHANS=8 -DMYNEWT_VAL_BLE_L2CAP_COC_MAX_NUM=1 -DMYNEWT_VAL_BLE_STORE_MAX_BONDS=5 -DMYNEWT_VAL_BLE_SM_OUR_KEY_DIST=0x6 -DMYNEWT_VAL_BLE_SM_THEIR_KEY_DIST=0x6 -DMYNEWT_VAL_MSYS_1_BLOCK_COUNT=32 -DMYNEWT_VAL_MSYS_1_BLOCK_SIZE=292 -DMYNEWT_VAL_BLE_EXT_ADV_MAX_SIZE=31 -DMYNEWT_VAL_BLE_MAX_CONNECTIONS=1 -DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 -DMYNEWT_VAL_BLE_MULTI_ADV_INSTANCES=5 -DMYNEWT_VAL_BLE_STORE_MAX_CCCDS=8 -DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 -DMYNEWT_VAL_BLE_MULTI_ADV_INSTANCES=5 -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LE_ENCRYPTION=1 -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LL_PRIVACY=1 -DMYNEWT_VAL_BLE_LL_CFG_FEAT_DATA_LEN_EXT=1 -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LL_EXT_ADV=1 -DMYNEWT_VAL_BLE_LL_SCHED_SCAN_AUX_PDU_LEN=41 -DMYNEWT_VAL_BLE_LL_SCHED_SCAN_SYNC_PDU_LEN=32 -DMYNEWT_VAL_BLE_SM_IO_CAP=BLE_HS_IO_DISPLAY_YESNO -DNIMBLE_HOST_STACKSIZE=3072 -DVFS_FILE_BUFFER_SIZE=84 -DVFS_DIR_BUFFER_SIZE=52 -include apps/pinetime/bin/pinetime/riotbuild/riotbuild.h -isystem /usr/local/Cellar/arm-none-eabi-gcc/7-2018-q2-update/gcc/arm-none-eabi/include/newlib-nano -Iapps/pinetime/../../modules/include -Iapps/pinetime/../../modules/bleman/include -Iapps/pinetime/../../modules/gui/include -Iapps/pinetime/../../modules/controller/include -Iapps/pinetime/../../modules/fonts/include -Iapps/pinetime/../../modules/hal/include -Iapps/pinetime/../../modules/storage/include -Iapps/pinetime/../../modules/util/include -Iapps/pinetime/../../modules/widget/include -Iapps/pinetime/../../widgets/home_time/include -Iapps/pinetime/../../widgets/menu_tiles/include -Iapps/pinetime/../../widgets/sysinfo/include -Iapps/pinetime/../../widgets/face_notification/include -Iapps/pinetime/../../widgets/face_sports/include -IRIOT/core/include -IRIOT/drivers/include -IRIOT/sys/include -IRIOT/boards/pinetime/include -IRIOT/boards/common/nrf52/include -IRIOT/cpu/nrf52/include -IRIOT/cpu/nrf5x_common/include -IRIOT/cpu/cortexm_common/include -IRIOT/cpu/cortexm_common/include/vendor -IRIOT/sys/libc/include -Iapps/pinetime/bin/pkg/pinetime/littlefs -Iapps/pinetime/bin/pkg/pinetime/lvgl -IRIOT/pkg/nimble/contrib/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/include -Iapps/pinetime/bin/pkg/pinetime/nimble/porting/npl/riot/include -Iapps/pinetime/bin/pkg/pinetime/nimble/porting/nimble/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/controller/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/drivers/nrf52/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/store/ram/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/util/include -Iapps/pinetime/bin/pkg/pinetime/nimble/ext/tinycrypt/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/transport/ram/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gap/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gatt/include -Iapps/pinetime/../../modules/include -Iapps/pinetime/../../modules/bleman/include -Iapps/pinetime/../../modules/gui/include -Iapps/pinetime/../../modules/controller/include -Iapps/pinetime/../../modules/fonts/include -Iapps/pinetime/../../modules/hal/include -Iapps/pinetime/../../modules/storage/include -Iapps/pinetime/../../modules/util/include -Iapps/pinetime/../../modules/widget/include -Iapps/pinetime/../../widgets/home_time/include -Iapps/pinetime/../../widgets/menu_tiles/include -Iapps/pinetime/../../widgets/sysinfo/include -Iapps/pinetime/../../widgets/face_notification/include -Iapps/pinetime/../../widgets/face_sports/include -Iapps/pinetime/../../modules/bleman/include -Iapps/pinetime/../../modules/gui/include -Iapps/pinetime/../../modules/controller/include -Iapps/pinetime/../../modules/fonts/include -Iapps/pinetime/../../modules/hal/include -Iapps/pinetime/../../modules/storage/include -Iapps/pinetime/../../modules/util/include -Iapps/pinetime/../../modules/widget/include -IRIOT/sys/posix/include -IRIOT/drivers/cst816s/include -IRIOT/drivers/ili9341/include -DEND_OF_OPTIONS
-</code></pre>
-<pre><code class="language-bash">bindgen --verbose --use-core --ctypes-prefix ::cty --with-derive-default --no-derive-copy --no-derive-debug --no-layout-tests --raw-line use --raw-line 'super::*;' --whitelist-function '(?i)lv_.*' --whitelist-type '(?i)lv_.*' --whitelist-var '(?i)lv_.*' -o rust/lvgl/src/core/obj.tmp apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_core/lv_obj.h -- -Dstatic= -Dinline= -Ibaselibc/include/ -Iapps/pinetime/bin/pkg/pinetime/ -Iapps/pinetime -DDEVELHELP -Werror -DCPU_FAM_NRF52 -mlittle-endian -ffunction-sections -fdata-sections -fno-builtin -fshort-enums -ggdb -g3 -DCPU_MODEL_NRF52832XXAA -DCPU_ARCH_CORTEX_M4F -DRIOT_BOARD=BOARD_PINETIME -DRIOT_CPU=CPU_NRF52 -DRIOT_MCU=MCU_NRF52 -std=c99 -fno-common -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DNIMBLE_CFG_CONTROLLER=1 -DMYNEWT_VAL_OS_CPUTIME_FREQ=32768 -DMYNEWT_VAL_BLE_SM_LEGACY=0 -DMYNEWT_VAL_BLE_SM_SC=1 -DMYNEWT_VAL_BLE_SM_MITM=1 -DMYNEWT_VAL_BLE_SM_BONDING=1 -DMYNEWT_VAL_BLE_SM_MAX_PROCS=1 -DMYNEWT_VAL_BLE_GATT_MAX_PROCS=8 -DMYNEWT_VAL_BLE_L2CAP_MAX_CHANS=8 -DMYNEWT_VAL_BLE_L2CAP_COC_MAX_NUM=1 -DMYNEWT_VAL_BLE_STORE_MAX_BONDS=5 -DMYNEWT_VAL_BLE_SM_OUR_KEY_DIST=0x6 -DMYNEWT_VAL_BLE_SM_THEIR_KEY_DIST=0x6 -DMYNEWT_VAL_MSYS_1_BLOCK_COUNT=32 -DMYNEWT_VAL_MSYS_1_BLOCK_SIZE=292 -DMYNEWT_VAL_BLE_EXT_ADV_MAX_SIZE=31 -DMYNEWT_VAL_BLE_MAX_CONNECTIONS=1 -DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 -DMYNEWT_VAL_BLE_MULTI_ADV_INSTANCES=5 -DMYNEWT_VAL_BLE_STORE_MAX_CCCDS=8 -DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 -DMYNEWT_VAL_BLE_MULTI_ADV_INSTANCES=5 -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LE_ENCRYPTION=1 -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LL_PRIVACY=1 -DMYNEWT_VAL_BLE_LL_CFG_FEAT_DATA_LEN_EXT=1 -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LL_EXT_ADV=1 -DMYNEWT_VAL_BLE_LL_SCHED_SCAN_AUX_PDU_LEN=41 -DMYNEWT_VAL_BLE_LL_SCHED_SCAN_SYNC_PDU_LEN=32 -DMYNEWT_VAL_BLE_SM_IO_CAP=BLE_HS_IO_DISPLAY_YESNO -DNIMBLE_HOST_STACKSIZE=3072 -DVFS_FILE_BUFFER_SIZE=84 -DVFS_DIR_BUFFER_SIZE=52 -include apps/pinetime/bin/pinetime/riotbuild/riotbuild.h -isystem /usr/local/Cellar/arm-none-eabi-gcc/7-2018-q2-update/gcc/arm-none-eabi/include/newlib-nano -Iapps/pinetime/../../modules/include -Iapps/pinetime/../../modules/bleman/include -Iapps/pinetime/../../modules/gui/include -Iapps/pinetime/../../modules/controller/include -Iapps/pinetime/../../modules/fonts/include -Iapps/pinetime/../../modules/hal/include -Iapps/pinetime/../../modules/storage/include -Iapps/pinetime/../../modules/util/include -Iapps/pinetime/../../modules/widget/include -Iapps/pinetime/../../widgets/home_time/include -Iapps/pinetime/../../widgets/menu_tiles/include -Iapps/pinetime/../../widgets/sysinfo/include -Iapps/pinetime/../../widgets/face_notification/include -Iapps/pinetime/../../widgets/face_sports/include -IRIOT/core/include -IRIOT/drivers/include -IRIOT/sys/include -IRIOT/boards/pinetime/include -IRIOT/boards/common/nrf52/include -IRIOT/cpu/nrf52/include -IRIOT/cpu/nrf5x_common/include -IRIOT/cpu/cortexm_common/include -IRIOT/cpu/cortexm_common/include/vendor -IRIOT/sys/libc/include -Iapps/pinetime/bin/pkg/pinetime/littlefs -Iapps/pinetime/bin/pkg/pinetime/lvgl -IRIOT/pkg/nimble/contrib/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/include -Iapps/pinetime/bin/pkg/pinetime/nimble/porting/npl/riot/include -Iapps/pinetime/bin/pkg/pinetime/nimble/porting/nimble/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/controller/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/drivers/nrf52/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/store/ram/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/util/include -Iapps/pinetime/bin/pkg/pinetime/nimble/ext/tinycrypt/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/transport/ram/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gap/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gatt/include -Iapps/pinetime/../../modules/include -Iapps/pinetime/../../modules/bleman/include -Iapps/pinetime/../../modules/gui/include -Iapps/pinetime/../../modules/controller/include -Iapps/pinetime/../../modules/fonts/include -Iapps/pinetime/../../modules/hal/include -Iapps/pinetime/../../modules/storage/include -Iapps/pinetime/../../modules/util/include -Iapps/pinetime/../../modules/widget/include -Iapps/pinetime/../../widgets/home_time/include -Iapps/pinetime/../../widgets/menu_tiles/include -Iapps/pinetime/../../widgets/sysinfo/include -Iapps/pinetime/../../widgets/face_notification/include -Iapps/pinetime/../../widgets/face_sports/include -Iapps/pinetime/../../modules/bleman/include -Iapps/pinetime/../../modules/gui/include -Iapps/pinetime/../../modules/controller/include -Iapps/pinetime/../../modules/fonts/include -Iapps/pinetime/../../modules/hal/include -Iapps/pinetime/../../modules/storage/include -Iapps/pinetime/../../modules/util/include -Iapps/pinetime/../../modules/widget/include -IRIOT/sys/posix/include -IRIOT/drivers/cst816s/include -IRIOT/drivers/ili9341/include -DEND_OF_OPTIONS
-</code></pre>
-<pre><code class="language-bash">+ ./scripts/gen-bindings.sh
-+ export RUST_BACKTRACE=1
-+ RUST_BACKTRACE=1
-+ libname=lvgl
-+ headerprefix=apps/pinetime/bin/pkg/pinetime
-+ generate_bindings_core
-+ local modname=core
-+ local submodname=obj
-+ local headerfile=apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_core/lv_obj.h
-+ local whitelistname=lv_
-++ cat
-+ local 'whitelist=        --raw-line use         --raw-line super::*;         --whitelist-function (?i)lv_.*         --whitelist-type     (?i)lv_.*         --whitelist-var      (?i)lv_.*'
-+ generate_bindings lvgl core obj apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_core/lv_obj.h --raw-line use --raw-line 'super::*;' --whitelist-function '(?i)lv_.*' --whitelist-type '(?i)lv_.*' --whitelist-var '(?i)lv_.*'
-+ local libname=lvgl
-+ local modname=core
-+ local submodname=obj
-+ local headerfile=apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_core/lv_obj.h
-+ shift 4
-+ local 'whitelist=--raw-line use --raw-line super::*; --whitelist-function (?i)lv_.* --whitelist-type (?i)lv_.* --whitelist-var (?i)lv_.*'
-+ echo 'whitelist=--raw-line use --raw-line super::*; --whitelist-function (?i)lv_.* --whitelist-type (?i)lv_.* --whitelist-var (?i)lv_.*'
-whitelist=--raw-line use --raw-line super::*; --whitelist-function (?i)lv_.* --whitelist-type (?i)lv_.* --whitelist-var (?i)lv_.*
-+ local expandpath=rust/lvgl/src/core/obj.rs
-+ local tmpexpandpath=rust/lvgl/src/core/obj.tmp
-+ bindgen --verbose --use-core --ctypes-prefix ::cty --with-derive-default --no-derive-copy --no-derive-debug --no-layout-tests --raw-line use --raw-line 'super::*;' --whitelist-function '(?i)lv_.*' --whitelist-type '(?i)lv_.*' --whitelist-var '(?i)lv_.*' -o rust/lvgl/src/core/obj.tmp apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_core/lv_obj.h -- -Dstatic= -Dinline= -Ibaselibc/include/ -Iapps/pinetime/bin/pkg/pinetime/ -Iapps/pinetime -DDEVELHELP -Werror -DCPU_FAM_NRF52 -mlittle-endian -ffunction-sections -fdata-sections -fno-builtin -fshort-enums -ggdb -g3 -DCPU_MODEL_NRF52832XXAA -DCPU_ARCH_CORTEX_M4F -DRIOT_BOARD=BOARD_PINETIME -DRIOT_CPU=CPU_NRF52 -DRIOT_MCU=MCU_NRF52 -std=c99 -fno-common -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DNIMBLE_CFG_CONTROLLER=1 -DMYNEWT_VAL_OS_CPUTIME_FREQ=32768 -DMYNEWT_VAL_BLE_SM_LEGACY=0 -DMYNEWT_VAL_BLE_SM_SC=1 -DMYNEWT_VAL_BLE_SM_MITM=1 -DMYNEWT_VAL_BLE_SM_BONDING=1 -DMYNEWT_VAL_BLE_SM_MAX_PROCS=1 -DMYNEWT_VAL_BLE_GATT_MAX_PROCS=8 -DMYNEWT_VAL_BLE_L2CAP_MAX_CHANS=8 -DMYNEWT_VAL_BLE_L2CAP_COC_MAX_NUM=1 -DMYNEWT_VAL_BLE_STORE_MAX_BONDS=5 -DMYNEWT_VAL_BLE_SM_OUR_KEY_DIST=0x6 -DMYNEWT_VAL_BLE_SM_THEIR_KEY_DIST=0x6 -DMYNEWT_VAL_MSYS_1_BLOCK_COUNT=32 -DMYNEWT_VAL_MSYS_1_BLOCK_SIZE=292 -DMYNEWT_VAL_BLE_EXT_ADV_MAX_SIZE=31 -DMYNEWT_VAL_BLE_MAX_CONNECTIONS=1 -DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 -DMYNEWT_VAL_BLE_MULTI_ADV_INSTANCES=5 -DMYNEWT_VAL_BLE_STORE_MAX_CCCDS=8 -DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 -DMYNEWT_VAL_BLE_MULTI_ADV_INSTANCES=5 -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LE_ENCRYPTION=1 -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LL_PRIVACY=1 -DMYNEWT_VAL_BLE_LL_CFG_FEAT_DATA_LEN_EXT=1 -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LL_EXT_ADV=1 -DMYNEWT_VAL_BLE_LL_SCHED_SCAN_AUX_PDU_LEN=41 -DMYNEWT_VAL_BLE_LL_SCHED_SCAN_SYNC_PDU_LEN=32 -DMYNEWT_VAL_BLE_SM_IO_CAP=BLE_HS_IO_DISPLAY_YESNO -DNIMBLE_HOST_STACKSIZE=3072 -DVFS_FILE_BUFFER_SIZE=84 -DVFS_DIR_BUFFER_SIZE=52 -include apps/pinetime/bin/pinetime/riotbuild/riotbuild.h -isystem /usr/local/Cellar/arm-none-eabi-gcc/7-2018-q2-update/gcc/arm-none-eabi/include/newlib-nano -Iapps/pinetime/../../modules/include -Iapps/pinetime/../../modules/bleman/include -Iapps/pinetime/../../modules/gui/include -Iapps/pinetime/../../modules/controller/include -Iapps/pinetime/../../modules/fonts/include -Iapps/pinetime/../../modules/hal/include -Iapps/pinetime/../../modules/storage/include -Iapps/pinetime/../../modules/util/include -Iapps/pinetime/../../modules/widget/include -Iapps/pinetime/../../widgets/home_time/include -Iapps/pinetime/../../widgets/menu_tiles/include -Iapps/pinetime/../../widgets/sysinfo/include -Iapps/pinetime/../../widgets/face_notification/include -Iapps/pinetime/../../widgets/face_sports/include -IRIOT/core/include -IRIOT/drivers/include -IRIOT/sys/include -IRIOT/boards/pinetime/include -IRIOT/boards/common/nrf52/include -IRIOT/cpu/nrf52/include -IRIOT/cpu/nrf5x_common/include -IRIOT/cpu/cortexm_common/include -IRIOT/cpu/cortexm_common/include/vendor -IRIOT/sys/libc/include -Iapps/pinetime/bin/pkg/pinetime/littlefs -Iapps/pinetime/bin/pkg/pinetime/lvgl -IRIOT/pkg/nimble/contrib/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/include -Iapps/pinetime/bin/pkg/pinetime/nimble/porting/npl/riot/include -Iapps/pinetime/bin/pkg/pinetime/nimble/porting/nimble/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/controller/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/drivers/nrf52/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/store/ram/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/util/include -Iapps/pinetime/bin/pkg/pinetime/nimble/ext/tinycrypt/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/transport/ram/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gap/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gatt/include -Iapps/pinetime/../../modules/include -Iapps/pinetime/../../modules/bleman/include -Iapps/pinetime/../../modules/gui/include -Iapps/pinetime/../../modules/controller/include -Iapps/pinetime/../../modules/fonts/include -Iapps/pinetime/../../modules/hal/include -Iapps/pinetime/../../modules/storage/include -Iapps/pinetime/../../modules/util/include -Iapps/pinetime/../../modules/widget/include -Iapps/pinetime/../../widgets/home_time/include -Iapps/pinetime/../../widgets/menu_tiles/include -Iapps/pinetime/../../widgets/sysinfo/include -Iapps/pinetime/../../widgets/face_notification/include -Iapps/pinetime/../../widgets/face_sports/include -Iapps/pinetime/../../modules/bleman/include -Iapps/pinetime/../../modules/gui/include -Iapps/pinetime/../../modules/controller/include -Iapps/pinetime/../../modules/fonts/include -Iapps/pinetime/../../modules/hal/include -Iapps/pinetime/../../modules/storage/include -Iapps/pinetime/../../modules/util/include -Iapps/pinetime/../../modules/widget/include -IRIOT/sys/posix/include -IRIOT/drivers/cst816s/include -IRIOT/drivers/ili9341/include -DEND_OF_OPTIONS
-+ cat rust/lvgl/src/core/obj.tmp
-+ sed 's/^extern &quot;C&quot; /#[lvgl_macros::safe_wrap(attr)] extern &quot;C&quot; /'
-+ sed 's/@param \([^ ][^ ]*\) /- __`\1`__: /'
-+ sed 's/@return /Return: /'
-+ sed 's/@code{.c}/```c/'
-+ sed 's/@code/```/'
-+ sed 's/@endcode/```/'
-+ sed s/@note/__Note:__/
-+ rm rust/lvgl/src/core/obj.tmp
-+ generate_bindings_objx
-+ local modname=objx
-+ local submodname=label
-+ local headerfile=apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_objx/lv_label.h
-+ local whitelistname=lv_label
-++ cat
-+ local 'whitelist=        --raw-line use         --raw-line super::*;         --whitelist-function (?i)lv_label.*         --whitelist-type     (?i)lv_label.*         --whitelist-var      (?i)lv_label.*         --blacklist-item     _lv_obj_t         --blacklist-item     lv_style_t'
-+ generate_bindings lvgl objx label apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_objx/lv_label.h --raw-line use --raw-line 'super::*;' --whitelist-function '(?i)lv_label.*' --whitelist-type '(?i)lv_label.*' --whitelist-var '(?i)lv_label.*' --blacklist-item _lv_obj_t --blacklist-item lv_style_t
-+ local libname=lvgl
-+ local modname=objx
-+ local submodname=label
-+ local headerfile=apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_objx/lv_label.h
-+ shift 4
-+ local 'whitelist=--raw-line use --raw-line super::*; --whitelist-function (?i)lv_label.* --whitelist-type (?i)lv_label.* --whitelist-var (?i)lv_label.* --blacklist-item _lv_obj_t --blacklist-item lv_style_t'
-+ echo 'whitelist=--raw-line use --raw-line super::*; --whitelist-function (?i)lv_label.* --whitelist-type (?i)lv_label.* --whitelist-var (?i)lv_label.* --blacklist-item _lv_obj_t --blacklist-item lv_style_t'
-whitelist=--raw-line use --raw-line super::*; --whitelist-function (?i)lv_label.* --whitelist-type (?i)lv_label.* --whitelist-var (?i)lv_label.* --blacklist-item _lv_obj_t --blacklist-item lv_style_t
-+ local expandpath=rust/lvgl/src/objx/label.rs
-+ local tmpexpandpath=rust/lvgl/src/objx/label.tmp
-+ bindgen --verbose --use-core --ctypes-prefix ::cty --with-derive-default --no-derive-copy --no-derive-debug --no-layout-tests --raw-line use --raw-line 'super::*;' --whitelist-function '(?i)lv_label.*' --whitelist-type '(?i)lv_label.*' --whitelist-var '(?i)lv_label.*' --blacklist-item _lv_obj_t --blacklist-item lv_style_t -o rust/lvgl/src/objx/label.tmp apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_objx/lv_label.h -- -Dstatic= -Dinline= -Ibaselibc/include/ -Iapps/pinetime/bin/pkg/pinetime/ -Iapps/pinetime -DDEVELHELP -Werror -DCPU_FAM_NRF52 -mlittle-endian -ffunction-sections -fdata-sections -fno-builtin -fshort-enums -ggdb -g3 -DCPU_MODEL_NRF52832XXAA -DCPU_ARCH_CORTEX_M4F -DRIOT_BOARD=BOARD_PINETIME -DRIOT_CPU=CPU_NRF52 -DRIOT_MCU=MCU_NRF52 -std=c99 -fno-common -DLV_CONF_INCLUDE_SIMPLE -DLV_LVGL_H_INCLUDE_SIMPLE -DNIMBLE_CFG_CONTROLLER=1 -DMYNEWT_VAL_OS_CPUTIME_FREQ=32768 -DMYNEWT_VAL_BLE_SM_LEGACY=0 -DMYNEWT_VAL_BLE_SM_SC=1 -DMYNEWT_VAL_BLE_SM_MITM=1 -DMYNEWT_VAL_BLE_SM_BONDING=1 -DMYNEWT_VAL_BLE_SM_MAX_PROCS=1 -DMYNEWT_VAL_BLE_GATT_MAX_PROCS=8 -DMYNEWT_VAL_BLE_L2CAP_MAX_CHANS=8 -DMYNEWT_VAL_BLE_L2CAP_COC_MAX_NUM=1 -DMYNEWT_VAL_BLE_STORE_MAX_BONDS=5 -DMYNEWT_VAL_BLE_SM_OUR_KEY_DIST=0x6 -DMYNEWT_VAL_BLE_SM_THEIR_KEY_DIST=0x6 -DMYNEWT_VAL_MSYS_1_BLOCK_COUNT=32 -DMYNEWT_VAL_MSYS_1_BLOCK_SIZE=292 -DMYNEWT_VAL_BLE_EXT_ADV_MAX_SIZE=31 -DMYNEWT_VAL_BLE_MAX_CONNECTIONS=1 -DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 -DMYNEWT_VAL_BLE_MULTI_ADV_INSTANCES=5 -DMYNEWT_VAL_BLE_STORE_MAX_CCCDS=8 -DMYNEWT_VAL_BLE_MAX_PERIODIC_SYNCS=5 -DMYNEWT_VAL_BLE_MULTI_ADV_INSTANCES=5 -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LE_ENCRYPTION=1 -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LL_PRIVACY=1 -DMYNEWT_VAL_BLE_LL_CFG_FEAT_DATA_LEN_EXT=1 -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LL_EXT_ADV=1 -DMYNEWT_VAL_BLE_LL_SCHED_SCAN_AUX_PDU_LEN=41 -DMYNEWT_VAL_BLE_LL_SCHED_SCAN_SYNC_PDU_LEN=32 -DMYNEWT_VAL_BLE_SM_IO_CAP=BLE_HS_IO_DISPLAY_YESNO -DNIMBLE_HOST_STACKSIZE=3072 -DVFS_FILE_BUFFER_SIZE=84 -DVFS_DIR_BUFFER_SIZE=52 -include apps/pinetime/bin/pinetime/riotbuild/riotbuild.h -isystem /usr/local/Cellar/arm-none-eabi-gcc/7-2018-q2-update/gcc/arm-none-eabi/include/newlib-nano -Iapps/pinetime/../../modules/include -Iapps/pinetime/../../modules/bleman/include -Iapps/pinetime/../../modules/gui/include -Iapps/pinetime/../../modules/controller/include -Iapps/pinetime/../../modules/fonts/include -Iapps/pinetime/../../modules/hal/include -Iapps/pinetime/../../modules/storage/include -Iapps/pinetime/../../modules/util/include -Iapps/pinetime/../../modules/widget/include -Iapps/pinetime/../../widgets/home_time/include -Iapps/pinetime/../../widgets/menu_tiles/include -Iapps/pinetime/../../widgets/sysinfo/include -Iapps/pinetime/../../widgets/face_notification/include -Iapps/pinetime/../../widgets/face_sports/include -IRIOT/core/include -IRIOT/drivers/include -IRIOT/sys/include -IRIOT/boards/pinetime/include -IRIOT/boards/common/nrf52/include -IRIOT/cpu/nrf52/include -IRIOT/cpu/nrf5x_common/include -IRIOT/cpu/cortexm_common/include -IRIOT/cpu/cortexm_common/include/vendor -IRIOT/sys/libc/include -Iapps/pinetime/bin/pkg/pinetime/littlefs -Iapps/pinetime/bin/pkg/pinetime/lvgl -IRIOT/pkg/nimble/contrib/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/include -Iapps/pinetime/bin/pkg/pinetime/nimble/porting/npl/riot/include -Iapps/pinetime/bin/pkg/pinetime/nimble/porting/nimble/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/controller/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/drivers/nrf52/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/store/ram/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/util/include -Iapps/pinetime/bin/pkg/pinetime/nimble/ext/tinycrypt/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/transport/ram/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gap/include -Iapps/pinetime/bin/pkg/pinetime/nimble/nimble/host/services/gatt/include -Iapps/pinetime/../../modules/include -Iapps/pinetime/../../modules/bleman/include -Iapps/pinetime/../../modules/gui/include -Iapps/pinetime/../../modules/controller/include -Iapps/pinetime/../../modules/fonts/include -Iapps/pinetime/../../modules/hal/include -Iapps/pinetime/../../modules/storage/include -Iapps/pinetime/../../modules/util/include -Iapps/pinetime/../../modules/widget/include -Iapps/pinetime/../../widgets/home_time/include -Iapps/pinetime/../../widgets/menu_tiles/include -Iapps/pinetime/../../widgets/sysinfo/include -Iapps/pinetime/../../widgets/face_notification/include -Iapps/pinetime/../../widgets/face_sports/include -Iapps/pinetime/../../modules/bleman/include -Iapps/pinetime/../../modules/gui/include -Iapps/pinetime/../../modules/controller/include -Iapps/pinetime/../../modules/fonts/include -Iapps/pinetime/../../modules/hal/include -Iapps/pinetime/../../modules/storage/include -Iapps/pinetime/../../modules/util/include -Iapps/pinetime/../../modules/widget/include -IRIOT/sys/posix/include -IRIOT/drivers/cst816s/include -IRIOT/drivers/ili9341/include -DEND_OF_OPTIONS
-+ cat rust/lvgl/src/objx/label.tmp
-+ sed 's/^extern &quot;C&quot; /#[lvgl_macros::safe_wrap(attr)] extern &quot;C&quot; /'
-+ sed 's/@param \([^ ][^ ]*\) /- __`\1`__: /'
-+ sed 's/@return /Return: /'
-+ sed 's/@code{.c}/```c/'
-+ sed 's/@code/```/'
-+ sed 's/@endcode/```/'
-+ sed s/@note/__Note:__/
-</code></pre>
-<h1 id="expose-rust-functions-to-c" class="section-header"><a href="#expose-rust-functions-to-c">17 Expose Rust functions to C</a></h1>
+<p><em>Answer: They are exactly the same!</em></p>
+<p>The magic happens in this line of code...</p>
+
 <div class="example-wrap"><pre class="rust rust-example-rendered">
-<span class="attribute">#[<span class="ident">no_mangle</span>]</span>
-<span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">create_watch_face</span>(<span class="ident">widgets</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">WatchFaceWidgets</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> { ...</pre></div>
-<h1 id="error-handling" class="section-header"><a href="#error-handling">18 Error Handling</a></h1>
+<span class="attribute">#[<span class="ident">lvgl_macros</span>::<span class="ident">safe_wrap</span>(<span class="ident">attr</span>)]</span></pre></div>
+<p>This activates a <a href="https://blog.rust-lang.org/2018/12/21/Procedural-Macros-in-Rust-2018.html"><strong>Rust Procedural Macro</strong></a> <code>safe_wrap</code> that we have written.  The Rust Compiler calls our Rust function <code>safe_wrap</code> during compilation (instead of runtime). <a href="https://github.com/lupyuen/PineTime-apps/blob/master/rust/macros/src/safe_wrap.rs#L116-L147"><code>safe_wrap</code> is defined here</a></p>
+<p>Unlike C Macros, Rust Macros are allowed to <strong>inspect the Rust code</strong> passed to the macro... And alter the code!</p>
+<p>So this whole chunk of Rust code...</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lv_label_set_text</span>(
+        <span class="ident">label</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">lv_obj_t</span>, 
+        <span class="ident">text</span>:  <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">cty</span>::<span class="ident">c_char</span>
+        ...</pre></div>
+<p>Gets passed into our <code>safe_wrap</code> function for us to manipulate!</p>
+<ol>
+<li>
+<p><code>safe_wrap</code> inspects the imported function name (<code>lv_label_set_text</code>), parameter types (<code>lv_obj_t</code>, <code>c_char</code>) and return type (none)</p>
+</li>
+<li>
+<p>Then <code>safe_wrap</code> replaces the chunk of code by the Safe Wrapper function <code>set_text</code>, populated with the right parameter types and return type</p>
+</li>
+<li>
+<p><code>*const ::cty::c_char</code> (pointer to a C string, which may or may not be null-terminated) is replaced by the safer <code>&amp;Strn</code> (reference to a null-terminated string object)</p>
+</li>
+</ol>
+<p>That's how we automatically generate Safe Wrapper functions (described in the previous section)... For every imported LittlevGL function.</p>
+<p><code>safe_wrap</code> is inserted into the Rust Bindings by the <a href="https://github.com/lupyuen/PineTime-apps/blob/master/scripts/gen-bindings.sh">gen-bindings.sh</a> script.</p>
+<p><em>What's <code>LvglResult&lt;()&gt;</code> and <code>Ok(())</code>?</em></p>
+<p>We'll find out in the next section: Rust Error Handling.</p>
+<h1 id="error-handling-in-rust" class="section-header"><a href="#error-handling-in-rust">17 Error Handling in Rust</a></h1>
 <p>TODO</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered">
 <span class="kw">let</span> <span class="ident">screen</span> <span class="op">=</span> <span class="ident">obj</span>::<span class="ident">create</span>(<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="ident">ptr</span>::<span class="ident">null</span>())
     .<span class="ident">expect</span>(<span class="string">&quot;create screen obj fail&quot;</span>);</pre></div>
 <p>TODO</p>
-<h1 id="lifetime" class="section-header"><a href="#lifetime">19 Lifetime</a></h1>
+<h1 id="lifetime" class="section-header"><a href="#lifetime">18 Lifetime</a></h1>
 <p>TODO</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered">
@@ -914,7 +761,7 @@ whitelist=--raw-line use --raw-line super::*; --whitelist-function (?i)lv_label.
             .<span class="ident">expect</span>(<span class="string">&quot;time fail&quot;</span>);
         <span class="ident">label</span>::<span class="ident">set_text</span>(<span class="ident">widgets</span>.<span class="ident">time_label</span>, <span class="kw-2">&amp;</span><span class="ident">Strn</span>::<span class="ident">new</span>(<span class="ident">TIME_BUF</span>.<span class="ident">as_bytes</span>())) <span class="question-mark">?</span> ;  <span class="comment">//  TODO: Simplify</span>
     }</pre></div>
-<h1 id="generate-rust-bindings-automatically-with-bindgen" class="section-header"><a href="#generate-rust-bindings-automatically-with-bindgen">20 Generate Rust Bindings Automatically with bindgen</a></h1>
+<h1 id="generate-rust-bindings-automatically-with-bindgen" class="section-header"><a href="#generate-rust-bindings-automatically-with-bindgen">19 Generate Rust Bindings Automatically with bindgen</a></h1>
 <p>TODO</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered">
@@ -927,13 +774,13 @@ whitelist=--raw-line use --raw-line super::*; --whitelist-function (?i)lv_label.
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lv_obj_set_height</span>(<span class="ident">obj</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">lv_obj_t</span>, <span class="ident">h</span>: <span class="ident">i16</span>);
 }</pre></div>
 <p><em>From https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/core/obj.rs, https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/objx/label.rs</em></p>
-<h1 id="riot-os-bindings" class="section-header"><a href="#riot-os-bindings">21 RIOT OS Bindings</a></h1>
+<h1 id="riot-os-bindings" class="section-header"><a href="#riot-os-bindings">20 RIOT OS Bindings</a></h1>
 <p>TODO</p>
-<h1 id="build-and-link-with-riot-os" class="section-header"><a href="#build-and-link-with-riot-os">22 Build and link with RIOT OS</a></h1>
+<h1 id="build-and-link-with-riot-os" class="section-header"><a href="#build-and-link-with-riot-os">21 Build and link with RIOT OS</a></h1>
 <p>TODO</p>
-<h1 id="vscode-development" class="section-header"><a href="#vscode-development">23 VSCode Development</a></h1>
+<h1 id="vscode-development" class="section-header"><a href="#vscode-development">22 VSCode Development</a></h1>
 <p>TODO</p>
-<h1 id="vscode-debugging" class="section-header"><a href="#vscode-debugging">24 VSCode Debugging</a></h1>
+<h1 id="vscode-debugging" class="section-header"><a href="#vscode-debugging">23 VSCode Debugging</a></h1>
 <p>TODO</p>
 
     
