@@ -644,6 +644,46 @@ When we build the Embedded C code with `make --trace`, we'll see the options pas
 
 # Whitelist and Blacklist C Types and Functions in `bindgen`
 
+To build Watch Faces on PineTime Smart Watch, we need to call two groups of functions in LittlevGL...
+
+1. [Base Object Functions `lv_obj_*`](https://docs.littlevgl.com/en/html/object-types/obj.html): Set the width and height of Widgets (like Labels). Also to create the Screen object. Defined in [`lv_obj.h`](https://github.com/littlevgl/lvgl/blob/master/src/lv_core/lv_obj.h)
+
+1. [Label Functions `lv_label_*`](https://docs.littlevgl.com/en/html/object-types/label.html): Create Label Widgets and set the text of the Labels. Defined in [`lv_label.h`](https://github.com/littlevgl/lvgl/blob/master/src/lv_objx/lv_label.h)
+
+To call both groups of functions from Rust, we need to run `bindgen` twice...
+
+```bash
+# Generate Rust Bindings for LittlevGL Base Object Functions lv_obj_*
+bindgen lv_obj.h   -o obj.rs   -- -Ibaselibc/include/ ...
+
+# Generate Rust Bindings for LittlevGL Label Functions lv_label_*
+bindgen lv_label.h -o label.rs -- -Ibaselibc/include/ ...
+```
+
+_There's a problem with duplicate definitions... Do you see the problem?_
+
+[`lv_label.h`](https://github.com/littlevgl/lvgl/blob/master/src/lv_objx/lv_label.h) includes [`lv_obj.h`](https://github.com/littlevgl/lvgl/blob/master/src/lv_core/lv_obj.h). So `bindgen` helpfully creates Rust Bindings for the Base Object Functions _twice_: In `obj.rs` and again in `label.rs`
+
+The Rust Compiler is not gonna like this. To solve this, we __Whitelist and Blacklist__ the items that we should include (Whitelist) and exclude (Blacklist)...
+
+```bash
+# Generate Rust Bindings for LittlevGL Base Object Functions lv_obj_*
+bindgen lv_obj.h   -o obj.rs \
+    --whitelist-function '(?i)lv_.*' \
+    --whitelist-type '(?i)lv_.*' \
+    --whitelist-var '(?i)lv_.*' \
+    -- -Ibaselibc/include/ ...
+
+# Generate Rust Bindings for LittlevGL Label Functions lv_label_*
+bindgen lv_label.h -o label.rs \
+    --whitelist-function '(?i)lv_label.*' \
+    --whitelist-type '(?i)lv_label.*' \
+    --whitelist-var '(?i)lv_label.*' \
+    --blacklist-item _lv_obj_t \
+    --blacklist-item lv_style_t \
+    -- -Ibaselibc/include/ ...
+```
+
 ```bash
 bindgen --verbose --use-core --ctypes-prefix ::cty --with-derive-default --no-derive-copy --no-derive-debug --no-layout-tests --raw-line use --raw-line 'super::*;' --whitelist-function '(?i)lv_.*' --whitelist-type '(?i)lv_.*' --whitelist-var '(?i)lv_.*' -o rust/lvgl/src/core/obj.tmp apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_core/lv_obj.h 
 ```
