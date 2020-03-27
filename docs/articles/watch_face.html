@@ -65,7 +65,7 @@
 <li><a href="#import-c-types-and-functions-into-rust-with-bindgen">13 Import C Types and Functions into Rust with <code>bindgen</code></a><ul></ul></li>
 <li><a href="#whitelist-and-blacklist-c-types-and-functions-in-bindgen">14 Whitelist and Blacklist C Types and Functions in <code>bindgen</code></a><ul></ul></li>
 <li><a href="#safe-wrappers-for-imported-c-functions">15 Safe Wrappers for Imported C Functions</a><ul></ul></li>
-<li><a href="#generate-safe-wrappers-with-rust-procedural-macros">16 Generate Safe Wrappers with Rust Procedural Macros</a><ul></ul></li>
+<li><a href="#generate-safe-wrappers-with-rust-procedural-macro">16 Generate Safe Wrappers with Rust Procedural Macro</a><ul></ul></li>
 <li><a href="#error-handling-in-rust">17 Error Handling in Rust</a><ul></ul></li>
 <li><a href="#lifetime">18 Lifetime</a><ul></ul></li>
 <li><a href="#generate-rust-bindings-automatically-with-bindgen">19 Generate Rust Bindings Automatically with bindgen</a><ul></ul></li>
@@ -660,7 +660,7 @@ bindgen --verbose --use-core --ctypes-prefix ::cty --with-derive-default --no-de
 <p>The Wrapper Function always checks to ensure that <a href="https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/lib.rs#L181-L190">the string is null-terminated</a> before calling the C function. Crashing Watches Averted!</p>
 <p><em>But do we need to write this Wrapper Function ourselves for every C function?</em></p>
 <p>Not necessary... The Safe Wrappers may be automatically generated! Let's learn how with a Rust Procedural Macro.</p>
-<h1 id="generate-safe-wrappers-with-rust-procedural-macros" class="section-header"><a href="#generate-safe-wrappers-with-rust-procedural-macros">16 Generate Safe Wrappers with Rust Procedural Macros</a></h1>
+<h1 id="generate-safe-wrappers-with-rust-procedural-macro" class="section-header"><a href="#generate-safe-wrappers-with-rust-procedural-macro">16 Generate Safe Wrappers with Rust Procedural Macro</a></h1>
 <p>As we have seen, to create a PineTime Watch Face we need to...</p>
 <ol>
 <li>

@@ -791,7 +791,7 @@ _But do we need to write this Wrapper Function ourselves for every C function?_
 
 Not necessary... The Safe Wrappers may be automatically generated! Let's learn how with a Rust Procedural Macro.
 
-# Generate Safe Wrappers with Rust Procedural Macros
+# Generate Safe Wrappers with Rust Procedural Macro
 
 As we have seen, to create a PineTime Watch Face we need to...
 
