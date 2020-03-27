@@ -649,6 +649,10 @@ bindgen --verbose --use-core --ctypes-prefix ::cty --with-derive-default --no-de
 ```
 
 ```bash
+bindgen --verbose --use-core --ctypes-prefix ::cty --with-derive-default --no-derive-copy --no-derive-debug --no-layout-tests --raw-line use --raw-line 'super::*;' --whitelist-function '(?i)lv_label.*' --whitelist-type '(?i)lv_label.*' --whitelist-var '(?i)lv_label.*' --blacklist-item _lv_obj_t --blacklist-item lv_style_t -o rust/lvgl/src/objx/label.tmp apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_objx/lv_label.h -- -Ibaselibc/include/ -Iapps/pinetime/bin/pkg/pinetime/ -Iapps/pinetime
+```
+
+```bash
 bindgen \
 --verbose \
 --use-core \
