@@ -801,7 +801,7 @@ Trick Question: What's the difference between this Rust code (Rust Binding for a
 extern "C" {
     pub fn lv_label_set_text(
         label: *mut lv_obj_t, 
-        text: *const ::cty::c_char
+        text:  *const ::cty::c_char
     );
 }
 ```
@@ -818,7 +818,7 @@ pub fn set_text(
     extern "C" {
         pub fn lv_label_set_text(
             label: *mut lv_obj_t,
-            text: *const ::cty::c_char
+            text:  *const ::cty::c_char
         );
     }
     text.validate();  //  Validate that the string is null-terminated
@@ -834,6 +834,27 @@ _From https://github.com/lupyuen/PineTime-apps/blob/master/logs/liblvgl-expanded
 
 _Answer: They are exactly the same!_
 
+The magic happens in this line of code...
+
+```rust
+#[lvgl_macros::safe_wrap(attr)]
+```
+
+This activates a Rust Procedural Macro `safe_wrap` that we wrote.  The Rust Compiler calls our Rust function `safe_wrap` during compilation (instead of runtime).
+
+Unlike C Macros, Rust Macros are allowed to inspect the Rust code attached to the macro... And alter the code!
+
+So this whole chunk of Rust code...
+
+```rust
+extern "C" {
+    pub fn lv_label_set_text(
+        label: *mut lv_obj_t, 
+        text:  *const ::cty::c_char
+        ...
+```
+
+Gets passed into our `safe_wrap` function for us to manipulate!
 
 
 TODO
