@@ -841,7 +841,7 @@ The magic happens in this line of code...
 #[lvgl_macros::safe_wrap(attr)]
 ```
 
-This activates a __Rust Procedural Macro__ `safe_wrap` that we wrote.  The Rust Compiler calls our Rust function `safe_wrap` during compilation (instead of runtime). [`safe_wrap` is defined here](https://github.com/lupyuen/PineTime-apps/blob/master/rust/macros/src/safe_wrap.rs#L116-L147)
+This activates a [__Rust Procedural Macro__](https://blog.rust-lang.org/2018/12/21/Procedural-Macros-in-Rust-2018.html) `safe_wrap` that we have written.  The Rust Compiler calls our Rust function `safe_wrap` during compilation (instead of runtime). [`safe_wrap` is defined here](https://github.com/lupyuen/PineTime-apps/blob/master/rust/macros/src/safe_wrap.rs#L116-L147)
 
 Unlike C Macros, Rust Macros are allowed to inspect the Rust code passed to the macro... __And alter the code!__
 
