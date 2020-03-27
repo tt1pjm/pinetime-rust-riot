@@ -770,7 +770,7 @@ Now we simply call `set_text` instead of `lv_label_set_text`... No more `unsafe`
 
 Instead of passing unsafe C pointers to the text string, we now pass an `Strn` object. 
 
-`Strn` is a Rust Struct that we have defined to pass null-terminated strings to C functions.  We create an `Strn` object with the Rust Macro `strn!`...
+`Strn` is a Rust Struct that we have defined to [pass null-terminated strings to C functions](https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/lib.rs#L82-L211).  We create an `Strn` object with the [Rust Macro `strn!`](https://github.com/lupyuen/PineTime-apps/blob/master/rust/macros/src/lib.rs#L62-L128)...
 
 ```rust
 strn!("00:00")
@@ -785,7 +785,7 @@ fn set_text(label: *mut lv_obj_t, text: &Strn) {
     ...
 ```
 
-The Wrapper Function always checks to ensure that the string is null-terminated before calling the C function. Crashing Watches Averted!
+The Wrapper Function always checks to ensure that [the string is null-terminated](https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/lib.rs#L181-L190) before calling the C function. Crashing Watches Averted!
 
 _But do we need to write this Wrapper Function ourselves for every C function?_
 
