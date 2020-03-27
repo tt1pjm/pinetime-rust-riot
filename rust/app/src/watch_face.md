@@ -841,9 +841,9 @@ The magic happens in this line of code...
 #[lvgl_macros::safe_wrap(attr)]
 ```
 
-This activates a Rust Procedural Macro `safe_wrap` that we wrote.  The Rust Compiler calls our Rust function `safe_wrap` during compilation (instead of runtime). [`safe_wrap` is defined here](https://github.com/lupyuen/PineTime-apps/blob/master/rust/macros/src/safe_wrap.rs#L116-L147)
+This activates a __Rust Procedural Macro__ `safe_wrap` that we wrote.  The Rust Compiler calls our Rust function `safe_wrap` during compilation (instead of runtime). [`safe_wrap` is defined here](https://github.com/lupyuen/PineTime-apps/blob/master/rust/macros/src/safe_wrap.rs#L116-L147)
 
-Unlike C Macros, Rust Macros are allowed to inspect the Rust code attached to the macro... And alter the code!
+Unlike C Macros, Rust Macros are allowed to inspect the Rust code passed to the macro... __And alter the code!__
 
 So this whole chunk of Rust code...
 
@@ -857,17 +857,19 @@ extern "C" {
 
 Gets passed into our `safe_wrap` function for us to manipulate!
 
-`safe_wrap` inspects the imported function name (`lv_label_set_text`), parameter types (`lv_obj_t`, `c_char`) and return type (none). 
+1. `safe_wrap` inspects the imported function name (`lv_label_set_text`), parameter types (`lv_obj_t`, `c_char`) and return type (none). 
 
-Then `safe_wrap` replaces the chunk of code by the Safe Wrapper function `set_text`, populated with the right parameter types and return type.
+1. Then `safe_wrap` replaces the chunk of code by the Safe Wrapper function `set_text`, populated with the right parameter types and return type.
 
 Note that `*const ::cty::c_char` (pointer to a C string) has been replaced by the safer `&Strn` (reference to a null-terminated string object).
 
 That's how we automatically generate Safe Wrapper functions (described in the previous section)... For every imported LittlevGL function.
 
-What's _LvglResult<()>_ and _Ok(())_? We'll learn about Rust Error Handling in the next section.
+_What's `LvglResult<()>` and `Ok(())`?_
 
-# Error Handling
+We'll learn about Rust Error Handling in the next section.
+
+# Error Handling in Rust
 
 TODO
 
