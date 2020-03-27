@@ -825,8 +825,9 @@ pub fn set_text(
     unsafe {
         lv_label_set_text(
             label as *mut lv_obj_t,
-            text.as_ptr() as *const ::cty::c_char);
-        Ok(())
+            text.as_ptr() as *const ::cty::c_char
+        );
+        Ok(())  //  Return OK
     }
 }
 ```
