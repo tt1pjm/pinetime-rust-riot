@@ -793,30 +793,48 @@ Not necessary... The Safe Wrappers may be automatically generated! Let's learn h
 
 # Generate Safe Wrappers with Procedural Macros
 
+Trick Question: What's the difference between this Rust code (Rust Binding for an imported C function)...
+
 ```rust
-        pub fn set_text(label: *mut lv_obj_t, text: &Strn) -> LvglResult<()> {
-            "----------Insert Extern Decl: `extern C { pub fn ... }`----------";
-            extern "C" {
-                #[doc =
-                  " Set a new text for a label. Memory will be allocated to store the text by the label."]
-                #[doc = " - __`label`__: pointer to a label object"]
-                #[doc =
-                  " - __`text`__: '\\0' terminated character string. NULL to refresh with the current text."]
-                pub fn lv_label_set_text(label: *mut lv_obj_t,
-                                         text: *const ::cty::c_char);
-            }
-            "----------Insert Validation: `Strn::validate_bytestr(name.bytestr)`----------";
-            text.validate();
-            unsafe {
-                "----------Insert Call: `let result_value = os_task_init(`----------";
-                lv_label_set_text(label as *mut lv_obj_t,
-                                  text.as_ptr() as *const ::cty::c_char);
-                "----------Insert Result: `Ok(Strn::from_cstr(result_value))`----------";
-                Ok(())
-            }
-        }
+//  In Rust: Import function lv_label_set_text from C
+#[lvgl_macros::safe_wrap(attr)]
+extern "C" {
+    pub fn lv_label_set_text(
+        label: *mut lv_obj_t, 
+        text: *const ::cty::c_char
+    );
+}
+```
+_From https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/objx/label.rs_
+
+And this Rust code (Rust Safe Wrapper for an imported C function)...
+
+```rust
+//  In Rust: Safe Wrapper function to set the text of a label
+pub fn set_text(
+    label: *mut lv_obj_t, 
+    text: &Strn
+) -> LvglResult<()> {
+    extern "C" {
+        pub fn lv_label_set_text(
+            label: *mut lv_obj_t,
+            text: *const ::cty::c_char
+        );
+    }
+    text.validate();  //  Validate that the string is null-terminated
+    unsafe {
+        lv_label_set_text(
+            label as *mut lv_obj_t,
+            text.as_ptr() as *const ::cty::c_char);
+        Ok(())
+    }
+}
 ```
 _From https://github.com/lupyuen/PineTime-apps/blob/master/logs/liblvgl-expanded.rs#L9239-L9259_
+
+_Answer: They are exactly the same!_
+
+
 
 TODO
 
