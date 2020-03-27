@@ -865,6 +865,8 @@ Note that `*const ::cty::c_char` (pointer to a C string) has been replaced by th
 
 That's how we automatically generate Safe Wrapper functions (described in the previous section)... For every imported LittlevGL function.
 
+`safe_wrap` is inserted into the Rust Bindings by the [gen-bindings.sh](https://github.com/lupyuen/PineTime-apps/blob/master/scripts/gen-bindings.sh) script.
+
 _What's `LvglResult<()>` and `Ok(())`?_
 
 We'll find out in the next section: Rust Error Handling.
