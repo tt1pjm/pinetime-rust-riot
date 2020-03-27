@@ -705,6 +705,8 @@ We tell `bindgen` not to create Rust Bindings for `_lv_obj_t` even though it's i
 
 No more duplicate Rust Bindings!
 
+When using `bindgen` in real projects we'll need to add more [command-line options](https://rust-lang.github.io/rust-bindgen/command-line-usage.html). Here's how we actually used `bindgen` to create the Rust Bindings in our PineTime Watch Face project...
+
 ```bash
 # Generate Rust Bindings for LittlevGL Base Object Functions lv_obj_*
 bindgen --verbose --use-core --ctypes-prefix ::cty --with-derive-default --no-derive-copy --no-derive-debug --no-layout-tests --raw-line use --raw-line 'super::*;' --whitelist-function '(?i)lv_.*' --whitelist-type '(?i)lv_.*' --whitelist-var '(?i)lv_.*' -o rust/lvgl/src/core/obj.tmp apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_core/lv_obj.h -- -Ibaselibc/include/ ...
@@ -713,8 +715,13 @@ bindgen --verbose --use-core --ctypes-prefix ::cty --with-derive-default --no-de
 bindgen --verbose --use-core --ctypes-prefix ::cty --with-derive-default --no-derive-copy --no-derive-debug --no-layout-tests --raw-line use --raw-line 'super::*;' --whitelist-function '(?i)lv_label.*' --whitelist-type '(?i)lv_label.*' --whitelist-var '(?i)lv_label.*' --blacklist-item _lv_obj_t --blacklist-item lv_style_t -o rust/lvgl/src/objx/label.tmp apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_objx/lv_label.h -- -Ibaselibc/include/ ...
 ```
 
-https://github.com/lupyuen/PineTime-apps/blob/master/logs/gen-bindings.log
+The shell script used to create the Rust Bindings is here: [gen-bindings.sh](https://github.com/lupyuen/PineTime-apps/blob/master/scripts/gen-bindings.sh)
 
+Here's the output log for the script: [gen-bindings.log](https://github.com/lupyuen/PineTime-apps/blob/master/logs/gen-bindings.log)
+
+# Safe Wrappers for Imported C Functions
+
+TODO
 
 ```bash
 bindgen \
