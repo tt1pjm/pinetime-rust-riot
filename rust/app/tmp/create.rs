@@ -40,3 +40,32 @@ extern "C" {
     fn lv_obj_set_height(obj: *mut obj::lv_obj_t, h: i16);
 }
 ////
+
+extern "C" {
+    pub fn lv_obj_create(
+        parent: *mut obj::lv_obj_t, 
+        copy:   *const obj::lv_obj_t
+    ) -> *mut obj::lv_obj_t;
+}
+
+pub fn create(
+    parent: *mut obj::lv_obj_t, 
+    copy:   *const obj::lv_obj_t
+) -> LvglResult<*mut obj::lv_obj_t> {
+    unsafe {
+        let result = lv_obj_create(
+            parent as *mut obj::lv_obj_t,
+            copy as *const obj::lv_obj_t
+        );
+        if result.is_null() { Err(LvglError::SYS_EUNKNOWN) }
+        else { Ok(result) }
+    }
+}
+
+fn test() {
+    let screen = create(ptr::null_mut(), ptr::null());
+    if screen.is_err() {
+        //  Handle error
+    }
+}
+

@@ -879,6 +879,43 @@ We'll find out in the next section: Rust Error Handling.
 
 # Error Handling in Rust
 
+```c
+lv_obj_t *lv_obj_create(lv_obj_t *parent, const lv_obj_t *copy);
+...
+lv_obj_t *scr = lv_obj_create(NULL, NULL); 
+```
+
+```rust
+extern "C" {
+    pub fn lv_obj_create(
+        parent: *mut obj::lv_obj_t, 
+        copy:   *const obj::lv_obj_t
+    ) -> *mut obj::lv_obj_t;
+}
+
+pub fn create(
+    parent: *mut obj::lv_obj_t, 
+    copy:   *const obj::lv_obj_t
+) -> LvglResult<*mut obj::lv_obj_t> {
+    unsafe {
+        let result = lv_obj_create(
+            parent as *mut obj::lv_obj_t,
+            copy as *const obj::lv_obj_t
+        );
+        if result.is_null() { Err(LvglError::SYS_EUNKNOWN) }
+        else { Ok(result) }
+    }
+}
+
+fn test() {
+    let screen = create(ptr::null_mut(), ptr::null());
+    if screen.is_err() {
+        //  Handle error
+    }
+}
+```
+_From https://github.com/lupyuen/PineTime-apps/blob/master/logs/liblvgl-expanded.rs#L5942-L5967_
+
 ```rust
 //  In Rust: Safe Wrapper function to set the text of a label
 pub fn set_text(
@@ -920,22 +957,6 @@ fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRes
     }
 ```
 
-# Generate Rust Bindings Automatically with bindgen
-
-TODO
-
-```rust
-#[lvgl_macros::safe_wrap(attr)]
-extern "C" {
-    pub fn lv_obj_create(parent: *mut lv_obj_t, copy: *const lv_obj_t) -> *mut lv_obj_t;
-    pub fn lv_label_create(par: *mut lv_obj_t, copy: *const lv_obj_t) -> *mut lv_obj_t;
-    pub fn lv_label_set_text(label: *mut lv_obj_t, text: *const ::cty::c_char);
-    pub fn lv_obj_set_width(obj: *mut lv_obj_t, w: i16);
-    pub fn lv_obj_set_height(obj: *mut lv_obj_t, h: i16);
-}
-```
-_From https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/core/obj.rs, https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/objx/label.rs_
-
 # RIOT OS Bindings
 
 TODO
@@ -951,3 +972,9 @@ TODO
 # VSCode Debugging
 
 TODO
+
+Here's how I debug RIOT OS on PineTime with VSCode and ST-Link. 
+
+Trying to figure out why I need to restart the debugger to get it to work (as shown in the video)
+
+https://youtu.be/U2okd7C8Q2A
