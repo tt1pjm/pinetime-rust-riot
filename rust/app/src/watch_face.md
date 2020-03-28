@@ -879,6 +879,18 @@ We'll find out in the next section: Rust Error Handling.
 
 # Error Handling in Rust
 
+```rust
+//  In Rust: Safe Wrapper function to set the text of a label
+pub fn set_text(
+    label: *mut lv_obj_t, 
+    text:  &Strn
+) -> LvglResult<()> {
+    ...
+    Ok(())  //  Return OK
+}
+```
+_From https://github.com/lupyuen/PineTime-apps/blob/master/logs/liblvgl-expanded.rs#L9239-L9259_
+
 TODO
 
 ```rust
