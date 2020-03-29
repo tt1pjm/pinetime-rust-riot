@@ -820,7 +820,7 @@ And this Safe Wrapper function (that calls `lv_label_set_text` safely)?
 pub fn set_text(
     label: *mut lv_obj_t, 
     text:  &Strn
-) -> LvglResult<()> {
+) -> LvglResult< () > {
     extern "C" {
         pub fn lv_label_set_text(
             label: *mut lv_obj_t,
@@ -873,35 +873,43 @@ That's how we automatically generate Safe Wrapper functions (described in the pr
 
 `safe_wrap` is inserted into the Rust Bindings by the [gen-bindings.sh](https://github.com/lupyuen/PineTime-apps/blob/master/scripts/gen-bindings.sh) script.
 
-_What's `LvglResult<()>` and `Ok(())`?_
+_What's `LvglResult< () >` and `Ok(())`?_
 
 We'll find out in the next section: Rust Error Handling.
 
 # Error Handling in Rust
+
+Error Handling in C is kinda messy. Here's a problem that we see often in C...
 
 ```c
 //  In C: Declare lv_obj_create function that creates a LittlevGL object
 lv_obj_t *lv_obj_create(lv_obj_t *parent, const lv_obj_t *copy);
 ...
 //  Create a screen object
-lv_obj_t *scr = lv_obj_create(NULL, NULL); 
+lv_obj_t *screen = lv_obj_create(NULL, NULL); 
 //  Get the coordinates of the screen object
-lv_area_t coords = scr->coords;
-//  Oops! This crashes if scr is NULL
+lv_area_t coords = screen->coords;
+//  Oops! This crashes if screen is NULL
 ```
+
+This C code failed to check the value returned by `lv_obj_create`. The program crashes if the returned `screen` is `NULL`.
+
+In Rust, we use the `Result` Struct to ensure that all returned values are checked.
+
+Here's a Safe Wrapper Function `create` that exposes a safer version of `lv_obj_create`. The Safe Wrapper Function uses the `Result` Struct to enforce checking of returned values...
 
 ```rust
 //  In Rust: Import from C the lv_obj_create function that creates a LittlevGL object
 extern "C" {
-    pub fn lv_obj_create(parent: *mut obj::lv_obj_t, copy: *const obj::lv_obj_t)
-        -> *mut obj::lv_obj_t;
+    pub fn lv_obj_create(parent: *mut lv_obj_t, copy: *const lv_obj_t)
+        -> *mut lv_obj_t;
 }
 
 //  Safe Wrapper function to create a LittlevGL object
-pub fn create(parent: *mut obj::lv_obj_t, copy: *const obj::lv_obj_t) 
-    -> LvglResult<*mut obj::lv_obj_t> {
+pub fn create(parent: *mut lv_obj_t, copy: *const lv_obj_t) 
+    -> LvglResult< *mut lv_obj_t > {
     unsafe {
-        //  Create the object
+        //  Create the object by calling the imported C function
         let result = lv_obj_create(parent, copy);
         //  If result is null, return an error
         if result.is_null() { Err(LvglError::SYS_EUNKNOWN) }
@@ -909,18 +917,36 @@ pub fn create(parent: *mut obj::lv_obj_t, copy: *const obj::lv_obj_t)
         else { Ok(result) }
     }
 }
-
-//  Create a screen object
-let result = create(ptr::null_mut(), ptr::null());
-if result.is_err() {
-    //  Handle error
-}
-//  Unwrap the screen object inside the result
-let screen = result.unwrap();
-//  Get a reference to the coordinates of the screen object
-let coords = &(*screen).coords;
 ```
 _Based on https://github.com/lupyuen/PineTime-apps/blob/master/logs/liblvgl-expanded.rs#L5942-L5967_
+
+The `create` Safe Wrapper Function does the following...
+
+1. Note that the return type of the `create` has been changed from `*mut lv_obj_t` to...
+
+   ```rust
+   LvglResult< *mut lv_obj_t >
+   ```
+
+1. When the C function `lv_obj_create` returns a 
+
+```rust
+//  Create a screen object
+let result = create(ptr::null_mut(), ptr::null());
+//  In case of error...
+if result.is_err() {
+    //  Handle the error
+    ...
+} else {
+    //  If no error, unwrap the screen object inside the result
+    let screen = result.unwrap();
+    //  Get a reference to the coordinates of the screen object
+    let coords = &(*screen).coords;
+    ...
+}
+```
+
+
 
 ```rust
 //  In Rust: Safe Wrapper function to set the text of a label
