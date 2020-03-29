@@ -880,41 +880,47 @@ We'll find out in the next section: Rust Error Handling.
 # Error Handling in Rust
 
 ```c
+//  In C: Declare lv_obj_create function that creates a LittlevGL object
 lv_obj_t *lv_obj_create(lv_obj_t *parent, const lv_obj_t *copy);
 ...
+//  Create a screen object
 lv_obj_t *scr = lv_obj_create(NULL, NULL); 
+//  Get the coordinates of the screen object
+lv_area_t coords = scr->coords;
+//  Oops! This crashes if scr is NULL
 ```
 
 ```rust
+//  In Rust: Import from C the lv_obj_create function that creates a LittlevGL object
 extern "C" {
-    pub fn lv_obj_create(
-        parent: *mut obj::lv_obj_t, 
-        copy:   *const obj::lv_obj_t
-    ) -> *mut obj::lv_obj_t;
+    pub fn lv_obj_create(parent: *mut obj::lv_obj_t, copy: *const obj::lv_obj_t)
+        -> *mut obj::lv_obj_t;
 }
 
-pub fn create(
-    parent: *mut obj::lv_obj_t, 
-    copy:   *const obj::lv_obj_t
-) -> LvglResult<*mut obj::lv_obj_t> {
+//  Safe Wrapper function to create a LittlevGL object
+pub fn create(parent: *mut obj::lv_obj_t, copy: *const obj::lv_obj_t) 
+    -> LvglResult<*mut obj::lv_obj_t> {
     unsafe {
-        let result = lv_obj_create(
-            parent as *mut obj::lv_obj_t,
-            copy as *const obj::lv_obj_t
-        );
+        //  Create the object
+        let result = lv_obj_create(parent, copy);
+        //  If result is null, return an error
         if result.is_null() { Err(LvglError::SYS_EUNKNOWN) }
+        //  Otherwise return the wrapped result
         else { Ok(result) }
     }
 }
 
-fn test() {
-    let screen = create(ptr::null_mut(), ptr::null());
-    if screen.is_err() {
-        //  Handle error
-    }
+//  Create a screen object
+let result = create(ptr::null_mut(), ptr::null());
+if result.is_err() {
+    //  Handle error
 }
+//  Unwrap the screen object inside the result
+let screen = result.unwrap();
+//  Get a reference to the coordinates of the screen object
+let coords = &(*screen).coords;
 ```
-_From https://github.com/lupyuen/PineTime-apps/blob/master/logs/liblvgl-expanded.rs#L5942-L5967_
+_Based on https://github.com/lupyuen/PineTime-apps/blob/master/logs/liblvgl-expanded.rs#L5942-L5967_
 
 ```rust
 //  In Rust: Safe Wrapper function to set the text of a label

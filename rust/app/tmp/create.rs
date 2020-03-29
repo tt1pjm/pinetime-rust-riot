@@ -63,9 +63,12 @@ pub fn create(
 }
 
 fn test() {
-    let screen = create(ptr::null_mut(), ptr::null());
-    if screen.is_err() {
+    let result = create(ptr::null_mut(), ptr::null());
+    if result.is_err() {
         //  Handle error
     }
+    //  Unwrap the object inside the result
+    let screen = result.unwrap();
+    //  Get the coordinates of the object
+    let coords = &(*screen).coords;
 }
-
