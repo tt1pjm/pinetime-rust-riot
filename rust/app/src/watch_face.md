@@ -877,7 +877,7 @@ _What's `LvglResult< () >` and `Ok(())`?_
 
 We'll find out in the next section: Rust Error Handling.
 
-# Error Handling in Rust
+# Return Errors with the Rust Result Enum
 
 Error Handling in C is kinda messy. Here's a problem that we see often in C...
 
@@ -920,7 +920,7 @@ pub fn create(parent: *mut lv_obj_t, copy: *const lv_obj_t)
 ```
 _Based on https://github.com/lupyuen/PineTime-apps/blob/master/logs/liblvgl-expanded.rs#L5942-L5967_
 
-The `create` Safe Wrapper Function does the following...
+What happens in the `create` Safe Wrapper Function?
 
 1. Note that the return type of the `create` function has been changed from `*mut lv_obj_t` (mutable pointer to `lv_obj_t`) to...
 
@@ -938,7 +938,7 @@ The `create` Safe Wrapper Function does the following...
     enum LvglResult< *mut lv_obj_t > {
         Ok( *mut lv_obj_t ),
         Err( LvglError ),
-    }  //  Note: This is not valid Rust syntax
+    }  //  This is not valid Rust syntax
     ```
 
 1. The `LvglResult` Enum has two variants: `Ok` and `Err`. To return an error, we return the `Err` variant with an error code inside (like `SYS_EUNKNOWN`)...
@@ -948,12 +948,16 @@ The `create` Safe Wrapper Function does the following...
     if result.is_null() { Err( LvglError::SYS_EUNKNOWN ) }
     ```
 
+    Here we return an `Err` if the call to `lv_obj_create` returns `NULL`.
+
 1. To return a valid result, we return the `Ok` variant with the result value inside...
 
     ```rust
     //  Otherwise return the wrapped result
     else { Ok( result ) }
     ```
+
+    Here we return the result of the call to `lv_obj_create`, since it's not `NULL`.
 
 1. The `if else` syntax used above looks odd if you're new to Rust...
 
@@ -968,7 +972,17 @@ The `create` Safe Wrapper Function does the following...
     condition ? true_value : false_value
     ```
 
-1. So  the `create` function is that When the C function `lv_obj_create` returns a 
+In summary: The `create` function calls the C function `lv_obj_create`. If the C function returns `NULL`, `create` returns an `Err`. Otherwise `create` returns `Ok` with the result value inside.
+
+# Check Errors with the Rust Result Enum
+
+```rust
+    let screen = create(ptr::null_mut(), ptr::null());
+    //  Get the coordinates of the object
+    let coords = &(*screen).coords;
+```
+
+type `core::result::Result<*mut lvgl::core::obj::_lv_obj_t, lvgl::result::LvglError>` cannot be dereferenced
 
 ```rust
 //  Create a screen object
@@ -985,8 +999,6 @@ if result.is_err() {
     ...
 }
 ```
-
-
 
 ```rust
 //  In Rust: Safe Wrapper function to set the text of a label
