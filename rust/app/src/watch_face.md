@@ -981,12 +981,31 @@ All calls to the `create` function must be checked for errors. Let's find out ho
 # Check Errors with the Rust Result Enum
 
 ```rust
-    let screen = create(ptr::null_mut(), ptr::null());
+//  In Rust: Create a screen object
+let screen = create(ptr::null_mut(), ptr::null());
+//  Get the coordinates of the object
+let coords = &(*screen).coords;
+//  Oops! Rust Compiler says result cannot be dereferenced
+```
+
+```rust
+//  In Rust: We specify `unsafe` to dereference the pointer in `screen`
+unsafe {
+    //  Create a screen object and unwrap it
+    let screen = create(ptr::null_mut(), ptr::null())
+        .expect("no screen");  //  If error, show "no screen" and stop
     //  Get the coordinates of the object
     let coords = &(*screen).coords;
 ```
 
-type `core::result::Result<*mut lvgl::core::obj::_lv_obj_t, lvgl::result::LvglError>` cannot be dereferenced
+```rust
+//  In Rust: We specify `unsafe` to dereference the pointer in `screen`
+unsafe {
+    //  Create a screen object and unwrap it
+    let screen = create(ptr::null_mut(), ptr::null()) ? ;  //  If error, return the error to caller
+    //  Get the coordinates of the object
+    let coords = &(*screen).coords;
+```
 
 ```rust
 //  Create a screen object

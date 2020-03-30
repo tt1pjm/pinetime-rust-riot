@@ -63,6 +63,15 @@ pub fn create(
 }
 
 fn test() {
+    unsafe {
+        let screen = create(ptr::null_mut(), ptr::null())
+            .expect("no screen");
+        //  Get the coordinates of the object
+        let coords = &(*screen).coords;
+    }
+}
+
+fn test() {
     let result = create(ptr::null_mut(), ptr::null());
     if result.is_err() {
         //  Handle error
