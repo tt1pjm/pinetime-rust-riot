@@ -894,9 +894,9 @@ lv_area_t coords = screen->coords;
 
 This C code failed to check the value returned by `lv_obj_create`. The program crashes if the returned `screen` is `NULL`.
 
-In Rust, we use the `Result` Struct to ensure that all returned values are checked.
+In Rust, we use the [__`Result` Enum__](https://doc.rust-lang.org/core/result/index.html) to ensure that all returned values are checked.
 
-Here's a Safe Wrapper Function `create` that exposes a safer version of `lv_obj_create`. The Safe Wrapper Function uses the `Result` Struct to enforce checking of returned values...
+Here's a Safe Wrapper Function `create` that exposes a safer version of `lv_obj_create`. The Safe Wrapper Function uses the `Result` Enum to enforce checking of returned values...
 
 ```rust
 //  In Rust: Import from C the lv_obj_create function that creates a LittlevGL object
@@ -907,14 +907,14 @@ extern "C" {
 
 //  Safe Wrapper function to create a LittlevGL object
 pub fn create(parent: *mut lv_obj_t, copy: *const lv_obj_t) 
-    -> LvglResult< *mut lv_obj_t > {
+    -> LvglResult< *mut lv_obj_t > {  //  Returns a lv_obj_t pointer wrapped in a Result Enum
     unsafe {
         //  Create the object by calling the imported C function
         let result = lv_obj_create(parent, copy);
         //  If result is null, return an error
-        if result.is_null() { Err(LvglError::SYS_EUNKNOWN) }
+        if result.is_null() { Err( LvglError::SYS_EUNKNOWN ) }
         //  Otherwise return the wrapped result
-        else { Ok(result) }
+        else { Ok( result ) }
     }
 }
 ```
@@ -922,13 +922,53 @@ _Based on https://github.com/lupyuen/PineTime-apps/blob/master/logs/liblvgl-expa
 
 The `create` Safe Wrapper Function does the following...
 
-1. Note that the return type of the `create` has been changed from `*mut lv_obj_t` to...
+1. Note that the return type of the `create` function has been changed from `*mut lv_obj_t` (mutable pointer to `lv_obj_t`) to...
 
    ```rust
    LvglResult< *mut lv_obj_t >
    ```
 
-1. When the C function `lv_obj_create` returns a 
+   `LvglResult` is a `Result` Enum that we have created to wrap safely all values returned by the LittlevGL C library.
+
+   `LvglResult< *mut lv_obj_t >` says that the returned `LvglResult` Enum will wrap a mutable pointer to `lv_obj_t`.
+
+1. Unlike C Enums, Rust Enums like `LvglResult` can have values inside. The expansion of `LvglResult< *mut lv_obj_t >` looks something like this...
+
+    ```rust
+    enum LvglResult< *mut lv_obj_t > {
+        Ok( *mut lv_obj_t ),
+        Err( LvglError ),
+    }  //  Note: This is not valid Rust syntax
+    ```
+
+1. The `LvglResult` Enum has two variants: `Ok` and `Err`. To return an error, we return the `Err` variant with an error code inside (like `SYS_EUNKNOWN`)...
+
+    ```rust
+    //  If result is null, return an error
+    if result.is_null() { Err( LvglError::SYS_EUNKNOWN ) }
+    ```
+
+1. To return a valid result, we return the `Ok` variant with the result value inside...
+
+    ```rust
+    //  Otherwise return the wrapped result
+    else { Ok( result ) }
+    ```
+
+1. The `if else` syntax used above looks odd if you're new to Rust...
+
+    ```rust
+    if condition { true_value } 
+    else { false_value }
+    ```
+
+    In Rust, `if else` evaluates to a value. So the above Rust code is equivalent to this C code with the Ternary Operator...
+
+    ```c
+    condition ? true_value : false_value
+    ```
+
+1. So  the `create` function is that When the C function `lv_obj_create` returns a 
 
 ```rust
 //  Create a screen object
