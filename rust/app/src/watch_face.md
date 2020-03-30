@@ -928,7 +928,7 @@ What happens in the `create` Safe Wrapper Function?
    LvglResult< *mut lv_obj_t >
    ```
 
-   `LvglResult` is a `Result` Enum that we have created to wrap safely all values returned by the LittlevGL C library.
+   `LvglResult` is a `Result` Enum that we have created to [wrap safely all values returned by the LittlevGL C library](https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/lib.rs#L29-L80).
 
    `LvglResult< *mut lv_obj_t >` says that the returned `LvglResult` Enum will wrap a mutable pointer to `lv_obj_t`.
 
@@ -941,9 +941,11 @@ What happens in the `create` Safe Wrapper Function?
     }  //  This is not valid Rust syntax
     ```
 
-1. The `LvglResult` Enum has two variants: `Ok` and `Err`. To return an error, we return the `Err` variant with an error code inside (like `SYS_EUNKNOWN`)...
+1. The `LvglResult` Enum has two variants: `Ok` and `Err`. To return an error, we return the `Err` variant with an [error code inside](https://github.com/lupyuen/PineTime-apps/blob/master/rust/lvgl/src/lib.rs#L35-L44) (like `SYS_EUNKNOWN`)...
 
     ```rust
+    //  Create the object by calling the imported C function
+    let result = lv_obj_create(parent, copy);
     //  If result is null, return an error
     if result.is_null() { Err( LvglError::SYS_EUNKNOWN ) }
     ```
@@ -972,7 +974,9 @@ What happens in the `create` Safe Wrapper Function?
     condition ? true_value : false_value
     ```
 
-In summary: The `create` function calls the C function `lv_obj_create`. If the C function returns `NULL`, `create` returns an `Err`. Otherwise `create` returns `Ok` with the result value inside.
+In summary: The `create` function calls the C function `lv_obj_create`. If the C function returns `NULL`, `create` returns `Err`. Otherwise `create` returns `Ok` with the result value inside.
+
+All calls to the `create` function must be checked for errors. Let's find out how the Rust Compiler enforces the error checking...
 
 # Check Errors with the Rust Result Enum
 
