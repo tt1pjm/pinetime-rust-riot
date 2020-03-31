@@ -980,28 +980,42 @@ All calls to the `create` function must be checked for errors. Let's find out ho
 
 # Check Errors with the Rust Result Enum
 
+Let's learn how the Rust Compiler forces us to check for errors returned by C functions. We'll use this Safe Wrapper function that we have created in the last section...
+
 ```rust
 //  In Rust: Safe Wrapper function to create a LittlevGL object
 pub fn create(parent: *mut lv_obj_t, copy: *const lv_obj_t) 
-    -> LvglResult< *mut lv_obj_t > {  //  Returns a lv_obj_t pointer wrapped in a Result Enum
+    -> LvglResult< *mut lv_obj_t > {  //  Returns an lv_obj_t pointer wrapped in a Result Enum
     ...
 ```
 
+The `create` function returns `LvglResult< *mut lv_obj_t >` which is a `Result` Enum that's either...
+
+1. `Ok` with an `lv_obj_t` pointer wrapped inside, or
+
+1. `Err` with an error code wrapped inside
+
+Let's try calling `create` without checking the result...
+
 ```rust
-//  In Rust: Create a screen object
+//  In Rust: Create a LittlevGL screen object
 let screen = create(ptr::null_mut(), ptr::null());
-//  Get the coordinates of the object
+//  Get a reference to the coordinates of the screen object
 let coords = &(*screen).coords;
 //  Oops! Rust Compiler says result cannot be dereferenced
 ```
 
+_The C Compiler would happily accept code like this... But not Rust!_
+
+`screen` has become a `Result` Enum that can't be used directly. The Rust Compiler insists that we check for errors in `screen` before unwrapping it, like this...
+
 ```rust
 //  In Rust: We specify `unsafe` to dereference the pointer in `screen`
 unsafe {
-    //  Create a screen object and unwrap it
+    //  Create a LittlevGL screen object and unwrap it
     let screen = create(ptr::null_mut(), ptr::null())
         .expect("no screen");  //  If error, show "no screen" and stop
-    //  Get the coordinates of the object
+    //  Get a reference to the coordinates of the screen object
     let coords = &(*screen).coords;
 ```
 
@@ -1010,9 +1024,9 @@ unsafe {
 fn create_screen() -> LvglResult< () > {  //  Returns Ok (with nothing inside) or Err
     //  We specify `unsafe` to dereference the pointer in `screen`
     unsafe {
-        //  Create a screen object and unwrap it
+        //  Create a LittlevGL screen object and unwrap it
         let screen = create(ptr::null_mut(), ptr::null()) ? ;  //  If error, stop and return the Err
-        //  Get the coordinates of the object
+        //  Get a reference to the coordinates of the screen object
         let coords = &(*screen).coords;
         ...
         Ok( () )  //  Return Ok with nothing inside
