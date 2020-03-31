@@ -1085,7 +1085,11 @@ Note that parameter type and return type have been changed...
 | :--- | :--- |
 | `lv_obj_t *screen_time_create(home_time_widget_t *ht) {` <br>&nbsp;&nbsp;`    //  Create a label for time (00:00)` <br>&nbsp;&nbsp;`    lv_obj_t *scr = lv_obj_create(NULL, NULL);` | `fn create_widgets(widgets: &mut WatchFaceWidgets) -> ` <br>&nbsp;&nbsp;`    LvglResult<()> {` <br>&nbsp;&nbsp;`    //  Create a label for time (00:00)` <br>&nbsp;&nbsp;`    let scr = widgets.screen;`  |
 
-We'll learn in a while why this was done to make the code easier to maintain.
+We'll learn in a while why this was done: To make the code easier to maintain.
+
+# Heapless Strings in Rust
+
+TODO
 
 # Lifetime of Rust Variables
 
