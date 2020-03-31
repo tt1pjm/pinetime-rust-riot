@@ -68,7 +68,7 @@
 <li><a href="#generate-safe-wrappers-with-rust-procedural-macro">16 Generate Safe Wrappers with Rust Procedural Macro</a><ul></ul></li>
 <li><a href="#return-errors-with-the-rust-result-enum">17 Return Errors with the Rust Result Enum</a><ul></ul></li>
 <li><a href="#check-errors-with-the-rust-result-enum">18 Check Errors with the Rust Result Enum</a><ul></ul></li>
-<li><a href="#lifetime">19 Lifetime</a><ul></ul></li>
+<li><a href="#lifetime-of-rust-variables">19 Lifetime of Rust Variables</a><ul></ul></li>
 <li><a href="#riot-os-bindings">20 RIOT OS Bindings</a><ul></ul></li>
 <li><a href="#build-and-link-with-riot-os">21 Build and link with RIOT OS</a><ul></ul></li>
 <li><a href="#vscode-development">22 VSCode Development</a><ul></ul></li>
@@ -823,44 +823,81 @@ lv_area_t coords = screen-&gt;coords;
 <p>In summary: The <code>create</code> function calls the C function <code>lv_obj_create</code>. If the C function returns <code>NULL</code>, <code>create</code> returns <code>Err</code>. Otherwise <code>create</code> returns <code>Ok</code> with the result value inside.</p>
 <p>All calls to the <code>create</code> function must be checked for errors. Let's find out how the Rust Compiler enforces the error checking...</p>
 <h1 id="check-errors-with-the-rust-result-enum" class="section-header"><a href="#check-errors-with-the-rust-result-enum">18 Check Errors with the Rust Result Enum</a></h1>
-<div class="example-wrap"><pre class="rust rust-example-rendered">
-    <span class="kw">let</span> <span class="ident">screen</span> <span class="op">=</span> <span class="ident">create</span>(<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="ident">ptr</span>::<span class="ident">null</span>());
-    <span class="comment">//  Get the coordinates of the object</span>
-    <span class="kw">let</span> <span class="ident">coords</span> <span class="op">=</span> <span class="kw-2">&amp;</span>(<span class="kw-2">*</span><span class="ident">screen</span>).<span class="ident">coords</span>;</pre></div>
-<p>type <code>core::result::Result&lt;*mut lvgl::core::obj::_lv_obj_t, lvgl::result::LvglError&gt;</code> cannot be dereferenced</p>
+<p>Let's learn how the Rust Compiler forces us to check for errors returned by C functions. We'll use this Safe Wrapper function that we have created in the last section...</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered">
-<span class="comment">//  Create a screen object</span>
-<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">create</span>(<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="ident">ptr</span>::<span class="ident">null</span>());
-<span class="comment">//  In case of error...</span>
-<span class="kw">if</span> <span class="ident">result</span>.<span class="ident">is_err</span>() {
-    <span class="comment">//  Handle the error</span>
-    ...
-} <span class="kw">else</span> {
-    <span class="comment">//  If no error, unwrap the screen object inside the result</span>
-    <span class="kw">let</span> <span class="ident">screen</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">unwrap</span>();
+<span class="comment">//  In Rust: Safe Wrapper function to create a LittlevGL object</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">create</span>(<span class="ident">parent</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">lv_obj_t</span>, <span class="ident">copy</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">lv_obj_t</span>) 
+    <span class="op">-</span><span class="op">&gt;</span> <span class="ident">LvglResult</span><span class="op">&lt;</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">lv_obj_t</span> <span class="op">&gt;</span> {  <span class="comment">//  Returns an lv_obj_t pointer wrapped in a Result Enum</span>
+    ...</pre></div>
+<p>The <code>create</code> function returns <code>LvglResult&lt; *mut lv_obj_t &gt;</code> which is a <code>Result</code> Enum that's either...</p>
+<ol>
+<li>
+<p><code>Ok</code> with an <code>lv_obj_t</code> pointer wrapped inside, or</p>
+</li>
+<li>
+<p><code>Err</code> with an error code wrapped inside</p>
+</li>
+</ol>
+<p>Let's try calling <code>create</code> without checking the result...</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="comment">//  In Rust: Create a LittlevGL screen object</span>
+<span class="kw">let</span> <span class="ident">screen</span> <span class="op">=</span> <span class="ident">create</span>(<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="ident">ptr</span>::<span class="ident">null</span>());
+<span class="comment">//  Get a reference to the coordinates of the screen object</span>
+<span class="kw">let</span> <span class="ident">coords</span> <span class="op">=</span> <span class="kw-2">&amp;</span>(<span class="kw-2">*</span><span class="ident">screen</span>).<span class="ident">coords</span>;
+<span class="comment">//  Oops! Rust Compiler says result cannot be dereferenced</span></pre></div>
+<p><em>The C Compiler would happily accept code like this... But not Rust!</em></p>
+<p><code>screen</code> has become a <code>Result</code> Enum that can't be used directly. The Rust Compiler insists that we check for error in <code>screen</code> before unwrapping it, like this...</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="comment">//  In Rust: We specify `unsafe` to dereference the pointer in `screen`</span>
+<span class="kw">unsafe</span> {
+    <span class="comment">//  Create a LittlevGL screen object and unwrap it</span>
+    <span class="kw">let</span> <span class="ident">screen</span> <span class="op">=</span> <span class="ident">create</span>(<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="ident">ptr</span>::<span class="ident">null</span>())
+        .<span class="ident">expect</span>(<span class="string">&quot;no screen&quot;</span>);  <span class="comment">//  If error, show &quot;no screen&quot; and stop</span>
     <span class="comment">//  Get a reference to the coordinates of the screen object</span>
-    <span class="kw">let</span> <span class="ident">coords</span> <span class="op">=</span> <span class="kw-2">&amp;</span>(<span class="kw-2">*</span><span class="ident">screen</span>).<span class="ident">coords</span>;
-    ...
-}</pre></div>
+    <span class="kw">let</span> <span class="ident">coords</span> <span class="op">=</span> <span class="kw-2">&amp;</span>(<span class="kw-2">*</span><span class="ident">screen</span>).<span class="ident">coords</span>;</pre></div>
+<p>By adding <code>.expect</code> after <code>create</code>, we check for error before unwrapping the pointer inside the result.</p>
+<p>If <code>create</code> returns an error, the program stops with the error &quot;<code>no screen</code>&quot;</p>
+<p>There's a simpler way to handle errors in Rust... With the Try Operator &quot;<code>?</code>&quot;</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered">
-<span class="comment">//  In Rust: Safe Wrapper function to set the text of a label</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_text</span>(
-    <span class="ident">label</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">lv_obj_t</span>, 
-    <span class="ident">text</span>:  <span class="kw-2">&amp;</span><span class="ident">Strn</span>
-) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">LvglResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-    ...
-    <span class="prelude-val">Ok</span>(())  <span class="comment">//  Return OK</span>
+<span class="comment">//  In Rust: Create a LittlevGL screen object and check for error</span>
+<span class="kw">fn</span> <span class="ident">create_screen</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">LvglResult</span><span class="op">&lt;</span> () <span class="op">&gt;</span> {  <span class="comment">//  Returns Ok (with nothing inside) or Err</span>
+    <span class="comment">//  We specify `unsafe` to dereference the pointer in `screen`</span>
+    <span class="kw">unsafe</span> {
+        <span class="comment">//  Create a LittlevGL screen object and unwrap it</span>
+        <span class="kw">let</span> <span class="ident">screen</span> <span class="op">=</span> <span class="ident">create</span>(<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="ident">ptr</span>::<span class="ident">null</span>()) <span class="question-mark">?</span> ;  <span class="comment">//  If error, stop and return the Err</span>
+        <span class="comment">//  Get a reference to the coordinates of the screen object</span>
+        <span class="kw">let</span> <span class="ident">coords</span> <span class="op">=</span> <span class="kw-2">&amp;</span>(<span class="kw-2">*</span><span class="ident">screen</span>).<span class="ident">coords</span>;
+        ...
+        <span class="prelude-val">Ok</span>( () )  <span class="comment">//  Return Ok with nothing inside</span>
+    }
 }</pre></div>
-<p><em>From https://github.com/lupyuen/PineTime-apps/blob/master/logs/liblvgl-expanded.rs#L9239-L9259</em></p>
-<p>TODO</p>
+<p>Note that <code>.expect</code> has been replaced by &quot;<code>?</code>&quot;...</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered">
-<span class="kw">let</span> <span class="ident">screen</span> <span class="op">=</span> <span class="ident">obj</span>::<span class="ident">create</span>(<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="ident">ptr</span>::<span class="ident">null</span>())
-    .<span class="ident">expect</span>(<span class="string">&quot;create screen obj fail&quot;</span>);</pre></div>
-<p>TODO</p>
-<h1 id="lifetime" class="section-header"><a href="#lifetime">19 Lifetime</a></h1>
+<span class="comment">//  Create a LittlevGL screen object and unwrap it</span>
+<span class="kw">let</span> <span class="ident">screen</span> <span class="op">=</span> <span class="ident">create</span>(<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="ident">ptr</span>::<span class="ident">null</span>()) <span class="question-mark">?</span> ;  <span class="comment">//  If error, stop and return the Err</span></pre></div>
+<p>If <code>create</code> returns <code>Ok</code>, the result is unwrapped and assigned to <code>screen</code>.</p>
+<p>But if <code>create</code> returns <code>Err</code>, the result is returned to the caller of <code>create_screen</code> immediately.</p>
+<p>That's why &quot;<code>?</code>&quot; works only inside a function that returns a <code>Result</code> Enum...</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="comment">//  Create a LittlevGL screen object and check for error</span>
+<span class="kw">fn</span> <span class="ident">create_screen</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">LvglResult</span><span class="op">&lt;</span> () <span class="op">&gt;</span> {  <span class="comment">//  Returns Ok (with nothing inside) or Err</span></pre></div>
+<p>The <code>()</code> in <code>LvglResult&lt; () &gt;</code> means &quot;nothing&quot;. Thus <code>create_screen</code> returns either...</p>
+<ol>
+<li>
+<p><code>Ok</code> with nothing <code>()</code> wrapped inside (because we don't need the return value), or</p>
+</li>
+<li>
+<p><code>Err</code> with an error code wrapped inside</p>
+</li>
+</ol>
+<p>If we look at the <a href="https://github.com/lupyuen/PineTime-apps/blob/master/logs/liblvgl-expanded.rs#L5942-L5967">Safe Wrappers</a> created by our <code>safe_wrap</code> macro, it's now obvious why we see so many <code>LvglResult&lt; () &gt;</code> and <code>Ok( () )</code> inside... That's how we handle errors in Rust.</p>
+<h1 id="lifetime-of-rust-variables" class="section-header"><a href="#lifetime-of-rust-variables">19 Lifetime of Rust Variables</a></h1>
 <p>TODO</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered">

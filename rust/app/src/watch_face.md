@@ -1060,9 +1060,11 @@ fn create_screen() -> LvglResult< () > {  //  Returns Ok (with nothing inside) o
 
 The `()` in `LvglResult< () >` means "nothing". Thus `create_screen` returns either...
 
-1. `Ok` with nothing wrapped inside (because we don't need the return value), or
+1. `Ok` with nothing `()` wrapped inside (because we don't need the return value), or
 
 1. `Err` with an error code wrapped inside
+
+If we look at the [Safe Wrappers](https://github.com/lupyuen/PineTime-apps/blob/master/logs/liblvgl-expanded.rs#L5942-L5967) created by our `safe_wrap` macro, it's now obvious why we see so many `LvglResult< () >` and `Ok( () )` inside... That's how we handle errors in Rust.
 
 # Lifetime of Rust Variables
 
