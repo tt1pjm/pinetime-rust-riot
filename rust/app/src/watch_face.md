@@ -1007,7 +1007,7 @@ let coords = &(*screen).coords;
 
 _The C Compiler would happily accept code like this... But not Rust!_
 
-`screen` has become a `Result` Enum that can't be used directly. The Rust Compiler insists that we check for errors in `screen` before unwrapping it, like this...
+`screen` has become a `Result` Enum that can't be used directly. The Rust Compiler insists that we check for error in `screen` before unwrapping it, like this...
 
 ```rust
 //  In Rust: We specify `unsafe` to dereference the pointer in `screen`
@@ -1018,6 +1018,12 @@ unsafe {
     //  Get a reference to the coordinates of the screen object
     let coords = &(*screen).coords;
 ```
+
+By adding `.expect` after `create`, we check for error before unwrapping the pointer inside the result.
+
+If `create` returns an error, the program stops with the error "`no screen`"
+
+There's a simpler way to handle errors in Rust... With the Try Operator "`?`"
 
 ```rust
 //  In Rust: Create a LittlevGL screen object and check for error
@@ -1034,7 +1040,31 @@ fn create_screen() -> LvglResult< () > {  //  Returns Ok (with nothing inside) o
 }
 ```
 
-# Lifetime
+Note that `.expect` has been replaced by "`?`"...
+
+```rust
+//  Create a LittlevGL screen object and unwrap it
+let screen = create(ptr::null_mut(), ptr::null()) ? ;  //  If error, stop and return the Err
+```
+
+If `create` returns `Ok`, the result is unwrapped and assigned to `screen`.
+
+But if `create` returns `Err`, the result is returned to the caller of `create_screen` immediately.
+
+That's why "`?`" works only inside a function that returns a `Result` Enum...
+
+```rust
+//  Create a LittlevGL screen object and check for error
+fn create_screen() -> LvglResult< () > {  //  Returns Ok (with nothing inside) or Err
+```
+
+The `()` in `LvglResult< () >` means "nothing". Thus `create_screen` returns either...
+
+1. `Ok` with nothing wrapped inside (because we don't need the return value), or
+
+1. `Err` with an error code wrapped inside
+
+# Lifetime of Rust Variables
 
 TODO
 
