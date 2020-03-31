@@ -68,11 +68,12 @@
 <li><a href="#generate-safe-wrappers-with-rust-procedural-macro">16 Generate Safe Wrappers with Rust Procedural Macro</a><ul></ul></li>
 <li><a href="#return-errors-with-the-rust-result-enum">17 Return Errors with the Rust Result Enum</a><ul></ul></li>
 <li><a href="#check-errors-with-the-rust-result-enum">18 Check Errors with the Rust Result Enum</a><ul></ul></li>
-<li><a href="#lifetime-of-rust-variables">19 Lifetime of Rust Variables</a><ul></ul></li>
-<li><a href="#riot-os-bindings">20 RIOT OS Bindings</a><ul></ul></li>
-<li><a href="#build-and-link-with-riot-os">21 Build and link with RIOT OS</a><ul></ul></li>
-<li><a href="#vscode-development">22 VSCode Development</a><ul></ul></li>
-<li><a href="#vscode-debugging">23 VSCode Debugging</a><ul></ul></li></ul></nav><p><em>This article is presented in CINEMASCOPE... Rotate your phone to view the C and Rust source code side by side... Or better yet, read this article on a desktop computer</em></p>
+<li><a href="#c-to-rust-conversion-final-version">19 C to Rust Conversion: Final Version</a><ul></ul></li>
+<li><a href="#lifetime-of-rust-variables">20 Lifetime of Rust Variables</a><ul></ul></li>
+<li><a href="#riot-os-bindings">21 RIOT OS Bindings</a><ul></ul></li>
+<li><a href="#build-and-link-with-riot-os">22 Build and link with RIOT OS</a><ul></ul></li>
+<li><a href="#vscode-development">23 VSCode Development</a><ul></ul></li>
+<li><a href="#vscode-debugging">24 VSCode Debugging</a><ul></ul></li></ul></nav><p><em>This article is presented in CINEMASCOPE... Rotate your phone to view the C and Rust source code side by side... Or better yet, read this article on a desktop computer</em></p>
 <p>We'll learn step by step to convert this <a href="https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c">Embedded C code</a> (based on LittlevGL) to <a href="https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs">Embedded Rust</a> on RIOT OS...</p>
 <table><thead><tr><th align="left"><strong>Original C Code</strong></th><th align="left"><strong>Converted Rust Code</strong></th></tr></thead><tbody>
 <tr><td align="left"><code>lv_obj_t *screen_time_create(home_time_widget_t *ht) {</code> <br><br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    lv_obj_t *scr = lv_obj_create(NULL, NULL);</code> <br>  <code>    lv_obj_t *label1 = lv_label_create(scr, NULL);</code> <br><br>  <code>    lv_label_set_text(label1, &quot;00:00&quot;);</code> <br>  <code>    lv_obj_set_width(label1, 240);</code> <br>  <code>    lv_obj_set_height(label1, 200);</code> <br>  <code>    ht-&gt;lv_time = label1;</code> <br>  <code>    ...</code> <br>  <code>    return scr;</code> <br><code>}</code> <br></td><td align="left"><code>fn create_widgets(widgets: &amp;mut WatchFaceWidgets) -&gt; </code> <br>  <code>    LvglResult&lt;()&gt; {</code> <br><br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    let scr = widgets.screen;</code> <br>  <code>    let label1 = label::create(scr, ptr::null()) ? ;</code> <br><br>  <code>    label::set_text(label1, strn!(&quot;00:00&quot;)) ? ;</code> <br>  <code>    obj::set_width(label1, 240) ? ;</code> <br>  <code>    obj::set_height(label1, 200) ? ;</code> <br>  <code>    widgets.time_label = label1;</code> <br>  <code>    ...</code> <br>  <code>    Ok(())</code> <br><code>}</code> <br></td></tr>
@@ -897,7 +898,20 @@ lv_area_t coords = screen-&gt;coords;
 </li>
 </ol>
 <p>If we look at the <a href="https://github.com/lupyuen/PineTime-apps/blob/master/logs/liblvgl-expanded.rs#L5942-L5967">Safe Wrappers</a> created by our <code>safe_wrap</code> macro, it's now obvious why we see so many <code>LvglResult&lt; () &gt;</code> and <code>Ok( () )</code> inside... That's how we handle errors in Rust.</p>
-<h1 id="lifetime-of-rust-variables" class="section-header"><a href="#lifetime-of-rust-variables">19 Lifetime of Rust Variables</a></h1>
+<h1 id="c-to-rust-conversion-final-version" class="section-header"><a href="#c-to-rust-conversion-final-version">19 C to Rust Conversion: Final Version</a></h1>
+<p>Now that we understand <code>unsafe</code> code, Safe Wrappers, <code>Result</code> Enums and &quot;<code>?</code>&quot;, this Rust code should make sense...</p>
+<table><thead><tr><th align="left"><strong>Original C Code</strong></th><th align="left"><strong>Converted Rust Code</strong></th></tr></thead><tbody>
+<tr><td align="left"><code>lv_obj_t *screen_time_create(home_time_widget_t *ht) {</code> <br><br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    lv_obj_t *scr = lv_obj_create(NULL, NULL);</code> <br>  <code>    lv_obj_t *label1 = lv_label_create(scr, NULL);</code> <br><br>  <code>    lv_label_set_text(label1, &quot;00:00&quot;);</code> <br>  <code>    lv_obj_set_width(label1, 240);</code> <br>  <code>    lv_obj_set_height(label1, 200);</code> <br>  <code>    ht-&gt;lv_time = label1;</code> <br>  <code>    ...</code> <br>  <code>    return scr;</code> <br><code>}</code> <br></td><td align="left"><code>fn create_widgets(widgets: &amp;mut WatchFaceWidgets) -&gt; </code> <br>  <code>    LvglResult&lt;()&gt; {</code> <br><br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    let scr = widgets.screen;</code> <br>  <code>    let label1 = label::create(scr, ptr::null()) ? ;</code> <br><br>  <code>    label::set_text(label1, strn!(&quot;00:00&quot;)) ? ;</code> <br>  <code>    obj::set_width(label1, 240) ? ;</code> <br>  <code>    obj::set_height(label1, 200) ? ;</code> <br>  <code>    widgets.time_label = label1;</code> <br>  <code>    ...</code> <br>  <code>    Ok(())</code> <br><code>}</code> <br></td></tr>
+<tr><td align="left"><em>From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c</em></td><td align="left"><em>From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs</em></td></tr>
+</tbody></table>
+<p><code>create</code>, <code>set_text</code>, <code>set_width</code> and <code>set_height</code> are Safe Wrapper functions, automatically generated by our <code>safe_wrap</code> macro.</p>
+<p>For clarity, we have segregated the Safe Wrappers by module, hence we see module names like <code>obj::</code> and <code>label::</code></p>
+<p>Note that parameter type and return type have been changed...</p>
+<table><thead><tr><th align="left"><strong>Original C Code</strong></th><th align="left"><strong>Converted Rust Code</strong></th></tr></thead><tbody>
+<tr><td align="left"><code>lv_obj_t *screen_time_create(home_time_widget_t *ht) {</code> <br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    lv_obj_t *scr = lv_obj_create(NULL, NULL);</code></td><td align="left"><code>fn create_widgets(widgets: &amp;mut WatchFaceWidgets) -&gt; </code> <br>  <code>    LvglResult&lt;()&gt; {</code> <br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    let scr = widgets.screen;</code></td></tr>
+</tbody></table>
+<p>We'll learn in a while why this was done to make the code easier to maintain.</p>
+<h1 id="lifetime-of-rust-variables" class="section-header"><a href="#lifetime-of-rust-variables">20 Lifetime of Rust Variables</a></h1>
 <p>TODO</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered">
@@ -914,13 +928,13 @@ lv_area_t coords = screen-&gt;coords;
             .<span class="ident">expect</span>(<span class="string">&quot;time fail&quot;</span>);
         <span class="ident">label</span>::<span class="ident">set_text</span>(<span class="ident">widgets</span>.<span class="ident">time_label</span>, <span class="kw-2">&amp;</span><span class="ident">Strn</span>::<span class="ident">new</span>(<span class="ident">TIME_BUF</span>.<span class="ident">as_bytes</span>())) <span class="question-mark">?</span> ;  <span class="comment">//  TODO: Simplify</span>
     }</pre></div>
-<h1 id="riot-os-bindings" class="section-header"><a href="#riot-os-bindings">20 RIOT OS Bindings</a></h1>
+<h1 id="riot-os-bindings" class="section-header"><a href="#riot-os-bindings">21 RIOT OS Bindings</a></h1>
 <p>TODO</p>
-<h1 id="build-and-link-with-riot-os" class="section-header"><a href="#build-and-link-with-riot-os">21 Build and link with RIOT OS</a></h1>
+<h1 id="build-and-link-with-riot-os" class="section-header"><a href="#build-and-link-with-riot-os">22 Build and link with RIOT OS</a></h1>
 <p>TODO</p>
-<h1 id="vscode-development" class="section-header"><a href="#vscode-development">22 VSCode Development</a></h1>
+<h1 id="vscode-development" class="section-header"><a href="#vscode-development">23 VSCode Development</a></h1>
 <p>TODO</p>
-<h1 id="vscode-debugging" class="section-header"><a href="#vscode-debugging">23 VSCode Debugging</a></h1>
+<h1 id="vscode-debugging" class="section-header"><a href="#vscode-debugging">24 VSCode Debugging</a></h1>
 <p>TODO</p>
 <p>Here's how I debug RIOT OS on PineTime with VSCode and ST-Link. </p>
 <p>Trying to figure out why I need to restart the debugger to get it to work (as shown in the video)</p>
