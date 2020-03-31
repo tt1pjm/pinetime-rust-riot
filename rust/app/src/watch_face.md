@@ -1006,7 +1006,7 @@ unsafe {
 ```
 
 ```rust
-//  In Rust: Create a screen object with error checking
+//  In Rust: Create a LittlevGL screen object and check for error
 fn create_screen() -> LvglResult< () > {  //  Returns Ok (with nothing inside) or Err
     //  We specify `unsafe` to dereference the pointer in `screen`
     unsafe {
