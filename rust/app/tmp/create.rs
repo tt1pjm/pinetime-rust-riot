@@ -87,7 +87,8 @@ fn test() {
 /// Populate the Time and Date Labels with the time and date. Called by screen_time_update_screen() above.
 fn zzz_set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
     //  Create a string buffer with max size 6 to format the time
-    let mut time_buf: heapless::String::<heapless::consts::U6> = 
+    type TimeBufSize = heapless::consts::U6;  //  Size of the string buffer
+    let mut time_buf: heapless::String::<TimeBufSize> = 
         heapless::String::new();
     //  Format the time and set the label
     time_buf.clear();
@@ -98,3 +99,4 @@ fn zzz_set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> Lvg
     label::set_text(widgets.time_label, &Strn::new(time_buf.as_bytes())) ? ;  //  TODO: Simplify
     Ok(())
 }
+

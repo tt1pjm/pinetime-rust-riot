@@ -1110,9 +1110,10 @@ _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/s
 
 ```rust
 /// Populate the Time and Date Labels with the time and date. Called by screen_time_update_screen() above.
-fn zzz_set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
+fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
     //  Create a string buffer with max size 6 to format the time
-    let mut time_buf: heapless::String::<heapless::consts::U6> = 
+    type TimeBufSize = heapless::consts::U6;  //  Size of the string buffer
+    let mut time_buf: heapless::String::<TimeBufSize> = 
         heapless::String::new();
     //  Format the time and set the label
     time_buf.clear();
@@ -1136,7 +1137,7 @@ error[E0597]: `time_buf` does not live long enough
 26 |     Ok(())
 27 | }
    | - `time_buf` dropped here while still borrowed
-   
+
 TODO
 
 # Lifetime of Rust Variables
