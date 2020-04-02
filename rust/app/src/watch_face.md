@@ -1108,8 +1108,35 @@ static int _home_time_set_time_label(home_time_widget_t *ht) {
 ```
 _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c_
 
+```rust
+/// Populate the Time and Date Labels with the time and date. Called by screen_time_update_screen() above.
+fn zzz_set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
+    //  Create a string buffer with max size 6 to format the time
+    let mut time_buf: heapless::String::<heapless::consts::U6> = 
+        heapless::String::new();
+    //  Format the time and set the label
+    time_buf.clear();
+    write!(&mut time_buf, "{:02}:{:02}\0",  //  Must terminate Rust strings with null
+        state.time.hour,
+        state.time.minute)
+        .expect("time fail");
+    label::set_text(widgets.time_label, &Strn::new(time_buf.as_bytes())) ? ;  //  TODO: Simplify
+    Ok(())
+}
+```
 
-
+error[E0597]: `time_buf` does not live long enough
+  --> rust/app/src/watch_face.rs:25:52
+   |
+25 |     label::set_text(widgets.time_label, &Strn::new(time_buf.as_bytes())) ? ;  //  TODO: Simplify
+   |                                                    ^^^^^^^^-----------
+   |                                                    |
+   |                                                    borrowed value does not live long enough
+   |                                                    argument requires that `time_buf` is borrowed for `'static`
+26 |     Ok(())
+27 | }
+   | - `time_buf` dropped here while still borrowed
+   
 TODO
 
 # Lifetime of Rust Variables

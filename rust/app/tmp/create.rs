@@ -81,3 +81,20 @@ fn test() {
     //  Get the coordinates of the object
     let coords = &(*screen).coords;
 }
+
+////
+
+/// Populate the Time and Date Labels with the time and date. Called by screen_time_update_screen() above.
+fn zzz_set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
+    //  Create a string buffer with max size 6 to format the time
+    let mut time_buf: heapless::String::<heapless::consts::U6> = 
+        heapless::String::new();
+    //  Format the time and set the label
+    time_buf.clear();
+    write!(&mut time_buf, "{:02}:{:02}\0",  //  Must terminate Rust strings with null
+        state.time.hour,
+        state.time.minute)
+        .expect("time fail");
+    label::set_text(widgets.time_label, &Strn::new(time_buf.as_bytes())) ? ;  //  TODO: Simplify
+    Ok(())
+}
