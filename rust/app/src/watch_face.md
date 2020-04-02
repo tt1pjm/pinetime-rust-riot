@@ -1108,6 +1108,8 @@ static int _home_time_set_time_label(home_time_widget_t *ht) {
 ```
 _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c_
 
+Here's the equivalent code in Rust...
+
 ```rust
 /// Populate the Time and Date Labels with the time and date. Called by screen_time_update_screen() above.
 fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
@@ -1121,10 +1123,11 @@ fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRes
         state.time.hour,
         state.time.minute)
         .expect("time fail");
-    label::set_text(widgets.time_label, &Strn::new(time_buf.as_bytes())) ? ;  //  TODO: Simplify
+    label::set_text(widgets.time_label, &Strn::new(time_buf.as_bytes())) ? ;
     Ok(())
 }
 ```
+_Based on https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs_
 
 error[E0597]: `time_buf` does not live long enough
   --> rust/app/src/watch_face.rs:25:52
