@@ -69,11 +69,12 @@
 <li><a href="#return-errors-with-the-rust-result-enum">17 Return Errors with the Rust Result Enum</a><ul></ul></li>
 <li><a href="#check-errors-with-the-rust-result-enum">18 Check Errors with the Rust Result Enum</a><ul></ul></li>
 <li><a href="#c-to-rust-conversion-final-version">19 C to Rust Conversion: Final Version</a><ul></ul></li>
-<li><a href="#lifetime-of-rust-variables">20 Lifetime of Rust Variables</a><ul></ul></li>
-<li><a href="#riot-os-bindings">21 RIOT OS Bindings</a><ul></ul></li>
-<li><a href="#build-and-link-with-riot-os">22 Build and link with RIOT OS</a><ul></ul></li>
-<li><a href="#vscode-development">23 VSCode Development</a><ul></ul></li>
-<li><a href="#vscode-debugging">24 VSCode Debugging</a><ul></ul></li></ul></nav><p><em>This article is presented in CINEMASCOPE... Rotate your phone to view the C and Rust source code side by side... Or better yet, read this article on a desktop computer</em></p>
+<li><a href="#heapless-strings-in-rust">20 Heapless Strings in Rust</a><ul></ul></li>
+<li><a href="#lifetime-of-rust-variables">21 Lifetime of Rust Variables</a><ul></ul></li>
+<li><a href="#riot-os-bindings">22 RIOT OS Bindings</a><ul></ul></li>
+<li><a href="#build-and-link-with-riot-os">23 Build and link with RIOT OS</a><ul></ul></li>
+<li><a href="#vscode-development">24 VSCode Development</a><ul></ul></li>
+<li><a href="#vscode-debugging">25 VSCode Debugging</a><ul></ul></li></ul></nav><p><em>This article is presented in CINEMASCOPE... Rotate your phone to view the C and Rust source code side by side... Or better yet, read this article on a desktop computer</em></p>
 <p>We'll learn step by step to convert this <a href="https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c">Embedded C code</a> (based on LittlevGL) to <a href="https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs">Embedded Rust</a> on RIOT OS...</p>
 <table><thead><tr><th align="left"><strong>Original C Code</strong></th><th align="left"><strong>Converted Rust Code</strong></th></tr></thead><tbody>
 <tr><td align="left"><code>lv_obj_t *screen_time_create(home_time_widget_t *ht) {</code> <br><br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    lv_obj_t *scr = lv_obj_create(NULL, NULL);</code> <br>  <code>    lv_obj_t *label1 = lv_label_create(scr, NULL);</code> <br><br>  <code>    lv_label_set_text(label1, &quot;00:00&quot;);</code> <br>  <code>    lv_obj_set_width(label1, 240);</code> <br>  <code>    lv_obj_set_height(label1, 200);</code> <br>  <code>    ht-&gt;lv_time = label1;</code> <br>  <code>    ...</code> <br>  <code>    return scr;</code> <br><code>}</code> <br></td><td align="left"><code>fn create_widgets(widgets: &amp;mut WatchFaceWidgets) -&gt; </code> <br>  <code>    LvglResult&lt;()&gt; {</code> <br><br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    let scr = widgets.screen;</code> <br>  <code>    let label1 = label::create(scr, ptr::null()) ? ;</code> <br><br>  <code>    label::set_text(label1, strn!(&quot;00:00&quot;)) ? ;</code> <br>  <code>    obj::set_width(label1, 240) ? ;</code> <br>  <code>    obj::set_height(label1, 200) ? ;</code> <br>  <code>    widgets.time_label = label1;</code> <br>  <code>    ...</code> <br>  <code>    Ok(())</code> <br><code>}</code> <br></td></tr>
@@ -910,10 +911,109 @@ lv_area_t coords = screen-&gt;coords;
 <table><thead><tr><th align="left"><strong>Original C Code</strong></th><th align="left"><strong>Converted Rust Code</strong></th></tr></thead><tbody>
 <tr><td align="left"><code>lv_obj_t *screen_time_create(home_time_widget_t *ht) {</code> <br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    lv_obj_t *scr = lv_obj_create(NULL, NULL);</code></td><td align="left"><code>fn create_widgets(widgets: &amp;mut WatchFaceWidgets) -&gt; </code> <br>  <code>    LvglResult&lt;()&gt; {</code> <br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    let scr = widgets.screen;</code></td></tr>
 </tbody></table>
-<p>We'll learn in a while why this was done to make the code easier to maintain.</p>
-<h1 id="lifetime-of-rust-variables" class="section-header"><a href="#lifetime-of-rust-variables">20 Lifetime of Rust Variables</a></h1>
+<p>We'll learn in a while why this was done: To make the code easier to maintain.</p>
+<h1 id="heapless-strings-in-rust" class="section-header"><a href="#heapless-strings-in-rust">20 Heapless Strings in Rust</a></h1>
+<p>Let's look at the C code for displaying the current time on PineTime Smart Watch. It calls <a href="http://www.cplusplus.com/reference/cstdio/snprintf/"><code>snprintf</code></a> to format the current time into a string buffer on the stack. Then it calls <code>lv_label_set_text</code> to set the text on the LittlebGL Label...</p>
+<pre><code class="language-c">/// In C: Populate the LittlevGL Time Label with the current time
+static int set_time_label(home_time_widget_t *ht) {
+    //  Create a string buffer on the stack with max size 6 to format the time
+    char time[6];
+    //  Format the time HH:MM into the string buffer
+    int res = snprintf(
+        time, 
+        sizeof(time), 
+        &quot;%02u:%02u&quot;, 
+        ht-&gt;time.hour,
+        ht-&gt;time.minute
+    );
+    if (res != sizeof(time) - 1) {
+        LOG_ERROR(&quot;[home_time]: error formatting time string %*s\n&quot;, res, time);
+        return -1;  //  Return error to caller
+    }
+    //  Display the formatted time on the LittlevGL label
+    lv_label_set_text(
+        ht-&gt;lv_time, 
+        time
+    );
+    return 0;  //  Return Ok
+}
+</code></pre>
+<p><em>From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c</em></p>
+<p>Here's the equivalent code in Rust...</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="doccomment">/// In Rust: Populate the LittlevGL Time Label with the current time</span>
+<span class="kw">fn</span> <span class="ident">set_time_label</span>(<span class="ident">widgets</span>: <span class="kw-2">&amp;</span><span class="ident">WatchFaceWidgets</span>, <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="ident">WatchFaceState</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">LvglResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {  <span class="comment">//  If error, return Err with error code inside</span>
+    <span class="comment">//  Create a heapless string buffer on the stack with max size 6 to format the time</span>
+    <span class="kw">type</span> <span class="ident">TimeBufSize</span> <span class="op">=</span> <span class="ident">heapless</span>::<span class="ident">consts</span>::<span class="ident">U6</span>;  <span class="comment">//  Size of the string buffer</span>
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">time_buf</span>: <span class="ident">heapless</span>::<span class="ident">String</span>::<span class="op">&lt;</span><span class="ident">TimeBufSize</span><span class="op">&gt;</span> <span class="op">=</span> 
+        <span class="ident">heapless</span>::<span class="ident">String</span>::<span class="ident">new</span>();
+    <span class="comment">//  Format the time HH:MM into the string buffer</span>
+    <span class="macro">write</span><span class="macro">!</span>(                 <span class="comment">//  Macro writes a formatted string...</span>
+        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">time_buf</span>,      <span class="comment">//  Into this buffer...</span>
+        <span class="string">&quot;{:02}:{:02}\0&quot;</span>,    <span class="comment">//  With this format... (Must terminate Rust strings with null)</span>
+        <span class="ident">state</span>.<span class="ident">time</span>.<span class="ident">hour</span>,    <span class="comment">//  With this hour value...</span>
+        <span class="ident">state</span>.<span class="ident">time</span>.<span class="ident">minute</span>   <span class="comment">//  And this minute value</span>
+    ).<span class="ident">expect</span>(<span class="string">&quot;time fail&quot;</span>);  <span class="comment">//  Fail if the buffer is too small</span>
+    <span class="comment">//  Display the formatted time on the LittlevGL label</span>
+    <span class="ident">label</span>::<span class="ident">set_text</span>(
+        <span class="ident">widgets</span>.<span class="ident">time_label</span>, 
+        <span class="kw-2">&amp;</span><span class="ident">Strn</span>::<span class="ident">new</span>( <span class="ident">time_buf</span>.<span class="ident">as_bytes</span>() )  <span class="comment">//  Verifies that the string is null-terminated</span>
+    ) <span class="question-mark">?</span> ;   <span class="comment">//  If error, return Err to caller</span>
+    <span class="prelude-val">Ok</span>(())  <span class="comment">//  Return Ok</span>
+}</pre></div>
+<p><em>Based on https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs</em></p>
+<p><em>Why do we use <code>heapless::String</code> instead of the usual <code>String</code> type in Rust?</em></p>
+<p>The usual <a href="https://doc.rust-lang.org/std/string/struct.String.html"><code>String</code></a> type in Rust uses Heap Memory... It allocates memory dynamically to store strings.  But we don't allow Heap Memory in our Rust program.</p>
+<p><a href="https://docs.rs/heapless/0.5.3/heapless/struct.String.html"><code>heapless::String</code></a> is a <a href="https://docs.rs/heapless/0.5.3/heapless/struct.String.html"><strong>Heapless String</strong></a> that doesn't use Heap Memory. It uses a fixed-size array stored on the stack (like above) or stored in Static Memory.</p>
+<p><em>Why can't we use Heap Memory?</em></p>
+<p>When writing embedded programs, it's good to budget in advance the memory needed to run the program and preallocate the memory needed from Static Memory. So that our program won't run out of Heap Memory while running and fail.</p>
+<p><a href="https://cpp4arduino.com/2018/11/06/what-is-heap-fragmentation.html">Heap Fragmentation</a> may also cause our programs to behave erratically.</p>
+<p><em>Why does the usual <code>String</code> type in Rust use Heap Memory?</em></p>
+<p>Using strings safely in C is hard... We have to watch the string size very carefully and make sure the strings don't overflow.</p>
+<p>Rust makes string programming easier and safer... Rust <code>Strings</code> will grow dynamically when they run out of space! Unfortunately this means that Rust <code>Strings</code> need Heap Memory to make them grow. Which is a problem for embedded programs.</p>
+<p>Here's how we allocate a Heapless String on the stack...</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="comment">//  Create a heapless string buffer on the stack with max size 6 to format the time</span>
+<span class="kw">type</span> <span class="ident">TimeBufSize</span> <span class="op">=</span> <span class="ident">heapless</span>::<span class="ident">consts</span>::<span class="ident">U6</span>;  <span class="comment">//  Size of the string buffer</span>
+<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">time_buf</span>: <span class="ident">heapless</span>::<span class="ident">String</span>::<span class="op">&lt;</span><span class="ident">TimeBufSize</span><span class="op">&gt;</span> <span class="op">=</span> 
+    <span class="ident">heapless</span>::<span class="ident">String</span>::<span class="ident">new</span>();</pre></div>
+<p><code>let mut</code> works like <code>let</code>, except that it declares a mutable variable on the stack whose value may change.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="comment">//  Format the time HH:MM into the string buffer</span>
+<span class="macro">write</span><span class="macro">!</span>(                 <span class="comment">//  Macro writes a formatted string...</span>
+    <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">time_buf</span>,      <span class="comment">//  Into this buffer...</span>
+    <span class="string">&quot;{:02}:{:02}\0&quot;</span>,    <span class="comment">//  With this format... (Must terminate Rust strings with null)</span>
+    <span class="ident">state</span>.<span class="ident">time</span>.<span class="ident">hour</span>,    <span class="comment">//  With this hour value...</span>
+    <span class="ident">state</span>.<span class="ident">time</span>.<span class="ident">minute</span>   <span class="comment">//  And this minute value</span>
+).<span class="ident">expect</span>(<span class="string">&quot;time fail&quot;</span>);  <span class="comment">//  Fail if the buffer is too small</span></pre></div>
+<p><code>write!</code> is a Rust Macro that writes formatted strings into a string buffer. It's a macro, not a function, so that the paramaters are validated against the specified format at compile-time.</p>
+<p>The Rust function <code>set_time_label</code> above looks OK. But there's a problem with this line of code...</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="comment">//  Display the formatted time on the LittlevGL label</span>
+<span class="ident">label</span>::<span class="ident">set_text</span>(
+    <span class="ident">widgets</span>.<span class="ident">time_label</span>, 
+    <span class="kw-2">&amp;</span><span class="ident">Strn</span>::<span class="ident">new</span>( <span class="ident">time_buf</span>.<span class="ident">as_bytes</span>() )  <span class="comment">//  Verifies that the string is null-terminated</span>
+) <span class="question-mark">?</span> ;   <span class="comment">//  If error, return Err to caller</span></pre></div>
+<p><em>Do you see the problem?</em></p>
+<p>The problem becomes obvious when we learn next about the Lifetime of Rust variables.</p>
+<h1 id="lifetime-of-rust-variables" class="section-header"><a href="#lifetime-of-rust-variables">21 Lifetime of Rust Variables</a></h1>
 <p>TODO</p>
 
+<pre><code>error[E0597]: `time_buf` does not live long enough
+  --&gt; rust/app/src/watch_face.rs:25:52
+   |
+25 |     label::set_text(widgets.time_label, &amp;Strn::new(time_buf.as_bytes())) ? ;  //  TODO: Simplify
+   |                                                    ^^^^^^^^-----------
+   |                                                    |
+   |                                                    borrowed value does not live long enough
+   |                                                    argument requires that `time_buf` is borrowed for `&#39;static`
+26 |     Ok(())
+27 | }
+   | - `time_buf` dropped here while still borrowed</code></pre>
 <div class="example-wrap"><pre class="rust rust-example-rendered">
 <span class="doccomment">/// Populate the Time and Date Labels with the time and date. Called by screen_time_update_screen() above.</span>
 <span class="kw">fn</span> <span class="ident">set_time_label</span>(<span class="ident">widgets</span>: <span class="kw-2">&amp;</span><span class="ident">WatchFaceWidgets</span>, <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="ident">WatchFaceState</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">LvglResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
@@ -928,13 +1028,14 @@ lv_area_t coords = screen-&gt;coords;
             .<span class="ident">expect</span>(<span class="string">&quot;time fail&quot;</span>);
         <span class="ident">label</span>::<span class="ident">set_text</span>(<span class="ident">widgets</span>.<span class="ident">time_label</span>, <span class="kw-2">&amp;</span><span class="ident">Strn</span>::<span class="ident">new</span>(<span class="ident">TIME_BUF</span>.<span class="ident">as_bytes</span>())) <span class="question-mark">?</span> ;  <span class="comment">//  TODO: Simplify</span>
     }</pre></div>
-<h1 id="riot-os-bindings" class="section-header"><a href="#riot-os-bindings">21 RIOT OS Bindings</a></h1>
+<p><em>From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs</em></p>
+<h1 id="riot-os-bindings" class="section-header"><a href="#riot-os-bindings">22 RIOT OS Bindings</a></h1>
 <p>TODO</p>
-<h1 id="build-and-link-with-riot-os" class="section-header"><a href="#build-and-link-with-riot-os">22 Build and link with RIOT OS</a></h1>
+<h1 id="build-and-link-with-riot-os" class="section-header"><a href="#build-and-link-with-riot-os">23 Build and link with RIOT OS</a></h1>
 <p>TODO</p>
-<h1 id="vscode-development" class="section-header"><a href="#vscode-development">23 VSCode Development</a></h1>
+<h1 id="vscode-development" class="section-header"><a href="#vscode-development">24 VSCode Development</a></h1>
 <p>TODO</p>
-<h1 id="vscode-debugging" class="section-header"><a href="#vscode-debugging">24 VSCode Debugging</a></h1>
+<h1 id="vscode-debugging" class="section-header"><a href="#vscode-debugging">25 VSCode Debugging</a></h1>
 <p>TODO</p>
 <p>Here's how I debug RIOT OS on PineTime with VSCode and ST-Link. </p>
 <p>Trying to figure out why I need to restart the debugger to get it to work (as shown in the video)</p>

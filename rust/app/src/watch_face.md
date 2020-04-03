@@ -1089,7 +1089,7 @@ We'll learn in a while why this was done: To make the code easier to maintain.
 
 # Heapless Strings in Rust
 
-Let's look at the C code for displaying the current time on PineTime Smart Watch. It calls `snprintf` to format the current time into a string buffer on the stack. Then it calls `lv_label_set_text` to set the text on the LittlebGL Label...
+Let's look at the C code for displaying the current time on PineTime Smart Watch. It calls [`snprintf`](http://www.cplusplus.com/reference/cstdio/snprintf/) to format the current time into a string buffer on the stack. Then it calls `lv_label_set_text` to set the text on the LittlebGL Label...
 
 ```c
 /// In C: Populate the LittlevGL Time Label with the current time
@@ -1123,7 +1123,7 @@ Here's the equivalent code in Rust...
 ```rust
 /// In Rust: Populate the LittlevGL Time Label with the current time
 fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {  //  If error, return Err with error code inside
-    //  Create a string buffer on the stack with max size 6 to format the time
+    //  Create a heapless string buffer on the stack with max size 6 to format the time
     type TimeBufSize = heapless::consts::U6;  //  Size of the string buffer
     let mut time_buf: heapless::String::<TimeBufSize> = 
         heapless::String::new();
@@ -1137,7 +1137,7 @@ fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRes
     //  Display the formatted time on the LittlevGL label
     label::set_text(
         widgets.time_label, 
-        &Strn::new( time_buf.as_bytes() )  //  Verifies that string is null-terminated
+        &Strn::new( time_buf.as_bytes() )  //  Verifies that the string is null-terminated
     ) ? ;   //  If error, return Err to caller
     Ok(())  //  Return Ok
 }
@@ -1146,13 +1146,58 @@ _Based on https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watc
 
 _Why do we use `heapless::String` instead of the usual `String` type in Rust?_
 
+The usual [`String`](https://doc.rust-lang.org/std/string/struct.String.html) type in Rust uses Heap Memory... It allocates memory dynamically to store strings.  But we don't allow Heap Memory in our Rust program.
 
+[`heapless::String`](https://docs.rs/heapless/0.5.3/heapless/struct.String.html) is a [__Heapless String__](https://docs.rs/heapless/0.5.3/heapless/struct.String.html) that doesn't use Heap Memory. It uses a fixed-size array stored on the stack (like above) or stored in Static Memory.
 
-https://docs.rs/heapless/0.5.3/heapless/struct.String.html
+_Why can't we use Heap Memory?_
 
-`let mut` works just like `let`, except that it declares a mutable variable on the stack whose value may change.
+When writing embedded programs, it's good to budget in advance the memory needed to run the program and preallocate the memory needed from Static Memory. So that our program won't run out of Heap Memory while running and fail.  
+
+[Heap Fragmentation](https://cpp4arduino.com/2018/11/06/what-is-heap-fragmentation.html) may also cause our programs to behave erratically.
+
+_Why does the usual `String` type in Rust use Heap Memory?_
+
+Using strings safely in C is hard... We have to watch the string size very carefully and make sure the strings don't overflow.
+
+Rust makes string programming easier and safer... Rust `Strings` will grow dynamically when they run out of space! Unfortunately this means that Rust `Strings` need Heap Memory to make them grow. Which is a problem for embedded programs.
+
+Here's how we allocate a Heapless String on the stack...
+
+```rust
+//  Create a heapless string buffer on the stack with max size 6 to format the time
+type TimeBufSize = heapless::consts::U6;  //  Size of the string buffer
+let mut time_buf: heapless::String::<TimeBufSize> = 
+    heapless::String::new();
+```
+
+`let mut` works like `let`, except that it declares a mutable variable on the stack whose value may change.
+
+```rust
+//  Format the time HH:MM into the string buffer
+write!(                 //  Macro writes a formatted string...
+    &mut time_buf,      //  Into this buffer...
+    "{:02}:{:02}\0",    //  With this format... (Must terminate Rust strings with null)
+    state.time.hour,    //  With this hour value...
+    state.time.minute   //  And this minute value
+).expect("time fail");  //  Fail if the buffer is too small
+```
 
 `write!` is a Rust Macro that writes formatted strings into a string buffer. It's a macro, not a function, so that the paramaters are validated against the specified format at compile-time.
+
+The Rust function `set_time_label` above looks OK. But there's a problem with this line of code...
+
+```rust
+//  Display the formatted time on the LittlevGL label
+label::set_text(
+    widgets.time_label, 
+    &Strn::new( time_buf.as_bytes() )  //  Verifies that the string is null-terminated
+) ? ;   //  If error, return Err to caller
+```
+
+_Do you see the problem?_
+
+The problem becomes obvious when we learn next about the Lifetime of Rust variables.
 
 # Lifetime of Rust Variables
 
