@@ -1089,21 +1089,31 @@ We'll learn in a while why this was done: To make the code easier to maintain.
 
 # Heapless Strings in Rust
 
-Let's look at the C code for displaying the current time on PineTime Smart Watch...
+Let's look at the C code for displaying the current time on PineTime Smart Watch. It calls `snprintf` to format the current time into a string buffer on the stack. Then it calls `lv_label_set_text` to set the text on the LittlebGL Label...
 
 ```c
-static int _home_time_set_time_label(home_time_widget_t *ht) {
-    //  Format the time HH:MM with a string buffer on the stack
+/// In C: Populate the LittlevGL Time Label with the current time
+static int set_time_label(home_time_widget_t *ht) {
+    //  Create a string buffer on the stack with max size 6 to format the time
     char time[6];
-    int res = snprintf(time, sizeof(time), "%02u:%02u", ht->time.hour,
-                       ht->time.minute);
+    //  Format the time HH:MM into the string buffer
+    int res = snprintf(
+        time, 
+        sizeof(time), 
+        "%02u:%02u", 
+        ht->time.hour,
+        ht->time.minute
+    );
     if (res != sizeof(time) - 1) {
         LOG_ERROR("[home_time]: error formatting time string %*s\n", res, time);
-        return -1;
+        return -1;  //  Return error to caller
     }
     //  Display the formatted time on the LittlevGL label
-    lv_label_set_text(ht->lv_time, time);
-    return 0;
+    lv_label_set_text(
+        ht->lv_time, 
+        time
+    );
+    return 0;  //  Return Ok
 }
 ```
 _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c_
@@ -1111,24 +1121,44 @@ _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/s
 Here's the equivalent code in Rust...
 
 ```rust
-/// Populate the Time and Date Labels with the time and date. Called by screen_time_update_screen() above.
-fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
-    //  Create a string buffer with max size 6 to format the time
+/// In Rust: Populate the LittlevGL Time Label with the current time
+fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {  //  If error, return Err with error code inside
+    //  Create a string buffer on the stack with max size 6 to format the time
     type TimeBufSize = heapless::consts::U6;  //  Size of the string buffer
     let mut time_buf: heapless::String::<TimeBufSize> = 
         heapless::String::new();
-    //  Format the time and set the label
-    time_buf.clear();
-    write!(&mut time_buf, "{:02}:{:02}\0",  //  Must terminate Rust strings with null
-        state.time.hour,
-        state.time.minute)
-        .expect("time fail");
-    label::set_text(widgets.time_label, &Strn::new(time_buf.as_bytes())) ? ;
-    Ok(())
+    //  Format the time HH:MM into the string buffer
+    write!(                 //  Macro writes a formatted string...
+        &mut time_buf,      //  Into this buffer...
+        "{:02}:{:02}\0",    //  With this format... (Must terminate Rust strings with null)
+        state.time.hour,    //  With this hour value...
+        state.time.minute   //  And this minute value
+    ).expect("time fail");  //  Fail if the buffer is too small
+    //  Display the formatted time on the LittlevGL label
+    label::set_text(
+        widgets.time_label, 
+        &Strn::new( time_buf.as_bytes() )  //  Verifies that string is null-terminated
+    ) ? ;   //  If error, return Err to caller
+    Ok(())  //  Return Ok
 }
 ```
 _Based on https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs_
 
+_Why do we use `heapless::String` instead of the usual `String` type in Rust?_
+
+
+
+https://docs.rs/heapless/0.5.3/heapless/struct.String.html
+
+`let mut` works just like `let`, except that it declares a mutable variable on the stack whose value may change.
+
+`write!` is a Rust Macro that writes formatted strings into a string buffer. It's a macro, not a function, so that the paramaters are validated against the specified format at compile-time.
+
+# Lifetime of Rust Variables
+
+TODO
+
+```
 error[E0597]: `time_buf` does not live long enough
   --> rust/app/src/watch_face.rs:25:52
    |
@@ -1140,12 +1170,7 @@ error[E0597]: `time_buf` does not live long enough
 26 |     Ok(())
 27 | }
    | - `time_buf` dropped here while still borrowed
-
-TODO
-
-# Lifetime of Rust Variables
-
-TODO
+```
 
 ```rust
 /// Populate the Time and Date Labels with the time and date. Called by screen_time_update_screen() above.
@@ -1162,6 +1187,7 @@ fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRes
         label::set_text(widgets.time_label, &Strn::new(TIME_BUF.as_bytes())) ? ;  //  TODO: Simplify
     }
 ```
+_From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs_
 
 # RIOT OS Bindings
 
