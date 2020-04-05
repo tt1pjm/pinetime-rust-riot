@@ -1082,10 +1082,10 @@ void lv_label_set_text(lv_obj_t *label, const char *text);
 <p>There are two solutions to our Lifetime problem...</p>
 <ol>
 <li>
-<p>Tell the Rust Compiler the expected Lifetime of the string buffer in <code>lv_label_set_text</code> (using the Lifetime Operator like <code>'static</code>, which is kinda complicated for newbies)</p>
+<p>Tell the Rust Compiler the expected Lifetime of the string buffer in <code>lv_label_set_text</code>. (Using Lifetime specifiers like <code>'static</code>, which is kinda complicated for newbies)</p>
 </li>
 <li>
-<p>Or make our string buffer live forever! By turning our Stack Variable into a Static Variable</p>
+<p>Or make our string buffer live forever! When we turn our Stack Variable into a Static Variable, the string buffer outlives <code>lv_label_set_text</code>. And makes the Rust Compiler very happy!</p>
 </li>
 </ol>
 <p>We'll learn about Static Variables next...</p>

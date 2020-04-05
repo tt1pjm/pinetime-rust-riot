@@ -1298,9 +1298,9 @@ _FYI: The Lifetime of `lv_label_set_text` is stated verbally in the LittlevGL do
 
 There are two solutions to our Lifetime problem...
 
-1. Tell the Rust Compiler the expected Lifetime of the string buffer in `lv_label_set_text` (using the Lifetime Operator like `'static`, which is kinda complicated for newbies)
+1. Tell the Rust Compiler the expected Lifetime of the string buffer in `lv_label_set_text`. (Using Lifetime specifiers like `'static`, which is kinda complicated for newbies)
 
-1. Or make our string buffer live forever! By turning our Stack Variable into a Static Variable
+1. Or make our string buffer live forever! When we turn our Stack Variable into a Static Variable, the string buffer outlives `lv_label_set_text`. And makes the Rust Compiler very happy!
 
 We'll learn about Static Variables next...
 
