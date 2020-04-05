@@ -1201,13 +1201,46 @@ The problem becomes obvious when we learn next about the Lifetime of Rust variab
 
 # Lifetime of Rust Variables
 
-TODO
+In the last section we attempted to display the current time on PineTime Smart Watch inside a LittlevGL Widget (which we have imported from C).  We allocated a Heapless String on the stack...
+
+```rust
+//  In Rust: Create a heapless string buffer on the stack with max size 6 to format the time
+type TimeBufSize = heapless::consts::U6;  //  Size of the string buffer
+let mut time_buf: heapless::String::<TimeBufSize> = 
+    heapless::String::new();
+```
+
+Then we formatted the current time into the Heapless String...
+
+```rust
+//  In Rust: Format the time HH:MM into the string buffer
+write!(                 //  Macro writes a formatted string...
+    &mut time_buf,      //  Into this buffer...
+    "{:02}:{:02}\0",    //  With this format... (Must terminate Rust strings with null)
+    state.time.hour,    //  With this hour value...
+    state.time.minute   //  And this minute value
+).expect("time fail");  //  Fail if the buffer is too small
+```
+
+And we passed the formatted time in the Heapless String to `set_text` to set the label text...
+
+```rust
+//  In Rust: Display the formatted time on the LittlevGL label
+label::set_text(
+    widgets.time_label, 
+    &Strn::new( time_buf.as_bytes() )  //  Verifies that the string is null-terminated
+) ? ;   //  If error, return Err to caller
+```
+
+`set_text` is a Safe Wrapper for the LittlevGL function `lv_label_set_text` that we have imported from C into Rust.
+
+When we compile this code, the Rust Compiler draws a neat line diagram to point out a cryptic error...
 
 ```
 error[E0597]: `time_buf` does not live long enough
   --> rust/app/src/watch_face.rs:25:52
    |
-25 |     label::set_text(widgets.time_label, &Strn::new(time_buf.as_bytes())) ? ;  //  TODO: Simplify
+25 |     label::set_text(widgets.time_label, &Strn::new(time_buf.as_bytes())) ? ;
    |                                                    ^^^^^^^^-----------
    |                                                    |
    |                                                    borrowed value does not live long enough
@@ -1216,6 +1249,62 @@ error[E0597]: `time_buf` does not live long enough
 27 | }
    | - `time_buf` dropped here while still borrowed
 ```
+
+_Borrowed value does not live long enough... What is the meaning of this?_
+
+Let's look at the declaration of the C function `lv_label_set_text` (from which `set_text` was derived)...
+
+```c
+//  In C: Declare function lv_label_set_text to set the text of a label
+void lv_label_set_text(lv_obj_t *label, const char *text);
+```
+
+`lv_label_set_text` (same for `set_text`) sets the text on a LittlevGL `label` to a string `text` that's passed to the function.
+
+_Question: What happens to the string in `text` AFTER the function `lv_label_set_text` returns?_
+
+_What if `lv_label_set_text` has lazily copied the string pointer (instead of the string contents)?_
+
+_Will some other LittlevGL function read the string pointer later?_
+
+Well this will be a problem... If our string buffer was allocated on the stack!
+
+Stack variables will magically disappear when we return from the function. If a LittlevGL function attempts to read the string buffer previously allocated on the stack... Strange things will happen!
+
+But that's exactly what we did: Allocate the string buffer on the stack...
+
+```rust
+//  In Rust: Create a heapless string buffer on the stack with max size 6 to format the time
+type TimeBufSize = heapless::consts::U6;  //  Size of the string buffer
+let mut time_buf: heapless::String::<TimeBufSize> = 
+    heapless::String::new();
+```
+
+So the Rust Compiler helpfully warns us that somebody could be using later the string buffer that we have passed to C. And that it's not safe to pass a string buffer on the stack. Let's reword it like this...
+
+1. Our string buffer lives on the stack. It disappears when the function returns.
+
+1. Thus our string buffer has a very short __Lifetime__... It's not meant to be used for a long time.
+
+1. But we passed the string buffer to the C function `lv_label_set_text` (via the Safe Wrapper `set_text`)
+
+1. The Rust Compiler doesn't know the expected Lifetime of the string buffer used by `lv_label_set_text`... The string buffer may still be used for a long time afterwards
+
+1. Hence the Rust Compiler warns that the string buffer might not __live long enough__ to satisfy `lv_label_set_text`
+
+The Rust Compiler is really that clever! These are typical bugs that we tend to miss in C... Passing values on the stack when we're not supposed to.  Which won't happen in Rust since the Lifetimes of variables will have to be stated clearly.
+
+_FYI: The Lifetime of `lv_label_set_text` is stated verbally in the LittlevGL docs... `lv_label_set_text` will copy the contents of the string buffer, instead of copying the string pointer. Therefore the string buffer passed to `lv_label_set_text` is expected to have a short Lifetime._
+
+There are two solutions to our Lifetime problem...
+
+1. Tell the Rust Compiler the expected Lifetime of the string buffer in `lv_label_set_text` (using the Lifetime Operator like `'static`, which is kinda complicated for newbies)
+
+1. Or make our string buffer live forever! By turning our Stack Variable into a Static Variable
+
+We'll learn about Static Variables next...
+
+# Static Variables in Rust
 
 ```rust
 /// Populate the Time and Date Labels with the time and date. Called by screen_time_update_screen() above.
