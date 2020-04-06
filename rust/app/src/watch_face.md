@@ -1396,7 +1396,9 @@ fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRes
 ```
 _From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs_
 
+_Why is the code marked `unsafe`?_
 
+Unlike C, Rust is fully aware of multithreading... [Using multiple threads to run code simultaneously](https://doc.rust-lang.org/1.30.0/book/second-edition/ch16-01-threads.html).
 
 # RIOT OS Bindings
 
