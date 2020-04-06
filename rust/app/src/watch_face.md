@@ -1306,22 +1306,97 @@ We'll learn about Static Variables next...
 
 # Static Variables in Rust
 
+Creating Static Variables in C is easy...
+
+```c
+/// In C: Populate the LittlevGL Time Label with the current time
+static int set_time_label(home_time_widget_t *ht) {
+    //  Create a string buffer in static memory with max size 6 to format the time
+    static char time[6];
+```
+_Based on https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c_
+
+Here we allocate a 6-byte string buffer in Static Memory to format the time for display on PineTime.
+
+_What's the initial value of `time`?_
+
+Static Memory (also known as BSS) is implicitly initialised with null bytes.  So `time` is initially set to 6 bytes of null.  Which also represents an empty string `""` in C (since C strings are terminated by null).
+
+Let's do the same in Rust... Watch how Rust cares about our code safety.  Here's our original Rust code that allocates the string buffer on the stack...
+
 ```rust
-/// Populate the Time and Date Labels with the time and date. Called by screen_time_update_screen() above.
-fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
-    //  Create a string buffer with max size 6 to format the time
-    static mut TIME_BUF: heapless::String::<heapless::consts::U6> = heapless::String(heapless::i::String::new());
-    //  Format the time and set the label
+/// In Rust (Stack Version): Populate the LittlevGL Time Label with the current time
+fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {  //  If error, return Err with error code inside
+    //  Create a heapless string buffer on the stack with max size 6 to format the time
+    type TimeBufSize = heapless::consts::U6;  //  Size of the string buffer
+    let mut time_buf: heapless::String::<TimeBufSize> = 
+        heapless::String::new();
+```
+
+And now we allocate the string buffer in Static Memory...
+
+```rust
+/// In Rust (Static Version): Populate the LittlevGL Time Label with the current time
+fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {  //  If error, return Err with error code inside
+    //  Create a heapless string buffer in static memory with max size 6 to format the time
+    type TimeBufSize = heapless::consts::U6;  //  Size of the string buffer
+    static mut TIME_BUF: heapless::String::<TimeBufSize> = 
+        heapless::String( heapless::i::String::new() );    
+```
+
+`let mut` has been changed to `static mut`.  This looks very similar to C, piece of cake!
+
+Then comes the initialisation...
+
+```rust
+//  In Rust: Initialise the string buffer
+static mut TIME_BUF: heapless::String::<TimeBufSize> = 
+    heapless::String( heapless::i::String::new() );    
+```
+
+In Rust, __all Static Variables must be initialised explicitly__... Rust doesn't allow implicit initialisation like in C!
+
+This prevents initialisation errors that we see in C _(phew!)_
+
+Note that the initial value has been changed from `heapless::String::new()` to...
+
+```rust
+heapless::String( heapless::i::String::new() )
+```
+
+That's the proper way to initialise a Heapless String Static Variable, [according to the docs](https://docs.rs/heapless/0.5.3/heapless/struct.String.html).  (And if you think carefully, there's a very good reason why the value looks different)
+
+Here's the entire function that creates a string buffer in Static Memory and uses the buffer...
+
+```rust
+/// In Rust (Static Version): Populate the LittlevGL Time Label with the current time
+fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {  //  If error, return Err with error code inside
+    //  Create a heapless string buffer in static memory with max size 6 to format the time
+    type TimeBufSize = heapless::consts::U6;  //  Size of the string buffer
+    static mut TIME_BUF: heapless::String::<TimeBufSize> = 
+        heapless::String( heapless::i::String::new() );    
+    //  This code is unsafe because multiple threads may be updating the string buffer
     unsafe {
-        TIME_BUF.clear();
-        write!(&mut TIME_BUF, "{:02}:{:02}\0",  //  Must terminate Rust strings with null
-            state.time.hour,
-            state.time.minute)
-            .expect("time fail");
-        label::set_text(widgets.time_label, &Strn::new(TIME_BUF.as_bytes())) ? ;  //  TODO: Simplify
-    }
+        TIME_BUF.clear();       //  Erase the string buffer
+        //  Format the time HH:MM into the string buffer
+        write!(                 //  Macro writes a formatted string...
+            &mut TIME_BUF,      //  Into this buffer...
+            "{:02}:{:02}\0",    //  With this format... (Must terminate Rust strings with null)
+            state.time.hour,    //  With this hour value...
+            state.time.minute   //  And this minute value
+        ).expect("time fail");  //  Fail if the buffer is too small
+        //  Display the formatted time on the LittlevGL label
+        label::set_text(
+            widgets.time_label, 
+            &Strn::new( TIME_BUF.as_bytes() )  //  Verifies that the string is null-terminated
+        ) ? ;   //  If error, return Err to caller
+    }       //  End of unsafe code
+    Ok(())  //  Return Ok
+}
 ```
 _From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs_
+
+
 
 # RIOT OS Bindings
 
