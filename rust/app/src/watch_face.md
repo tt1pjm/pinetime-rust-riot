@@ -1400,6 +1400,20 @@ _Why is the code marked `unsafe`?_
 
 Unlike C, Rust is fully aware of multithreading... [Using multiple threads to run code simultaneously](https://doc.rust-lang.org/1.30.0/book/second-edition/ch16-01-threads.html).
 
+When two threads read and write to the same Static Variable (like `TIME_BUF`), we will get inconsistent results (unless we do some locking).
+
+Thus we need to flag the code as `unsafe` to say...
+
+> Dear Rust Compiler: Thank you for warning us that Mutable Statics like `TIME_BUF` can be mutated by multiple threads and cause undefined behavior. We promise to take responsibility for any `unsafe` consequences. We hope you're happy now.
+
+_But is this code really `unsafe`? Will we have multiple threads running the same code concurrently?_
+
+Actually the code above will only be executed by a single thread... RIOT OS assures this on our PineTime Smart Watch.
+
+The Rust Compiler doesn't know anything about RIOT OS. That's why we need to flag the code as `unsafe` and tell the compiler that it's really OK.
+
+If there's a possibility that multiple threads will run the code, we will need to use the [Thread Synchronisation](https://riot-os.org/api/group__core__sync.html) functions provided by RIOT OS.
+
 # RIOT OS Bindings
 
 TODO

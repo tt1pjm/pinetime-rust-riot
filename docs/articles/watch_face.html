@@ -1090,21 +1090,87 @@ void lv_label_set_text(lv_obj_t *label, const char *text);
 </ol>
 <p>We'll learn about Static Variables next...</p>
 <h1 id="static-variables-in-rust" class="section-header"><a href="#static-variables-in-rust">22 Static Variables in Rust</a></h1>
+<p>Creating Static Variables in C is easy...</p>
+<pre><code class="language-c">/// In C: Populate the LittlevGL Time Label with the current time
+static int set_time_label(home_time_widget_t *ht) {
+    //  Create a string buffer in static memory with max size 6 to format the time
+    static char time[6];
+</code></pre>
+<p><em>Based on https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c</em></p>
+<p>Here we allocate a 6-byte string buffer in Static Memory to format the time for display on PineTime.</p>
+<p><em>What's the initial value of <code>time</code>?</em></p>
+<p>Static Memory (also known as BSS) is implicitly initialised with null bytes.  So <code>time</code> is initially set to 6 bytes of null.  Which also represents an empty string <code>&quot;&quot;</code> in C (since C strings are terminated by null).</p>
+<p>Let's do the same in Rust... Watch how Rust cares about our code safety.  Here's our original Rust code that allocates the string buffer on the stack...</p>
+
 <div class="example-wrap"><pre class="rust rust-example-rendered">
-<span class="doccomment">/// Populate the Time and Date Labels with the time and date. Called by screen_time_update_screen() above.</span>
-<span class="kw">fn</span> <span class="ident">set_time_label</span>(<span class="ident">widgets</span>: <span class="kw-2">&amp;</span><span class="ident">WatchFaceWidgets</span>, <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="ident">WatchFaceState</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">LvglResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-    <span class="comment">//  Create a string buffer with max size 6 to format the time</span>
-    <span class="kw">static</span> <span class="kw-2">mut</span> <span class="ident">TIME_BUF</span>: <span class="ident">heapless</span>::<span class="ident">String</span>::<span class="op">&lt;</span><span class="ident">heapless</span>::<span class="ident">consts</span>::<span class="ident">U6</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">heapless</span>::<span class="ident">String</span>(<span class="ident">heapless</span>::<span class="ident">i</span>::<span class="ident">String</span>::<span class="ident">new</span>());
-    <span class="comment">//  Format the time and set the label</span>
+<span class="doccomment">/// In Rust (Stack Version): Populate the LittlevGL Time Label with the current time</span>
+<span class="kw">fn</span> <span class="ident">set_time_label</span>(<span class="ident">widgets</span>: <span class="kw-2">&amp;</span><span class="ident">WatchFaceWidgets</span>, <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="ident">WatchFaceState</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">LvglResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {  <span class="comment">//  If error, return Err with error code inside</span>
+    <span class="comment">//  Create a heapless string buffer on the stack with max size 6 to format the time</span>
+    <span class="kw">type</span> <span class="ident">TimeBufSize</span> <span class="op">=</span> <span class="ident">heapless</span>::<span class="ident">consts</span>::<span class="ident">U6</span>;  <span class="comment">//  Size of the string buffer</span>
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">time_buf</span>: <span class="ident">heapless</span>::<span class="ident">String</span>::<span class="op">&lt;</span><span class="ident">TimeBufSize</span><span class="op">&gt;</span> <span class="op">=</span> 
+        <span class="ident">heapless</span>::<span class="ident">String</span>::<span class="ident">new</span>();</pre></div>
+<p>And now we allocate the string buffer in Static Memory...</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="doccomment">/// In Rust (Static Version): Populate the LittlevGL Time Label with the current time</span>
+<span class="kw">fn</span> <span class="ident">set_time_label</span>(<span class="ident">widgets</span>: <span class="kw-2">&amp;</span><span class="ident">WatchFaceWidgets</span>, <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="ident">WatchFaceState</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">LvglResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {  <span class="comment">//  If error, return Err with error code inside</span>
+    <span class="comment">//  Create a heapless string buffer in static memory with max size 6 to format the time</span>
+    <span class="kw">type</span> <span class="ident">TimeBufSize</span> <span class="op">=</span> <span class="ident">heapless</span>::<span class="ident">consts</span>::<span class="ident">U6</span>;  <span class="comment">//  Size of the string buffer</span>
+    <span class="kw">static</span> <span class="kw-2">mut</span> <span class="ident">TIME_BUF</span>: <span class="ident">heapless</span>::<span class="ident">String</span>::<span class="op">&lt;</span><span class="ident">TimeBufSize</span><span class="op">&gt;</span> <span class="op">=</span> 
+        <span class="ident">heapless</span>::<span class="ident">String</span>( <span class="ident">heapless</span>::<span class="ident">i</span>::<span class="ident">String</span>::<span class="ident">new</span>() );    </pre></div>
+<p><code>let mut</code> has been changed to <code>static mut</code>.  This looks very similar to C, piece of cake!</p>
+<p>Then comes the initialisation...</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="comment">//  In Rust: Initialise the string buffer</span>
+<span class="kw">static</span> <span class="kw-2">mut</span> <span class="ident">TIME_BUF</span>: <span class="ident">heapless</span>::<span class="ident">String</span>::<span class="op">&lt;</span><span class="ident">TimeBufSize</span><span class="op">&gt;</span> <span class="op">=</span> 
+    <span class="ident">heapless</span>::<span class="ident">String</span>( <span class="ident">heapless</span>::<span class="ident">i</span>::<span class="ident">String</span>::<span class="ident">new</span>() );    </pre></div>
+<p>In Rust, <strong>all Static Variables must be initialised explicitly</strong>... Rust doesn't allow implicit initialisation like in C!</p>
+<p>This prevents initialisation errors that we see in C <em>(phew!)</em></p>
+<p>Note that the initial value has been changed from <code>heapless::String::new()</code> to...</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="ident">heapless</span>::<span class="ident">String</span>( <span class="ident">heapless</span>::<span class="ident">i</span>::<span class="ident">String</span>::<span class="ident">new</span>() )</pre></div>
+<p>That's the proper way to initialise a Heapless String Static Variable, <a href="https://docs.rs/heapless/0.5.3/heapless/struct.String.html">according to the docs</a>.  (And if you think carefully, there's a very good reason why the value looks different)</p>
+<p>Here's the entire function that creates a string buffer in Static Memory and uses the buffer...</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="doccomment">/// In Rust (Static Version): Populate the LittlevGL Time Label with the current time</span>
+<span class="kw">fn</span> <span class="ident">set_time_label</span>(<span class="ident">widgets</span>: <span class="kw-2">&amp;</span><span class="ident">WatchFaceWidgets</span>, <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="ident">WatchFaceState</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">LvglResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {  <span class="comment">//  If error, return Err with error code inside</span>
+    <span class="comment">//  Create a heapless string buffer in static memory with max size 6 to format the time</span>
+    <span class="kw">type</span> <span class="ident">TimeBufSize</span> <span class="op">=</span> <span class="ident">heapless</span>::<span class="ident">consts</span>::<span class="ident">U6</span>;  <span class="comment">//  Size of the string buffer</span>
+    <span class="kw">static</span> <span class="kw-2">mut</span> <span class="ident">TIME_BUF</span>: <span class="ident">heapless</span>::<span class="ident">String</span>::<span class="op">&lt;</span><span class="ident">TimeBufSize</span><span class="op">&gt;</span> <span class="op">=</span> 
+        <span class="ident">heapless</span>::<span class="ident">String</span>( <span class="ident">heapless</span>::<span class="ident">i</span>::<span class="ident">String</span>::<span class="ident">new</span>() );    
+    <span class="comment">//  This code is unsafe because multiple threads may be updating the string buffer</span>
     <span class="kw">unsafe</span> {
-        <span class="ident">TIME_BUF</span>.<span class="ident">clear</span>();
-        <span class="macro">write</span><span class="macro">!</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">TIME_BUF</span>, <span class="string">&quot;{:02}:{:02}\0&quot;</span>,  <span class="comment">//  Must terminate Rust strings with null</span>
-            <span class="ident">state</span>.<span class="ident">time</span>.<span class="ident">hour</span>,
-            <span class="ident">state</span>.<span class="ident">time</span>.<span class="ident">minute</span>)
-            .<span class="ident">expect</span>(<span class="string">&quot;time fail&quot;</span>);
-        <span class="ident">label</span>::<span class="ident">set_text</span>(<span class="ident">widgets</span>.<span class="ident">time_label</span>, <span class="kw-2">&amp;</span><span class="ident">Strn</span>::<span class="ident">new</span>(<span class="ident">TIME_BUF</span>.<span class="ident">as_bytes</span>())) <span class="question-mark">?</span> ;  <span class="comment">//  TODO: Simplify</span>
-    }</pre></div>
+        <span class="ident">TIME_BUF</span>.<span class="ident">clear</span>();       <span class="comment">//  Erase the string buffer</span>
+        <span class="comment">//  Format the time HH:MM into the string buffer</span>
+        <span class="macro">write</span><span class="macro">!</span>(                 <span class="comment">//  Macro writes a formatted string...</span>
+            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">TIME_BUF</span>,      <span class="comment">//  Into this buffer...</span>
+            <span class="string">&quot;{:02}:{:02}\0&quot;</span>,    <span class="comment">//  With this format... (Must terminate Rust strings with null)</span>
+            <span class="ident">state</span>.<span class="ident">time</span>.<span class="ident">hour</span>,    <span class="comment">//  With this hour value...</span>
+            <span class="ident">state</span>.<span class="ident">time</span>.<span class="ident">minute</span>   <span class="comment">//  And this minute value</span>
+        ).<span class="ident">expect</span>(<span class="string">&quot;time fail&quot;</span>);  <span class="comment">//  Fail if the buffer is too small</span>
+        <span class="comment">//  Display the formatted time on the LittlevGL label</span>
+        <span class="ident">label</span>::<span class="ident">set_text</span>(
+            <span class="ident">widgets</span>.<span class="ident">time_label</span>, 
+            <span class="kw-2">&amp;</span><span class="ident">Strn</span>::<span class="ident">new</span>( <span class="ident">TIME_BUF</span>.<span class="ident">as_bytes</span>() )  <span class="comment">//  Verifies that the string is null-terminated</span>
+        ) <span class="question-mark">?</span> ;   <span class="comment">//  If error, return Err to caller</span>
+    }       <span class="comment">//  End of unsafe code</span>
+    <span class="prelude-val">Ok</span>(())  <span class="comment">//  Return Ok</span>
+}</pre></div>
 <p><em>From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs</em></p>
+<p><em>Why is the code marked <code>unsafe</code>?</em></p>
+<p>Unlike C, Rust is fully aware of multithreading... <a href="https://doc.rust-lang.org/1.30.0/book/second-edition/ch16-01-threads.html">Using multiple threads to run code simultaneously</a>.</p>
+<p>When two threads read and write to the same Static Variable (like <code>TIME_BUF</code>), we will get inconsistent results (unless we do some locking).</p>
+<p>Thus we need to flag the code as <code>unsafe</code> to say...</p>
+<blockquote>
+<p>Dear Rust Compiler: Thank you for warning us that Mutable Statics like <code>TIME_BUF</code> can be mutated by multiple threads and cause undefined behavior. We promise to take responsibility for any <code>unsafe</code> consequences. We hope you're happy now.</p>
+</blockquote>
+<p><em>But is this code really <code>unsafe</code>? Will we have multiple threads running the same code concurrently?</em></p>
+<p>Actually the code above will only be executed by a single thread... RIOT OS assures this on our PineTime Smart Watch.</p>
+<p>The Rust Compiler doesn't know anything about RIOT OS. That's why we need to flag the code as <code>unsafe</code> and tell the compiler that it's really OK.</p>
+<p>If there's a possibility that multiple threads will run the code, we will need to use the <a href="https://riot-os.org/api/group__core__sync.html">Thread Synchronisation</a> functions provided by RIOT OS.</p>
 <h1 id="riot-os-bindings" class="section-header"><a href="#riot-os-bindings">23 RIOT OS Bindings</a></h1>
 <p>TODO</p>
 <h1 id="build-and-link-with-riot-os" class="section-header"><a href="#build-and-link-with-riot-os">24 Build and link with RIOT OS</a></h1>
