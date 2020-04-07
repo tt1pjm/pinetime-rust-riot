@@ -1155,9 +1155,9 @@ static int set_time_label(home_time_widget_t *ht) {
         <span class="ident">label</span>::<span class="ident">set_text</span>(
             <span class="ident">widgets</span>.<span class="ident">time_label</span>, 
             <span class="kw-2">&amp;</span><span class="ident">Strn</span>::<span class="ident">new</span>( <span class="ident">TIME_BUF</span>.<span class="ident">as_bytes</span>() )  <span class="comment">//  Verifies that the string is null-terminated</span>
-        ) <span class="question-mark">?</span> ;   <span class="comment">//  If error, return Err to caller</span>
-    }       <span class="comment">//  End of unsafe code</span>
-    <span class="prelude-val">Ok</span>(())  <span class="comment">//  Return Ok</span>
+        ) <span class="question-mark">?</span> ;  <span class="comment">//  If error, return Err to caller</span>
+    }          <span class="comment">//  End of unsafe code</span>
+    <span class="prelude-val">Ok</span>(())     <span class="comment">//  Return Ok</span>
 }</pre></div>
 <p><em>From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs</em></p>
 <p><em>Why is the code marked <code>unsafe</code>?</em></p>

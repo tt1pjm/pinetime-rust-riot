@@ -1389,9 +1389,9 @@ fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRes
         label::set_text(
             widgets.time_label, 
             &Strn::new( TIME_BUF.as_bytes() )  //  Verifies that the string is null-terminated
-        ) ? ;   //  If error, return Err to caller
-    }       //  End of unsafe code
-    Ok(())  //  Return Ok
+        ) ? ;  //  If error, return Err to caller
+    }          //  End of unsafe code
+    Ok(())     //  Return Ok
 }
 ```
 _From https://github.com/lupyuen/PineTime-apps/blob/master/rust/app/src/watch_face.rs_
