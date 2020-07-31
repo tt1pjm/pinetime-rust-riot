@@ -1,6 +1,8 @@
-[![Build Status](https://api.cirrus-ci.com/github/bosmoment/PineTime-apps.svg)](https://cirrus-ci.com/github/bosmoment/PineTime-apps)
-
 # Bosmoment-style Pinetime firmware applications
+
+Experimental version with Rust on RIOT. Read the article...
+
+["Porting PineTime Watch Face from C to Rust on RIOT OS with LittlevGL"](https://lupyuen.github.io/pinetime-rust-riot/articles/watch_face)
 
 Friendly firmware applications for the Pinetime!
 
