@@ -23,7 +23,7 @@ rust_build_profile=debug
 app_build=$PWD/apps/$build_app/bin/$build_app/PineTime.elf
 
 #  Location of the compiled Rust app and external libraries.  The Rust compiler generates a *.rlib archive for the Rust app and each external Rust library here.
-rust_build_dir=$PWD/target/$rust_build_target/$rust_build_profile/deps
+rust_build_dir=$PWD/target/$rust_build_target/$rust_build_profile
 
 #  Location of the Rust Application Library to be linked with RIOT OS
 rust_app_dir=$PWD/apps/$build_app/bin/$build_app
@@ -63,7 +63,7 @@ function build_riot() {
     local build_app=$1     # RIOT OS app to be built e.g. apps/pinetime
     set -x  #  Echo commands
     pushd apps/$build_app
-    make -s --jobs=10  # --trace
+    make -s -j  # --trace
     popd
     set +x  #  Stop echo
 }
@@ -84,7 +84,7 @@ if [ -e $app_build ]; then
 fi
 
 #  Delete the compiled Rust app to force the Rust build to relink the Rust app.  Sometimes there are multiple copies of the compiled app, this deletes all copies.
-rust_app_build=$rust_build_dir/libapp*.rlib
+rust_app_build=$rust_build_dir/libapp.a
 for f in $rust_app_build
 do
     if [ -e $f ]; then
@@ -117,8 +117,8 @@ if [ ! -d tmprustlib ]; then
 fi
 pushd tmprustlib >/dev/null
 
-#  Extract the object (*.o) files in the compiled Rust output (*.rlib).
-rust_build=$rust_build_dir/*.rlib
+#  Extract the object (*.o) files in the compiled Rust output.
+rust_build=$rust_build_dir/libapp.a
 for f in $rust_build
 do
     if [ -e $f ]; then
