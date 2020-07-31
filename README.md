@@ -4,7 +4,7 @@
 
 Experimental version with Rust on RIOT. Read the article...
 
-["Porting PineTime Watch Face from C to Rust on RIOT OS with LittlevGL"](https://lupyuen.github.io/pinetime-rust-riot/articles/watch_face)
+["Porting PineTime Watch Face from C to Rust On RIOT with LVGL"](https://lupyuen.github.io/pinetime-rust-riot/articles/watch_face)
 
 This firmware is built automatically in the GitHub Cloud with GitHub Actions. Here is the GitHub Actions Workflow...
 

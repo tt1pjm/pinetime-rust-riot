@@ -1,15 +1,15 @@
-# Porting PineTime Watch Face from C to Rust on RIOT OS with LittlevGL
+# Porting PineTime Watch Face from C to Rust On RIOT with LVGL
 
 ![RIOT on PineTime Smart Watch](https://lupyuen.github.io/images/pinetime-riot.jpg)
 
 _This article is presented in CINEMASCOPE... Rotate your phone to view the C and Rust source code side by side... Or better yet, read this article on a desktop computer_
 
-We'll learn step by step to convert this [Embedded C code](https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c) (based on LittlevGL) to [Embedded Rust](https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs) on RIOT OS...
+We'll learn step by step to convert this [Embedded C code](https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c) (based on LVGL) to [Embedded Rust](https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs) on RIOT OS...
 
 | __Original C Code__ | __Converted Rust Code__ |
 | :--- | :--- |
 | `lv_obj_t *screen_time_create(home_time_widget_t *ht) {` <br><br>&nbsp;&nbsp;`    //  Create a label for time (00:00)` <br>&nbsp;&nbsp;`    lv_obj_t *scr = lv_obj_create(NULL, NULL);` <br>&nbsp;&nbsp;`    lv_obj_t *label1 = lv_label_create(scr, NULL);` <br><br>&nbsp;&nbsp;`    lv_label_set_text(label1, "00:00");` <br>&nbsp;&nbsp;`    lv_obj_set_width(label1, 240);` <br>&nbsp;&nbsp;`    lv_obj_set_height(label1, 200);` <br>&nbsp;&nbsp;`    ht->lv_time = label1;` <br>&nbsp;&nbsp;`    ...` <br>&nbsp;&nbsp;`    return scr;` <br>`}` <br> | `fn create_widgets(widgets: &mut WatchFaceWidgets) -> ` <br>&nbsp;&nbsp;`    LvglResult<()> {` <br><br>&nbsp;&nbsp;`    //  Create a label for time (00:00)` <br>&nbsp;&nbsp;`    let scr = widgets.screen;` <br>&nbsp;&nbsp;`    let label1 = label::create(scr, ptr::null()) ? ;` <br><br>&nbsp;&nbsp;`    label::set_text(label1, strn!("00:00")) ? ;` <br>&nbsp;&nbsp;`    obj::set_width(label1, 240) ? ;` <br>&nbsp;&nbsp;`    obj::set_height(label1, 200) ? ;` <br>&nbsp;&nbsp;`    widgets.time_label = label1;` <br>&nbsp;&nbsp;`    ...` <br>&nbsp;&nbsp;`    Ok(())` <br>`}` <br> |
-| _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c_ | _From https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs_ |
+| _From [widgets/home_time/screen_time.c](https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c)_ | _From [rust/app/src/watch_face.rs](https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs)_ |
 
 We'll also learn how Rust handles memory safety when calling C functions...
 
@@ -18,11 +18,11 @@ We'll also learn how Rust handles memory safety when calling C functions...
 |
 `int set_time_label(home_time_widget_t *ht) {` <br><br>&nbsp;&nbsp;`    //  Create a string buffer on stack` <br>&nbsp;&nbsp;`    char time[6];` <br><br>&nbsp;&nbsp;`    //  Format the time` <br>&nbsp;&nbsp;`    int res = snprintf(time, ` <br>&nbsp;&nbsp;&nbsp;&nbsp;`        sizeof(time), ` <br>&nbsp;&nbsp;&nbsp;&nbsp;`        "%02u:%02u", ` <br>&nbsp;&nbsp;&nbsp;&nbsp;`        ht->time.hour,` <br>&nbsp;&nbsp;&nbsp;&nbsp;`        ht->time.minute);` <br><br>&nbsp;&nbsp;`if (res != sizeof(time) - 1) {` <br>&nbsp;&nbsp;&nbsp;&nbsp;`LOG_ERROR("overflow");` <br>&nbsp;&nbsp;&nbsp;&nbsp;`return -1;` <br>&nbsp;&nbsp;`}` <br><br>&nbsp;&nbsp;`//  Set the label` <br>&nbsp;&nbsp;`lv_label_set_text(ht->lv_time, time);` <br><br>&nbsp;&nbsp;`//  Return OK` <br>&nbsp;&nbsp;`return 0;` <br>`}` <br>|`fn set_time_label(` <br>&nbsp;&nbsp;`    widgets: &WatchFaceWidgets, ` <br>&nbsp;&nbsp;`    state: &WatchFaceState) -> ` <br>&nbsp;&nbsp;`    LvglResult<()> {` <br><br>&nbsp;&nbsp;`    //  Create a static string buffer` <br>&nbsp;&nbsp;`    static mut TIME_BUF: HString::<U6> =`<br>&nbsp;&nbsp;&nbsp;&nbsp;` HString(IString::new());` <br><br>&nbsp;&nbsp;`    unsafe {` <br>&nbsp;&nbsp;&nbsp;&nbsp;`        //  Format the time` <br>&nbsp;&nbsp;&nbsp;&nbsp;`        TIME_BUF.clear();` <br>&nbsp;&nbsp;&nbsp;&nbsp;`        write!(&mut TIME_BUF, ` <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`            "{:02}:{:02}\0",` <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`            state.time.hour,` <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`            state.time.minute)` <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`            .expect("overflow");` <br><br>&nbsp;&nbsp;&nbsp;&nbsp;`        //  Set the label` <br>&nbsp;&nbsp;&nbsp;&nbsp;`        label::set_text(widgets.time_label, ` <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`            &Strn::from_str(&TIME_BUF) ? ;` <br>&nbsp;&nbsp;`    }` <br><br>&nbsp;&nbsp;`    //  Return OK` <br>&nbsp;&nbsp;`    Ok(())` <br>`}` <br>
 |
-| _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c_ | _From https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs_ |
+| _From [widgets/home_time/screen_time.c](https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c)_ | _From [rust/app/src/watch_face.rs](https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs)_ |
 
 # Function Declaration
 
-Here's a C function that calls the [LittlevGL](https://littlevgl.com/) library to create a Label Widget.  The Label Widget displays the time of the day (like `23:59`).  This code was taken from the [bosmoment /
+Here's a C function that calls the [LVGL](https://lvgl.io/) library to create a Label Widget.  The Label Widget displays the time of the day (like `23:59`).  This code was taken from the [bosmoment /
 PineTime-apps](https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c) port of [RIOT OS](https://www.riot-os.org/) to the [PineTime Smart Watch](https://wiki.pine64.org/index.php/PineTime).
 
 ```c
@@ -40,7 +40,7 @@ lv_obj_t *screen_time_create(home_time_widget_t *ht) {
 ```
 _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c_
 
-Functions whose names start with `lv_` (like `lv_obj_create`) are defined in the LittlevGL library. `lv_obj_t` is a C Struct exposed by the LittlevGL library. `home_time_widget_t` is a custom C Struct defined by the RIOT OS application.
+Functions whose names start with `lv_` (like `lv_obj_create`) are defined in the LVGL library. `lv_obj_t` is a C Struct exposed by the LVGL library. `home_time_widget_t` is a custom C Struct defined by the RIOT OS application.
 
 Let's start by converting this function declaration from C to Rust...
 
@@ -88,7 +88,7 @@ Now let's convert this variable declaration from C to Rust...
 lv_obj_t *scr = lv_obj_create( ... ); 
 ```
 
-`scr` is a pointer to a C Struct `lv_obj_t`. `scr` is set to the value returned by the C function LittlevGL `lv_obj_create` (which creates a LittlevGL Screen).
+`scr` is a pointer to a C Struct `lv_obj_t`. `scr` is set to the value returned by the C function LVGL `lv_obj_create` (which creates a LVGL Screen).
 
 In Rust, variables are declared with the `let` keyword, followed by the variable name and type...
 
@@ -194,10 +194,10 @@ lv_obj_set_width(label1, 240);
 lv_obj_set_height(label1, 200);
 ```
 
-The `lv_...` functions called above come from the LittlevGL library. Here are the function declarations in C...
+The `lv_...` functions called above come from the LVGL library. Here are the function declarations in C...
 
 ```c
-//  In C: LittlevGL Function Declarations
+//  In C: LVGL Function Declarations
 lv_obj_t * lv_obj_create(lv_obj_t *parent, const lv_obj_t *copy);
 lv_obj_t * lv_label_create(lv_obj_t *par, const lv_obj_t *copy);
 void lv_label_set_text(lv_obj_t *label, const char *text);
@@ -209,7 +209,7 @@ _From https://github.com/littlevgl/lvgl/blob/master/src/lv_core/lv_obj.h, https:
 To call these C functions from Rust, we need to import them with `extern "C"` like this...
 
 ```rust
-//  In Rust: Import LittlevGL Functions
+//  In Rust: Import LVGL Functions
 extern "C" {
     fn lv_obj_create(parent: *mut lv_obj_t, copy: *const lv_obj_t) -> *mut lv_obj_t;
     fn lv_label_create(par: *mut lv_obj_t, copy: *const lv_obj_t) -> *mut lv_obj_t;
@@ -581,10 +581,10 @@ Later we'll see the fix for this: Safe Wrappers.
 
 # Import C Types and Functions into Rust with `bindgen`
 
-Earlier we used this Rust code to import C functions from the LittlevGL library into Rust...
+Earlier we used this Rust code to import C functions from the LVGL library into Rust...
 
 ```rust
-//  In Rust: Import LittlevGL Functions
+//  In Rust: Import LVGL Functions
 extern "C" {
     fn lv_obj_create(parent: *mut lv_obj_t, copy: *const lv_obj_t) -> *mut lv_obj_t;
     fn lv_label_create(par: *mut lv_obj_t, copy: *const lv_obj_t) -> *mut lv_obj_t;
@@ -602,7 +602,7 @@ cargo install bindgen
 bindgen lv_obj.h -o obj.rs
 ```
 
-`bindgen` takes a C Header File (like [`lv_obj.h`](https://github.com/littlevgl/lvgl/blob/master/src/lv_core/lv_obj.h) from LittlevGL) and generates the Rust code (like in `obj.rs` above) to import the C types and functions declared in the Header File.
+`bindgen` takes a C Header File (like [`lv_obj.h`](https://github.com/littlevgl/lvgl/blob/master/src/lv_core/lv_obj.h) from LVGL) and generates the Rust code (like in `obj.rs` above) to import the C types and functions declared in the Header File.
 
 Thus `bindgen` is a tool that generates __Rust Bindings__ for C types and functions...
 
@@ -638,7 +638,7 @@ After `--`, we add the same `gcc` options we would use for compiling the Embedde
 
 - Other `gcc` options like `-std=c99` and `-fno-common` so that `bindgen` understands how to parse our Header Files
 
-Take a peek at the complete list of `bindgen` options we used to create Rust Bindings for the LittlevGL library: [gen-bindings.sh](https://github.com/lupyuen/pinetime-rust-riot/blob/master/scripts/gen-bindings.sh)
+Take a peek at the complete list of `bindgen` options we used to create Rust Bindings for the LVGL library: [gen-bindings.sh](https://github.com/lupyuen/pinetime-rust-riot/blob/master/scripts/gen-bindings.sh)
 
 _How did we get that awfully long list of `bindgen` options?_
 
@@ -646,7 +646,7 @@ When we build the Embedded C code with `make --trace`, we'll see the options pas
 
 # Whitelist and Blacklist C Types and Functions in `bindgen`
 
-To build Watch Faces on PineTime Smart Watch, we need to call two groups of functions in LittlevGL...
+To build Watch Faces on PineTime Smart Watch, we need to call two groups of functions in LVGL...
 
 1. [Base Object Functions `lv_obj_*`](https://docs.littlevgl.com/en/html/object-types/obj.html): Set the width and height of Widgets (like Labels). Also to create the Screen object. Defined in [`lv_obj.h`](https://github.com/littlevgl/lvgl/blob/master/src/lv_core/lv_obj.h)
 
@@ -655,10 +655,10 @@ To build Watch Faces on PineTime Smart Watch, we need to call two groups of func
 To call both groups of functions from Rust, we need to run `bindgen` twice...
 
 ```bash
-# Generate Rust Bindings for LittlevGL Base Object Functions lv_obj_*
+# Generate Rust Bindings for LVGL Base Object Functions lv_obj_*
 bindgen lv_obj.h   -o obj.rs   -- -Ibaselibc/include/ ...
 
-# Generate Rust Bindings for LittlevGL Label Functions lv_label_*
+# Generate Rust Bindings for LVGL Label Functions lv_label_*
 bindgen lv_label.h -o label.rs -- -Ibaselibc/include/ ...
 ```
 
@@ -669,14 +669,14 @@ _There's a problem with duplicate definitions... Do you see the problem?_
 The Rust Compiler is not gonna like this. To solve this, we __Whitelist and Blacklist__ the items that we should include ([Whitelist](https://rust-lang.github.io/rust-bindgen/whitelisting.html)) and exclude ([Blacklist](https://rust-lang.github.io/rust-bindgen/blacklisting.html))...
 
 ```bash
-# Generate Rust Bindings for LittlevGL Base Object Functions lv_obj_*
+# Generate Rust Bindings for LVGL Base Object Functions lv_obj_*
 bindgen lv_obj.h   -o obj.rs \
     --whitelist-function '(?i)lv_.*' \
     --whitelist-type     '(?i)lv_.*' \
     --whitelist-var      '(?i)lv_.*' \
     -- -Ibaselibc/include/ ...
 
-# Generate Rust Bindings for LittlevGL Label Functions lv_label_*
+# Generate Rust Bindings for LVGL Label Functions lv_label_*
 bindgen lv_label.h -o label.rs \
     --whitelist-function '(?i)lv_label.*' \
     --whitelist-type     '(?i)lv_label.*' \
@@ -710,10 +710,10 @@ No more duplicate Rust Bindings!
 When using `bindgen` in real projects we'll need to add more [command-line options](https://rust-lang.github.io/rust-bindgen/command-line-usage.html). Here's how we actually used `bindgen` to create the Rust Bindings in our PineTime Watch Face project...
 
 ```bash
-# Generate Rust Bindings for LittlevGL Base Object Functions lv_obj_*
+# Generate Rust Bindings for LVGL Base Object Functions lv_obj_*
 bindgen --verbose --use-core --ctypes-prefix ::cty --with-derive-default --no-derive-copy --no-derive-debug --no-layout-tests --raw-line use --raw-line 'super::*;' --whitelist-function '(?i)lv_.*' --whitelist-type '(?i)lv_.*' --whitelist-var '(?i)lv_.*' -o rust/lvgl/src/core/obj.tmp apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_core/lv_obj.h -- -Ibaselibc/include/ ...
 
-# Generate Rust Bindings for LittlevGL Label Functions lv_label_*
+# Generate Rust Bindings for LVGL Label Functions lv_label_*
 bindgen --verbose --use-core --ctypes-prefix ::cty --with-derive-default --no-derive-copy --no-derive-debug --no-layout-tests --raw-line use --raw-line 'super::*;' --whitelist-function '(?i)lv_label.*' --whitelist-type '(?i)lv_label.*' --whitelist-var '(?i)lv_label.*' --blacklist-item _lv_obj_t --blacklist-item lv_style_t -o rust/lvgl/src/objx/label.tmp apps/pinetime/bin/pkg/pinetime/lvgl/src/lv_objx/lv_label.h -- -Ibaselibc/include/ ...
 ```
 
@@ -723,7 +723,7 @@ Here's the output log for the script: [gen-bindings.log](https://github.com/lupy
 
 # Safe Wrappers for Imported C Functions
 
-To display the current time in our PineTime Watch Face, we need to call `lv_label_set_text` imported from the LittlevGL library...
+To display the current time in our PineTime Watch Face, we need to call `lv_label_set_text` imported from the LVGL library...
 
 ```rust
 //  In Rust: Import function lv_label_set_text from C
@@ -797,7 +797,7 @@ Not necessary... The Safe Wrappers may be automatically generated! Let's learn h
 
 As we have seen, to create a PineTime Watch Face we need to...
 
-1. Run `bindgen` to import the LittlevGL function `lv_label_set_text` from C into Rust
+1. Run `bindgen` to import the LVGL function `lv_label_set_text` from C into Rust
 
 1. Create a Safe Wrapper function in Rust to call `lv_label_set_text` safely
 
@@ -871,7 +871,7 @@ Gets passed into our `safe_wrap` function for us to manipulate!
 
 1. `*const ::cty::c_char` (pointer to a C string, which may or may not be null-terminated) is replaced by the safer `&Strn` (reference to a null-terminated string object)
 
-That's how we automatically generate Safe Wrapper functions (described in the previous section)... For every imported LittlevGL function.
+That's how we automatically generate Safe Wrapper functions (described in the previous section)... For every imported LVGL function.
 
 `safe_wrap` is inserted into the Rust Bindings by the [gen-bindings.sh](https://github.com/lupyuen/pinetime-rust-riot/blob/master/scripts/gen-bindings.sh) script.
 
@@ -884,7 +884,7 @@ We'll find out in the next section: Rust Error Handling.
 Error Handling in C is kinda messy. Here's a problem that we see often in C...
 
 ```c
-//  In C: Declare lv_obj_create function that creates a LittlevGL object
+//  In C: Declare lv_obj_create function that creates a LVGL object
 lv_obj_t *lv_obj_create(lv_obj_t *parent, const lv_obj_t *copy);
 ...
 //  Create a screen object
@@ -901,13 +901,13 @@ In Rust, we use the [__`Result` Enum__](https://doc.rust-lang.org/core/result/in
 Here's a Safe Wrapper Function `create` that exposes a safer version of `lv_obj_create`. The Safe Wrapper Function uses the `Result` Enum to enforce checking of returned values...
 
 ```rust
-//  In Rust: Import from C the lv_obj_create function that creates a LittlevGL object
+//  In Rust: Import from C the lv_obj_create function that creates a LVGL object
 extern "C" {
     pub fn lv_obj_create(parent: *mut lv_obj_t, copy: *const lv_obj_t)
         -> *mut lv_obj_t;
 }
 
-//  Safe Wrapper function to create a LittlevGL object
+//  Safe Wrapper function to create a LVGL object
 pub fn create(parent: *mut lv_obj_t, copy: *const lv_obj_t) 
     -> LvglResult< *mut lv_obj_t > {  //  Returns a lv_obj_t pointer wrapped in a Result Enum
     unsafe {
@@ -930,7 +930,7 @@ What happens in the `create` Safe Wrapper Function?
    LvglResult< *mut lv_obj_t >
    ```
 
-   `LvglResult` is a `Result` Enum that we have created to [wrap safely all values returned by the LittlevGL C library](https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/lvgl/src/lib.rs#L29-L80).
+   `LvglResult` is a `Result` Enum that we have created to [wrap safely all values returned by the LVGL C library](https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/lvgl/src/lib.rs#L29-L80).
 
    `LvglResult< *mut lv_obj_t >` says that the returned `LvglResult` Enum will wrap a mutable pointer to `lv_obj_t`.
 
@@ -985,7 +985,7 @@ All calls to the `create` function must be checked for errors. Let's find out ho
 Let's learn how the Rust Compiler forces us to check for errors returned by C functions. We'll use this Safe Wrapper function that we have created in the last section...
 
 ```rust
-//  In Rust: Safe Wrapper function to create a LittlevGL object
+//  In Rust: Safe Wrapper function to create a LVGL object
 pub fn create(parent: *mut lv_obj_t, copy: *const lv_obj_t) 
     -> LvglResult< *mut lv_obj_t > {  //  Returns an lv_obj_t pointer wrapped in a Result Enum
     ...
@@ -1000,7 +1000,7 @@ The `create` function returns `LvglResult< *mut lv_obj_t >` which is a `Result` 
 Let's try calling `create` without checking the result...
 
 ```rust
-//  In Rust: Create a LittlevGL screen object
+//  In Rust: Create a LVGL screen object
 let screen = create(ptr::null_mut(), ptr::null());
 //  Get a reference to the coordinates of the screen object
 let coords = &(*screen).coords;
@@ -1014,7 +1014,7 @@ _The C Compiler would happily accept code like this... But not Rust!_
 ```rust
 //  In Rust: We specify `unsafe` to dereference the pointer in `screen`
 unsafe {
-    //  Create a LittlevGL screen object and unwrap it
+    //  Create a LVGL screen object and unwrap it
     let screen = create(ptr::null_mut(), ptr::null())
         .expect("no screen");  //  If error, show "no screen" and stop
     //  Get a reference to the coordinates of the screen object
@@ -1028,11 +1028,11 @@ If `create` returns an error, the program stops with the error "`no screen`"
 There's a simpler way to handle errors in Rust... With the Try Operator "`?`"
 
 ```rust
-//  In Rust: Create a LittlevGL screen object and check for error
+//  In Rust: Create a LVGL screen object and check for error
 fn create_screen() -> LvglResult< () > {  //  Returns Ok (with nothing inside) or Err
     //  We specify `unsafe` to dereference the pointer in `screen`
     unsafe {
-        //  Create a LittlevGL screen object and unwrap it
+        //  Create a LVGL screen object and unwrap it
         let screen = create(ptr::null_mut(), ptr::null()) ? ;  //  If error, stop and return the Err
         //  Get a reference to the coordinates of the screen object
         let coords = &(*screen).coords;
@@ -1045,7 +1045,7 @@ fn create_screen() -> LvglResult< () > {  //  Returns Ok (with nothing inside) o
 Note that `.expect` has been replaced by "`?`"...
 
 ```rust
-//  Create a LittlevGL screen object and unwrap it
+//  Create a LVGL screen object and unwrap it
 let screen = create(ptr::null_mut(), ptr::null()) ? ;  //  If error, stop and return the Err
 ```
 
@@ -1056,7 +1056,7 @@ But if `create` returns `Err`, the result is returned to the caller of `create_s
 That's why "`?`" works only inside a function that returns a `Result` Enum...
 
 ```rust
-//  Create a LittlevGL screen object and check for error
+//  Create a LVGL screen object and check for error
 fn create_screen() -> LvglResult< () > {  //  Returns Ok (with nothing inside) or Err
 ```
 
@@ -1094,7 +1094,7 @@ We'll learn in a while why this was done: To make the code easier to maintain.
 Let's look at the C code for displaying the current time on PineTime Smart Watch. It calls [`snprintf`](http://www.cplusplus.com/reference/cstdio/snprintf/) to format the current time into a string buffer on the stack. Then it calls `lv_label_set_text` to set the text on the LittlebGL Label...
 
 ```c
-/// In C: Populate the LittlevGL Time Label with the current time
+/// In C: Populate the LVGL Time Label with the current time
 static int set_time_label(home_time_widget_t *ht) {
     //  Create a string buffer on the stack with max size 6 to format the time
     char time[6];
@@ -1110,7 +1110,7 @@ static int set_time_label(home_time_widget_t *ht) {
         LOG_ERROR("[home_time]: error formatting time string %*s\n", res, time);
         return -1;  //  Return error to caller
     }
-    //  Display the formatted time on the LittlevGL label
+    //  Display the formatted time on the LVGL label
     lv_label_set_text(
         ht->lv_time, 
         time
@@ -1123,7 +1123,7 @@ _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/s
 Here's the equivalent code in Rust...
 
 ```rust
-/// In Rust: Populate the LittlevGL Time Label with the current time
+/// In Rust: Populate the LVGL Time Label with the current time
 fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {  //  If error, return Err with error code inside
     //  Create a heapless string buffer on the stack with max size 6 to format the time
     type TimeBufSize = heapless::consts::U6;  //  Size of the string buffer
@@ -1136,7 +1136,7 @@ fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRes
         state.time.hour,    //  With this hour value...
         state.time.minute   //  And this minute value
     ).expect("time fail");  //  Fail if the buffer is too small
-    //  Display the formatted time on the LittlevGL label
+    //  Display the formatted time on the LVGL label
     label::set_text(
         widgets.time_label, 
         &Strn::new( time_buf.as_bytes() )  //  Verifies that the string is null-terminated
@@ -1190,7 +1190,7 @@ write!(                 //  Macro writes a formatted string...
 The Rust function `set_time_label` above looks OK. But there's a problem with this line of code...
 
 ```rust
-//  Display the formatted time on the LittlevGL label
+//  Display the formatted time on the LVGL label
 label::set_text(
     widgets.time_label, 
     &Strn::new( time_buf.as_bytes() )  //  Verifies that the string is null-terminated
@@ -1203,7 +1203,7 @@ The problem becomes obvious when we learn next about the Lifetime of Rust variab
 
 # Lifetime of Rust Variables
 
-In the last section we attempted to display the current time on PineTime Smart Watch inside a LittlevGL Widget (which we have imported from C).  We allocated a Heapless String on the stack...
+In the last section we attempted to display the current time on PineTime Smart Watch inside a LVGL Widget (which we have imported from C).  We allocated a Heapless String on the stack...
 
 ```rust
 //  In Rust: Create a heapless string buffer on the stack with max size 6 to format the time
@@ -1227,14 +1227,14 @@ write!(                 //  Macro writes a formatted string...
 And we passed the formatted time in the Heapless String to `set_text` to set the label text...
 
 ```rust
-//  In Rust: Display the formatted time on the LittlevGL label
+//  In Rust: Display the formatted time on the LVGL label
 label::set_text(
     widgets.time_label, 
     &Strn::new( time_buf.as_bytes() )  //  Verifies that the string is null-terminated
 ) ? ;   //  If error, return Err to caller
 ```
 
-`set_text` is a Safe Wrapper for the LittlevGL function `lv_label_set_text` that we have imported from C into Rust.
+`set_text` is a Safe Wrapper for the LVGL function `lv_label_set_text` that we have imported from C into Rust.
 
 When we compile this code, the Rust Compiler draws a neat line diagram to point out a cryptic error...
 
@@ -1261,17 +1261,17 @@ Let's look at the declaration of the C function `lv_label_set_text` (from which 
 void lv_label_set_text(lv_obj_t *label, const char *text);
 ```
 
-`lv_label_set_text` (same for `set_text`) sets the text on a LittlevGL `label` to a string `text` that's passed to the function.
+`lv_label_set_text` (same for `set_text`) sets the text on a LVGL `label` to a string `text` that's passed to the function.
 
 _Question: What happens to the string in `text` AFTER the function `lv_label_set_text` returns?_
 
 _What if `lv_label_set_text` has lazily copied the string pointer (instead of the string contents)?_
 
-_Will some other LittlevGL function read the string pointer later?_
+_Will some other LVGL function read the string pointer later?_
 
 Well this will be a problem... If our string buffer was allocated on the stack!
 
-Stack variables will magically disappear when we return from the function. If a LittlevGL function attempts to read the string buffer previously allocated on the stack... Strange things will happen!
+Stack variables will magically disappear when we return from the function. If a LVGL function attempts to read the string buffer previously allocated on the stack... Strange things will happen!
 
 But that's exactly what we did: Allocate the string buffer on the stack...
 
@@ -1296,7 +1296,7 @@ So the Rust Compiler helpfully warns us that somebody could be using later the s
 
 The Rust Compiler is really that clever! These are typical bugs that we tend to miss in C... Passing values on the stack when we're not supposed to.  Which won't happen in Rust since the Lifetimes of variables will have to be stated clearly.
 
-_FYI: The Lifetime of `lv_label_set_text` is stated verbally in the LittlevGL docs... `lv_label_set_text` will copy the contents of the string buffer, instead of copying the string pointer. Therefore the string buffer passed to `lv_label_set_text` is expected to have a short Lifetime._
+_FYI: The Lifetime of `lv_label_set_text` is stated verbally in the LVGL docs... `lv_label_set_text` will copy the contents of the string buffer, instead of copying the string pointer. Therefore the string buffer passed to `lv_label_set_text` is expected to have a short Lifetime._
 
 There are two solutions to our Lifetime problem...
 
@@ -1311,7 +1311,7 @@ We'll learn about Static Variables next...
 Creating Static Variables in C is easy...
 
 ```c
-/// In C: Populate the LittlevGL Time Label with the current time
+/// In C: Populate the LVGL Time Label with the current time
 static int set_time_label(home_time_widget_t *ht) {
     //  Create a string buffer in static memory with max size 6 to format the time
     static char time[6];
@@ -1327,7 +1327,7 @@ Static Memory (also known as BSS) is implicitly initialised with null bytes.  So
 Let's do the same in Rust... Watch how Rust cares about our code safety.  Here's our original Rust code that allocates the string buffer on the stack...
 
 ```rust
-/// In Rust (Stack Version): Populate the LittlevGL Time Label with the current time
+/// In Rust (Stack Version): Populate the LVGL Time Label with the current time
 fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {  //  If error, return Err with error code inside
     //  Create a heapless string buffer on the stack with max size 6 to format the time
     type TimeBufSize = heapless::consts::U6;  //  Size of the string buffer
@@ -1338,7 +1338,7 @@ fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRes
 And now we allocate the string buffer in Static Memory...
 
 ```rust
-/// In Rust (Static Version): Populate the LittlevGL Time Label with the current time
+/// In Rust (Static Version): Populate the LVGL Time Label with the current time
 fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {  //  If error, return Err with error code inside
     //  Create a heapless string buffer in static memory with max size 6 to format the time
     type TimeBufSize = heapless::consts::U6;  //  Size of the string buffer
@@ -1371,7 +1371,7 @@ That's the proper way to initialise a Heapless String Static Variable, [accordin
 Here's the entire function that creates a string buffer in Static Memory and uses the buffer...
 
 ```rust
-/// In Rust (Static Version): Populate the LittlevGL Time Label with the current time
+/// In Rust (Static Version): Populate the LVGL Time Label with the current time
 fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {  //  If error, return Err with error code inside
     //  Create a heapless string buffer in static memory with max size 6 to format the time
     type TimeBufSize = heapless::consts::U6;  //  Size of the string buffer
@@ -1387,7 +1387,7 @@ fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRes
             state.time.hour,    //  With this hour value...
             state.time.minute   //  And this minute value
         ).expect("time fail");  //  Fail if the buffer is too small
-        //  Display the formatted time on the LittlevGL label
+        //  Display the formatted time on the LVGL label
         label::set_text(
             widgets.time_label, 
             &Strn::new( TIME_BUF.as_bytes() )  //  Verifies that the string is null-terminated
