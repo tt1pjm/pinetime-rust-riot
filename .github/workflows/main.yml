@@ -75,22 +75,22 @@ jobs:
     #########################################################################################
     # Build and Upload Rust+RIOT Application Firmware
 
-    # - name: Build Application Firmware
-    #   run:  |
-    #     export PATH=$PATH:${{ runner.temp }}/arm-none-eabi/bin
-    #     ./scripts/build-app.sh
+    - name: Build Application Firmware
+      run:  |
+        export PATH=$PATH:${{ runner.temp }}/arm-none-eabi/bin
+        ./scripts/build-app.sh
 
-    # - name: Upload Application Firmware
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: PineTime.elf
-    #     path: apps/pinetime/bin/pinetime/PineTime.elf
+    - name: Upload Application Firmware
+      uses: actions/upload-artifact@v2
+      with:
+        name: PineTime.elf
+        path: apps/pinetime/bin/pinetime/PineTime.elf
 
-    # - name: Upload Application Firmware Outputs
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: PineTime.zip
-    #     path: apps/pinetime/bin/pinetime/PineTime.*
+    - name: Upload Application Firmware Outputs
+      uses: actions/upload-artifact@v2
+      with:
+        name: PineTime.zip
+        path: apps/pinetime/bin/pinetime/PineTime.*
 
     #########################################################################################
     # Finish
