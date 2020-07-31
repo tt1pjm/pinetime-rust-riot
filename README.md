@@ -1,5 +1,7 @@
 # Bosmoment-style Pinetime firmware applications
 
+![RIOT on PineTime Smart Watch](https://lupyuen.github.io/images/pinetime-riot.jpg)
+
 Experimental version with Rust on RIOT. Read the article...
 
 ["Porting PineTime Watch Face from C to Rust on RIOT OS with LittlevGL"](https://lupyuen.github.io/pinetime-rust-riot/articles/watch_face)

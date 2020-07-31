@@ -1,4 +1,6 @@
-# watch_face.rs: Porting PineTime Watch Face from C to Rust on RIOT OS with LittlevGL
+# Porting PineTime Watch Face from C to Rust on RIOT OS with LittlevGL
+
+![RIOT on PineTime Smart Watch](https://lupyuen.github.io/images/pinetime-riot.jpg)
 
 _This article is presented in CINEMASCOPE... Rotate your phone to view the C and Rust source code side by side... Or better yet, read this article on a desktop computer_
 
