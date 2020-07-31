@@ -80,25 +80,20 @@ jobs:
         export PATH=$PATH:${{ runner.temp }}/arm-none-eabi/bin
         ./scripts/build-app.sh
 
-#    - name: Upload Application Firmware
-#      uses: actions/upload-artifact@v2
-#      with:
-#        name: my_sensor_app.elf
-#        path: bin/targets/nrf52_my_sensor/app/apps/my_sensor_app/my_sensor_app.elf
+    - name: Upload Application Firmware
+      uses: actions/upload-artifact@v2
+      with:
+        name: PineTime.elf
+        path: apps/pinetime/bin/pinetime/PineTime.elf
 
-#    - name: Upload Application Firmware Outputs
-#      uses: actions/upload-artifact@v2
-#      with:
-#        name: my_sensor_app.zip
-#        path: bin/targets/nrf52_my_sensor/app/apps/my_sensor_app/my_sensor_app.*
+    - name: Upload Application Firmware Outputs
+      uses: actions/upload-artifact@v2
+      with:
+        name: PineTime.zip
+        path: apps/pinetime/bin/pinetime/PineTime.*
 
     #########################################################################################
     # Finish
 
-#    - name: Find output
-#      run:  |
-#        find bin/targets/nrf52_boot/app/boot/mynewt -name "mynewt.*" -ls
-#        find bin/targets/nrf52_my_sensor/app/apps/my_sensor_app -name "my_sensor_app.*" -ls
-      
 # Embedded Arm Toolchain will only be cached if the build succeeds.
 # So make sure that the first build always succeeds, e.g. comment out the "Build" step.

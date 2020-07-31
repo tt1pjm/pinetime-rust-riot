@@ -21,3 +21,4 @@ lvgl      = { path = "../lvgl" }    # Import path `../lvgl` as LittlevGL (LVGL) 
 name       = "app"  # Output will be named `libapp.rlib`
 test       = false
 bench      = false
+crate-type = ["staticlib"]
