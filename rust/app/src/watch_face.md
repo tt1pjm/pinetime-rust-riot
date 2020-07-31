@@ -1414,14 +1414,6 @@ The Rust Compiler doesn't know anything about RIOT OS. That's why we need to fla
 
 If there's a possibility that multiple threads will run the code, we will need to use the [Thread Synchronisation](https://riot-os.org/api/group__core__sync.html) functions provided by RIOT OS.
 
-# RIOT OS Bindings
-
-TODO
-
-# Build and link with RIOT OS
-
-TODO
-
 # VSCode Development
 
 TODO
@@ -1435,3 +1427,15 @@ Here's how I debug RIOT OS on PineTime with VSCode and ST-Link.
 Trying to figure out why I need to restart the debugger to get it to work (as shown in the video)
 
 https://youtu.be/U2okd7C8Q2A
+
+# Build and link with RIOT OS
+
+TODO
+
+# Moving Variables Around
+
+TODO
+
+# RIOT OS Bindings
+
+TODO
