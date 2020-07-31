@@ -105,7 +105,7 @@ PineTime-apps</a> port of <a href="https://www.riot-os.org/">RIOT OS</a> to the 
     return scr;
 }
 </code></pre>
-<p><em>From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c</em></p>
+<p><em>From <a href="https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c">widgets/home_time/screen_time.c</a></em></p>
 <p>Functions whose names start with <code>lv_</code> (like <code>lv_obj_create</code>) are defined in the LVGL library. <code>lv_obj_t</code> is a C Struct exposed by the LVGL library. <code>home_time_widget_t</code> is a custom C Struct defined by the RIOT OS application.</p>
 <p>Let's start by converting this function declaration from C to Rust...</p>
 <pre><code class="language-c">lv_obj_t *screen_time_create(home_time_widget_t *ht) { ...
@@ -130,7 +130,7 @@ PineTime-apps</a> port of <a href="https://www.riot-os.org/">RIOT OS</a> to the 
 <p>Here's the C function declaration converted to Rust...</p>
 <table><thead><tr><th align="left"><strong>Original C Code</strong></th><th align="left"><strong>Converted Rust Code</strong></th></tr></thead><tbody>
 <tr><td align="left"><code>lv_obj_t *screen_time_create(</code> <br>   <code>home_time_widget_t *ht)</code></td><td align="left"><code>fn screen_time_create(</code> <br>   <code>ht: *mut home_time_widget_t)</code> <br>   <code>-&gt; *mut lv_obj_t</code></td></tr>
-<tr><td align="left"><em>From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c</em></td><td align="left"><em>From https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs</em></td></tr>
+<tr><td align="left"><em>From <a href="https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c">widgets/home_time/screen_time.c</a></em></td><td align="left"><em>From <a href="https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs">rust/app/src/watch_face.rs</a></em></td></tr>
 </tbody></table>
 <h1 id="variable-declaration" class="section-header"><a href="#variable-declaration">2 Variable Declaration</a></h1>
 <p>Now let's convert this variable declaration from C to Rust...</p>
@@ -156,7 +156,7 @@ PineTime-apps</a> port of <a href="https://www.riot-os.org/">RIOT OS</a> to the 
 <tr><td align="left">  <code>//  Create a label for time (00:00)</code></td><td align="left">  <code>//  Create a label for time (00:00)</code></td></tr>
 <tr><td align="left">  <code>lv_obj_t *scr = lv_obj_create( ... );</code></td><td align="left">  <code>let scr = lv_obj_create( ... );</code></td></tr>
 <tr><td align="left">  <code>lv_obj_t *label1 = lv_label_create(scr, ... );</code></td><td align="left">  <code>let label1 = lv_label_create(scr, ... );</code></td></tr>
-<tr><td align="left"><em>From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c</em></td><td align="left"><em>From https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs</em></td></tr>
+<tr><td align="left"><em>From <a href="https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c">widgets/home_time/screen_time.c</a></em></td><td align="left"><em>From <a href="https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs">rust/app/src/watch_face.rs</a></em></td></tr>
 <tr><td align="left"><br></td><td align="left"></td></tr>
 </tbody></table>
 <p>The parameters are missing from the above code... Let's learn to convert <code>NULL</code> to Rust.</p>
@@ -194,7 +194,7 @@ lv_obj_t * lv_obj_create(lv_obj_t *parent, const lv_obj_t *copy);
 <tr><td align="left">      <code>scr,</code></td><td align="left">      <code>scr,</code></td></tr>
 <tr><td align="left">      <strong><code>NULL</code></strong></td><td align="left">      <strong><code>ptr::null()</code></strong></td></tr>
 <tr><td align="left">  <code>);</code></td><td align="left">  <code>);</code></td></tr>
-<tr><td align="left"><em>From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c</em></td><td align="left"><em>From https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs</em></td></tr>
+<tr><td align="left"><em>From <a href="https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c">widgets/home_time/screen_time.c</a></em></td><td align="left"><em>From <a href="https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs">rust/app/src/watch_face.rs</a></em></td></tr>
 <tr><td align="left"><br></td><td align="left"></td></tr>
 </tbody></table>
 <h1 id="import-c-functions-into-rust" class="section-header"><a href="#import-c-functions-into-rust">4 Import C Functions into Rust</a></h1>
@@ -252,7 +252,7 @@ void lv_obj_set_height(lv_obj_t *obj, int16_t h);
 <tr><td align="left">  <code>lv_obj_set_height(</code></td><td align="left">  <code>lv_obj_set_height(</code></td></tr>
 <tr><td align="left">      <code>label1, 200</code></td><td align="left">      <code>label1, 200</code></td></tr>
 <tr><td align="left">  <code>);</code></td><td align="left">  <code>);</code></td></tr>
-<tr><td align="left"><em>From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c</em></td><td align="left"><em>From https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs</em></td></tr>
+<tr><td align="left"><em>From <a href="https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c">widgets/home_time/screen_time.c</a></em></td><td align="left"><em>From <a href="https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs">rust/app/src/watch_face.rs</a></em></td></tr>
 <tr><td align="left"><br></td><td align="left"></td></tr>
 </tbody></table>
 <h1 id="numeric-types" class="section-header"><a href="#numeric-types">5 Numeric Types</a></h1>
@@ -387,7 +387,7 @@ ht-&gt;lv_time = label1;
 <tr><td align="left">  <code>ht-&gt;lv_time = label1;</code></td><td align="left">  <code>(*ht).lv_time = label1;</code></td></tr>
 <tr><td align="left">  <code>return scr;</code></td><td align="left">  <code>scr</code></td></tr>
 <tr><td align="left"><code>}</code></td><td align="left"><code>}</code></td></tr>
-<tr><td align="left"><em>From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c</em></td><td align="left"><em>From https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs</em></td></tr>
+<tr><td align="left"><em>From <a href="https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c">widgets/home_time/screen_time.c</a></em></td><td align="left"><em>From <a href="https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs">rust/app/src/watch_face.rs</a></em></td></tr>
 <tr><td align="left"><br></td><td align="left"></td></tr>
 </tbody></table>
 <p>The importing of C functions into Rust has been omitted from the code above. Now let's learn to import C Structs and Enums into Rust.</p>
@@ -408,7 +408,7 @@ ht-&gt;lv_time = label1;
 <tr><td align="left">  <code>bool charging;</code></td><td align="left">  <code>charging: bool,</code></td></tr>
 <tr><td align="left">  <code>bool powered;</code></td><td align="left">  <code>powered: bool,</code></td></tr>
 <tr><td align="left"><code>} home_time_widget_t;</code></td><td align="left"><code>}</code></td></tr>
-<tr><td align="left"><em>From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/include/home_time.h</em></td><td align="left"><em>From https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs</em></td></tr>
+<tr><td align="left"><em>From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/include/home_time.h</em></td><td align="left"><em>From <a href="https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs">rust/app/src/watch_face.rs</a></em></td></tr>
 <tr><td align="left"><br></td><td align="left"></td></tr>
 </tbody></table>
 <p>Note the Name/Type Flipping. Also semicolons &quot;<code>;</code>&quot; have been replaced by commas &quot;<code>,</code>&quot;.</p>
@@ -425,7 +425,7 @@ ht-&gt;lv_time = label1;
 <tr><td align="left">  <code>BLEMAN_BLE_STATE_DISCONNECTED,</code></td><td align="left">  <code>BLEMAN_BLE_STATE_DISCONNECTED = 2,</code></td></tr>
 <tr><td align="left">  <code>BLEMAN_BLE_STATE_CONNECTED,</code></td><td align="left">  <code>BLEMAN_BLE_STATE_CONNECTED = 3,</code></td></tr>
 <tr><td align="left"><code>} bleman_ble_state_t;</code></td><td align="left"><code>}</code></td></tr>
-<tr><td align="left"><em>From https://github.com/bosmoment/PineTime-apps/blob/master/modules/bleman/include/bleman.h</em></td><td align="left"><em>From https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs</em></td></tr>
+<tr><td align="left"><em>From https://github.com/bosmoment/PineTime-apps/blob/master/modules/bleman/include/bleman.h</em></td><td align="left"><em>From <a href="https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs">rust/app/src/watch_face.rs</a></em></td></tr>
 <tr><td align="left"><br></td><td align="left"></td></tr>
 </tbody></table>
 <p>Note that we specified in Rust the Enum values <code>0, 1, 2, 3</code> to avoid any possible ambiguity.</p>
@@ -440,7 +440,7 @@ ht-&gt;lv_time = label1;
 <div class="example-wrap"><pre class="rust rust-example-rendered">
 <span class="comment">//  In Rust: Compare an enum value</span>
 <span class="kw">if</span> <span class="ident">state</span>.<span class="ident">ble_state</span> <span class="op">==</span> <span class="ident">bleman_ble_state_t</span>::<span class="ident">BLEMAN_BLE_STATE_DISCONNECTED</span> { ...</pre></div>
-<p><em>From https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs</em></p>
+<p><em>From <a href="https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs">rust/app/src/watch_face.rs</a></em></p>
 <p>Note that Enum values are prefixed by the Enum type name, like <code>bleman_ble_state_t::...</code></p>
 <p><em>Importing of C functions and types looks tedious and error-prone... Is there a better way to import C functions and types into Rust?</em></p>
 <p>Yes! Later we'll look at an automated way to import C functions and types: <code>bindgen</code></p>
@@ -906,7 +906,7 @@ lv_area_t coords = screen-&gt;coords;
 <p>Now that we understand <code>unsafe</code> code, Safe Wrappers, <code>Result</code> Enums and &quot;<code>?</code>&quot;, this Rust code should make sense...</p>
 <table><thead><tr><th align="left"><strong>Original C Code</strong></th><th align="left"><strong>Converted Rust Code</strong></th></tr></thead><tbody>
 <tr><td align="left"><code>lv_obj_t *screen_time_create(home_time_widget_t *ht) {</code> <br><br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    lv_obj_t *scr = lv_obj_create(NULL, NULL);</code> <br>  <code>    lv_obj_t *label1 = lv_label_create(scr, NULL);</code> <br><br>  <code>    lv_label_set_text(label1, &quot;00:00&quot;);</code> <br>  <code>    lv_obj_set_width(label1, 240);</code> <br>  <code>    lv_obj_set_height(label1, 200);</code> <br>  <code>    ht-&gt;lv_time = label1;</code> <br>  <code>    ...</code> <br>  <code>    return scr;</code> <br><code>}</code> <br></td><td align="left"><code>fn create_widgets(widgets: &amp;mut WatchFaceWidgets) -&gt; </code> <br>  <code>    LvglResult&lt;()&gt; {</code> <br><br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    let scr = widgets.screen;</code> <br>  <code>    let label1 = label::create(scr, ptr::null()) ? ;</code> <br><br>  <code>    label::set_text(label1, strn!(&quot;00:00&quot;)) ? ;</code> <br>  <code>    obj::set_width(label1, 240) ? ;</code> <br>  <code>    obj::set_height(label1, 200) ? ;</code> <br>  <code>    widgets.time_label = label1;</code> <br>  <code>    ...</code> <br>  <code>    Ok(())</code> <br><code>}</code> <br></td></tr>
-<tr><td align="left"><em>From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c</em></td><td align="left"><em>From https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs</em></td></tr>
+<tr><td align="left"><em>From <a href="https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c">widgets/home_time/screen_time.c</a></em></td><td align="left"><em>From <a href="https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs">rust/app/src/watch_face.rs</a></em></td></tr>
 </tbody></table>
 <p><code>create</code>, <code>set_text</code>, <code>set_width</code> and <code>set_height</code> are Safe Wrapper functions, automatically generated by our <code>safe_wrap</code> macro.</p>
 <p>For clarity, we have segregated the Safe Wrappers by module, hence we see module names like <code>obj::</code> and <code>label::</code></p>
@@ -941,7 +941,7 @@ static int set_time_label(home_time_widget_t *ht) {
     return 0;  //  Return Ok
 }
 </code></pre>
-<p><em>From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c</em></p>
+<p><em>From <a href="https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c">widgets/home_time/screen_time.c</a></em></p>
 <p>Here's the equivalent code in Rust...</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered">
@@ -1161,7 +1161,7 @@ static int set_time_label(home_time_widget_t *ht) {
     }          <span class="comment">//  End of unsafe code</span>
     <span class="prelude-val">Ok</span>(())     <span class="comment">//  Return Ok</span>
 }</pre></div>
-<p><em>From https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs</em></p>
+<p><em>From <a href="https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs">rust/app/src/watch_face.rs</a></em></p>
 <p><em>Why is the code marked <code>unsafe</code>?</em></p>
 <p>Unlike C, Rust is fully aware of multithreading... <a href="https://doc.rust-lang.org/1.30.0/book/second-edition/ch16-01-threads.html">Using multiple threads to run code simultaneously</a>.</p>
 <p>When two threads read and write to the same Static Variable (like <code>TIME_BUF</code>), we will get inconsistent results (unless we do some locking).</p>

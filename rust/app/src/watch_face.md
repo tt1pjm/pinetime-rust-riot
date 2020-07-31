@@ -38,7 +38,7 @@ lv_obj_t *screen_time_create(home_time_widget_t *ht) {
     return scr;
 }
 ```
-_From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c_
+_From [widgets/home_time/screen_time.c](https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c)_
 
 Functions whose names start with `lv_` (like `lv_obj_create`) are defined in the LVGL library. `lv_obj_t` is a C Struct exposed by the LVGL library. `home_time_widget_t` is a custom C Struct defined by the RIOT OS application.
 
@@ -78,7 +78,7 @@ Here's the C function declaration converted to Rust...
 | __Original C Code__ | __Converted Rust Code__ |
 | :--- | :--- |
 | `lv_obj_t *screen_time_create(` <br> &nbsp;&nbsp;`home_time_widget_t *ht)` | `fn screen_time_create(` <br> &nbsp;&nbsp;`ht: *mut home_time_widget_t)` <br> &nbsp;&nbsp;`-> *mut lv_obj_t` |
-| _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c_ | _From https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs_ |
+| _From [widgets/home_time/screen_time.c](https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c)_ | _From [rust/app/src/watch_face.rs](https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs)_ |
 
 # Variable Declaration
 
@@ -122,7 +122,7 @@ Here's how it looks when we convert to Rust the two variable declarations from o
 | &nbsp;&nbsp;`//  Create a label for time (00:00)` | &nbsp;&nbsp;`//  Create a label for time (00:00)` |
 | &nbsp;&nbsp;`lv_obj_t *scr = lv_obj_create( ... );` | &nbsp;&nbsp;`let scr = lv_obj_create( ... );` |
 | &nbsp;&nbsp;`lv_obj_t *label1 = lv_label_create(scr, ... );` | &nbsp;&nbsp;`let label1 = lv_label_create(scr, ... );` |
-| _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c_ | _From https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs_ |
+| _From [widgets/home_time/screen_time.c](https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c)_ | _From [rust/app/src/watch_face.rs](https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs)_ |
 <br>
 
 The parameters are missing from the above code... Let's learn to convert `NULL` to Rust.
@@ -176,7 +176,7 @@ When we insert the `NULL` parameters into the converted Rust code, we get this..
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`scr,` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`scr,` |
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__`NULL`__ | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__`ptr::null()`__ |
 | &nbsp;&nbsp;`);` | &nbsp;&nbsp;`);` |
-| _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c_ | _From https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs_ |
+| _From [widgets/home_time/screen_time.c](https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c)_ | _From [rust/app/src/watch_face.rs](https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs)_ |
 <br>
 
 # Import C Functions into Rust
@@ -248,7 +248,7 @@ Once the C functions have been imported, we may call them in Rust like this...
 | &nbsp;&nbsp;`lv_obj_set_height(` | &nbsp;&nbsp;`lv_obj_set_height(` |
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`label1, 200` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`label1, 200` |
 | &nbsp;&nbsp;`);` | &nbsp;&nbsp;`);` |
-| _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c_ | _From https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs_ |
+| _From [widgets/home_time/screen_time.c](https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c)_ | _From [rust/app/src/watch_face.rs](https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs)_ |
 <br>
 
 # Numeric Types
@@ -432,7 +432,7 @@ Following the steps above, we'll get this line-by-line conversion from C to Rust
 | &nbsp;&nbsp;`ht->lv_time = label1;` | &nbsp;&nbsp;`(*ht).lv_time = label1;` |
 | &nbsp;&nbsp;`return scr;` | &nbsp;&nbsp;`scr` |
 | `}` | `}` |
-| _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c_ | _From https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs_ |
+| _From [widgets/home_time/screen_time.c](https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c)_ | _From [rust/app/src/watch_face.rs](https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs)_ |
 <br>
 
 The importing of C functions into Rust has been omitted from the code above. Now let's learn to import C Structs and Enums into Rust.
@@ -457,7 +457,7 @@ The importing of C functions into Rust has been omitted from the code above. Now
 |    &nbsp;&nbsp;`bool charging;` | &nbsp;&nbsp;`charging: bool,` |
 |    &nbsp;&nbsp;`bool powered;` | &nbsp;&nbsp;`powered: bool,` |
 |`} home_time_widget_t;` | `}` |
-| _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/include/home_time.h_ | _From https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs_ |
+| _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/include/home_time.h_ | _From [rust/app/src/watch_face.rs](https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs)_ |
 <br>
 
 Note the Name/Type Flipping. Also semicolons "`;`" have been replaced by commas "`,`".
@@ -482,7 +482,7 @@ The Struct above contains a C Enum `bleman_ble_state_t`. Here's how we import `b
 | &nbsp;&nbsp;`BLEMAN_BLE_STATE_DISCONNECTED,` | &nbsp;&nbsp;`BLEMAN_BLE_STATE_DISCONNECTED = 2,` |
 | &nbsp;&nbsp;`BLEMAN_BLE_STATE_CONNECTED,` | &nbsp;&nbsp;`BLEMAN_BLE_STATE_CONNECTED = 3,` |
 | `} bleman_ble_state_t;` | `}` |
-| _From https://github.com/bosmoment/PineTime-apps/blob/master/modules/bleman/include/bleman.h_ | _From https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs_ |
+| _From https://github.com/bosmoment/PineTime-apps/blob/master/modules/bleman/include/bleman.h_ | _From [rust/app/src/watch_face.rs](https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs)_ |
 <br>
 
 Note that we specified in Rust the Enum values `0, 1, 2, 3` to avoid any possible ambiguity.
@@ -505,7 +505,7 @@ _What's `#[derive(PartialEq)]`?_
 //  In Rust: Compare an enum value
 if state.ble_state == bleman_ble_state_t::BLEMAN_BLE_STATE_DISCONNECTED { ...
 ```
-_From https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs_
+_From [rust/app/src/watch_face.rs](https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs)_
 
 Note that Enum values are prefixed by the Enum type name, like `bleman_ble_state_t::...`
 
@@ -1075,7 +1075,7 @@ Now that we understand `unsafe` code, Safe Wrappers, `Result` Enums and "`?`", t
 | __Original C Code__ | __Converted Rust Code__ |
 | :--- | :--- |
 | `lv_obj_t *screen_time_create(home_time_widget_t *ht) {` <br><br>&nbsp;&nbsp;`    //  Create a label for time (00:00)` <br>&nbsp;&nbsp;`    lv_obj_t *scr = lv_obj_create(NULL, NULL);` <br>&nbsp;&nbsp;`    lv_obj_t *label1 = lv_label_create(scr, NULL);` <br><br>&nbsp;&nbsp;`    lv_label_set_text(label1, "00:00");` <br>&nbsp;&nbsp;`    lv_obj_set_width(label1, 240);` <br>&nbsp;&nbsp;`    lv_obj_set_height(label1, 200);` <br>&nbsp;&nbsp;`    ht->lv_time = label1;` <br>&nbsp;&nbsp;`    ...` <br>&nbsp;&nbsp;`    return scr;` <br>`}` <br> | `fn create_widgets(widgets: &mut WatchFaceWidgets) -> ` <br>&nbsp;&nbsp;`    LvglResult<()> {` <br><br>&nbsp;&nbsp;`    //  Create a label for time (00:00)` <br>&nbsp;&nbsp;`    let scr = widgets.screen;` <br>&nbsp;&nbsp;`    let label1 = label::create(scr, ptr::null()) ? ;` <br><br>&nbsp;&nbsp;`    label::set_text(label1, strn!("00:00")) ? ;` <br>&nbsp;&nbsp;`    obj::set_width(label1, 240) ? ;` <br>&nbsp;&nbsp;`    obj::set_height(label1, 200) ? ;` <br>&nbsp;&nbsp;`    widgets.time_label = label1;` <br>&nbsp;&nbsp;`    ...` <br>&nbsp;&nbsp;`    Ok(())` <br>`}` <br> |
-| _From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c_ | _From https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs_ |
+| _From [widgets/home_time/screen_time.c](https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c)_ | _From [rust/app/src/watch_face.rs](https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs)_ |
 
 `create`, `set_text`, `set_width` and `set_height` are Safe Wrapper functions, automatically generated by our `safe_wrap` macro.
 
@@ -1118,7 +1118,7 @@ static int set_time_label(home_time_widget_t *ht) {
     return 0;  //  Return Ok
 }
 ```
-_From https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c_
+_From [widgets/home_time/screen_time.c](https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c)_
 
 Here's the equivalent code in Rust...
 
@@ -1396,7 +1396,7 @@ fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRes
     Ok(())     //  Return Ok
 }
 ```
-_From https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs_
+_From [rust/app/src/watch_face.rs](https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs)_
 
 _Why is the code marked `unsafe`?_
 
