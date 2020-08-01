@@ -38,6 +38,11 @@ jobs:
     #########################################################################################
     # Download and Cache Dependencies
 
+    - name: Install imgtool dependencies
+      run:  |
+        pip3 install --user setuptools
+        pip3 install --user pycrypto ecdsa pyasn1
+
     # - name: Fetch cache for Rust Toolchain
     #   id:   cache-rust
     #   uses: actions/cache@v2
@@ -71,10 +76,6 @@ jobs:
         release: 8-2019-q3
         # Directory to unpack GCC to. Defaults to a temporary directory.
         directory: ${{ runner.temp }}/arm-none-eabi
-
-    - name: Install imgtool dependencies
-      run:  |
-        pip3 install --user setuptools pycrypto ecdsa pyasn1
 
     #########################################################################################
     # Build and Upload Standalone Rust+RIOT Application Firmware
