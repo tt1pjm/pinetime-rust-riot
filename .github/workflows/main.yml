@@ -103,7 +103,7 @@ jobs:
     - name: Build Application Firmware for MCUBoot
       run:  |
         export PATH=$PATH:${{ runner.temp }}/arm-none-eabi/bin
-        export IMAGE_VERSION = 1.1.1+1
+        export IMAGE_VERSION=1.1.1+1
         cd apps/pinetime
         make -j mcuboot --trace
 
