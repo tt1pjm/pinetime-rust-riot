@@ -71,25 +71,51 @@ jobs:
         release: 8-2019-q3
         # Directory to unpack GCC to. Defaults to a temporary directory.
         directory: ${{ runner.temp }}/arm-none-eabi
-        
-    #########################################################################################
-    # Build and Upload Rust+RIOT Application Firmware
 
-    - name: Build Application Firmware
+    - name: Install imgtool dependencies
+      run:  |
+        pip3 install --user pycrypto ecdsa pyasn1
+
+    #########################################################################################
+    # Build and Upload Standalone Rust+RIOT Application Firmware
+
+    - name: Build Standalone Application Firmware
       run:  |
         export PATH=$PATH:${{ runner.temp }}/arm-none-eabi/bin
         ./scripts/build-app.sh
 
-    - name: Upload Application Firmware
+    - name: Upload Standalone Application Firmware
       uses: actions/upload-artifact@v2
       with:
         name: PineTime.elf
         path: apps/pinetime/bin/pinetime/PineTime.elf
 
-    - name: Upload Application Firmware Outputs
+    - name: Upload Standalone Application Firmware Outputs
       uses: actions/upload-artifact@v2
       with:
         name: PineTime.zip
+        path: apps/pinetime/bin/pinetime/PineTime.*
+
+    #########################################################################################
+    # Build and Upload Rust+RIOT Application Firmware for MCUBoot
+
+    - name: Build Application Firmware for MCUBoot
+      run:  |
+        export PATH=$PATH:${{ runner.temp }}/arm-none-eabi/bin
+        export IMAGE_VERSION = 1.1.1+1
+        cd apps/pinetime
+        make -j mcuboot --trace
+
+    - name: Upload Application Firmware for MCUBoot
+      uses: actions/upload-artifact@v2
+      with:
+        name: PineTime-mcuboot.elf
+        path: apps/pinetime/bin/pinetime/PineTime.elf
+
+    - name: Upload Application Firmware Outputs for MCUBoot
+      uses: actions/upload-artifact@v2
+      with:
+        name: PineTime-mcuboot.zip
         path: apps/pinetime/bin/pinetime/PineTime.*
 
     #########################################################################################

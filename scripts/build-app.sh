@@ -197,3 +197,10 @@ cp apps/$build_app/bin/$build_app/*.map logs
 
 #  Flash the firmware
 #  scripts/nrf52/flash-app.sh
+
+#  For MCUBoot:
+#  export PATH="/usr/local/Cellar/python@3.8/3.8.5/bin:$PATH"
+#  pip3 install --user pycrypto ecdsa pyasn1
+#  pushd apps/pinetime
+#  make mcuboot --trace
+#  popd
