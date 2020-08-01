@@ -105,7 +105,7 @@ jobs:
         export PATH=$PATH:${{ runner.temp }}/arm-none-eabi/bin
         export IMAGE_VERSION=1.1.1+1
         cd apps/pinetime
-        make -j mcuboot --trace
+        make mcuboot
 
     - name: Upload Application Firmware for MCUBoot
       uses: actions/upload-artifact@v2
