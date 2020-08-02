@@ -4,11 +4,19 @@
 
 Experimental version with Rust on RIOT. Read the article...
 
-["Porting PineTime Watch Face from C to Rust On RIOT with LVGL"](https://lupyuen.github.io/pinetime-rust-riot/articles/watch_face)
+[_Porting PineTime Watch Face from C to Rust On RIOT with LVGL_](https://lupyuen.github.io/pinetime-rust-riot/articles/watch_face)
 
-This firmware is built automatically in the GitHub Cloud with GitHub Actions. Here is the GitHub Actions Workflow...
+The firmware is __built automatically__ in the GitHub Cloud. 
+
+Just fork this repo, update the source code and the built firmware will be available for download under __"Actions"__.
+
+The Automated Build is performed according to the following __GitHub Actions Workflow__...
 
 [`.github/workflows/main.yml`](.github/workflows/main.yml)
+
+The Worklow is similar to the one described in this article...
+
+[_Build PineTime Firmware in the Cloud with GitHub Actions_](https://lupyuen.github.io/pinetime-rust-mynewt/articles/cloud)
 
 Friendly firmware applications for the Pinetime!
 
