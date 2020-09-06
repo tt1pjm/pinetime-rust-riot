@@ -2,9 +2,11 @@
 
 ![RIOT on PineTime Smart Watch](https://lupyuen.github.io/images/pinetime-riot.jpg)
 
-Experimental version with Rust on RIOT. Read the article...
+Experimental version with Rust on RIOT. See the presentation slides and article...
 
-[_Porting PineTime Watch Face from C to Rust On RIOT with LVGL_](https://lupyuen.github.io/pinetime-rust-riot/articles/watch_face)
+1. [_Safer, Simpler Embedded Programs with Rust on RIOT_](https://docs.google.com/presentation/d/1IgCsWJ5TYpPaHXZlaETlM2rYQrBmOpN2WeFsNjmYO_k/edit?usp=sharing)
+
+1. [_Porting PineTime Watch Face from C to Rust On RIOT with LVGL_](https://lupyuen.github.io/pinetime-rust-riot/articles/watch_face)
 
 The firmware is __built automatically__ in the GitHub Cloud. 
 
