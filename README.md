@@ -8,6 +8,8 @@ Experimental version with Rust on RIOT. See the presentation slides and article.
 
 1. [_Porting PineTime Watch Face from C to Rust On RIOT with LVGL_](https://lupyuen.github.io/pinetime-rust-riot/articles/watch_face)
 
+1. [_WebAssembly Simulator for Rust on RIOT_](https://github.com/AppKaki/lvgl-wasm/blob/rust/README.md)
+
 The firmware is __built automatically__ in the GitHub Cloud. 
 
 Just fork this repo, update the source code and the built firmware will be available for download under __"Actions"__.
