@@ -1,6 +1,6 @@
 # Rust on RIOT for PineTime Smart Watch
 
-![RIOT on PineTime Smart Watch](https://lupyuen.github.io/images/pinetime-riot.jpg)
+![Rust on RIOT on PineTime Smart Watch](https://lupyuen.github.io/images/riot-on-rust.jpg)
 
 Rust on RIOT for [PineTime Smart Watch](https://wiki.pine64.org/index.php/PineTime). See the presentation and article...
 
@@ -27,6 +27,8 @@ The Worklow is similar to the one described in this article...
 [_Build PineTime Firmware in the Cloud with GitHub Actions_](https://lupyuen.github.io/pinetime-rust-mynewt/articles/cloud)
 
 RIOT Firmware based on [`github.com/bosmoment/PineTime-apps`](https://github.com/bosmoment/PineTime-apps)...
+
+![RIOT on PineTime Smart Watch](https://lupyuen.github.io/images/pinetime-riot.jpg)
 
 # Bosmoment-style Pinetime firmware applications
 
