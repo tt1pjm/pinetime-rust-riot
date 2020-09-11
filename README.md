@@ -1,10 +1,12 @@
-# Bosmoment-style Pinetime firmware applications
+# Rust on RIOT for PineTime Smart Watch
 
 ![RIOT on PineTime Smart Watch](https://lupyuen.github.io/images/pinetime-riot.jpg)
 
-Experimental version with Rust on RIOT. See the presentation slides and article...
+Rust on RIOT for [PineTime Smart Watch](https://wiki.pine64.org/index.php/PineTime). See the presentation and article...
 
 1. [_Safer, Simpler Embedded Programs with Rust on RIOT_](https://docs.google.com/presentation/d/1IgCsWJ5TYpPaHXZlaETlM2rYQrBmOpN2WeFsNjmYO_k/edit?usp=sharing)
+
+1. [_Video Presentation_](https://youtu.be/rTxeXnlH-mM)
 
 1. [_Porting PineTime Watch Face from C to Rust On RIOT with LVGL_](https://lupyuen.github.io/pinetime-rust-riot/articles/watch_face)
 
@@ -21,6 +23,10 @@ The Automated Build is performed according to the following __GitHub Actions Wor
 The Worklow is similar to the one described in this article...
 
 [_Build PineTime Firmware in the Cloud with GitHub Actions_](https://lupyuen.github.io/pinetime-rust-mynewt/articles/cloud)
+
+Based on [`github.com/bosmoment/PineTime-apps`](https://github.com/bosmoment/PineTime-apps)...
+
+# Bosmoment-style Pinetime firmware applications
 
 Friendly firmware applications for the Pinetime!
 
