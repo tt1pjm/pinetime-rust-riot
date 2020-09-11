@@ -12,9 +12,11 @@ Rust on RIOT for [PineTime Smart Watch](https://wiki.pine64.org/index.php/PineTi
 
 1. [_WebAssembly Simulator for Rust on RIOT_](https://github.com/AppKaki/lvgl-wasm/blob/rust/README.md)
 
+Download the binaries from [`Releases`](https://github.com/lupyuen/pinetime-rust-riot/releases)
+
 The firmware is __built automatically__ in the GitHub Cloud. 
 
-Just fork this repo, update the source code and the built firmware will be available for download under __"Actions"__.
+Just fork this repo, enable GitHub Actions, update the source code and the built firmware will be available for download under __"Actions"__.
 
 The Automated Build is performed according to the following __GitHub Actions Workflow__...
 
@@ -24,7 +26,7 @@ The Worklow is similar to the one described in this article...
 
 [_Build PineTime Firmware in the Cloud with GitHub Actions_](https://lupyuen.github.io/pinetime-rust-mynewt/articles/cloud)
 
-Based on [`github.com/bosmoment/PineTime-apps`](https://github.com/bosmoment/PineTime-apps)...
+RIOT Firmware based on [`github.com/bosmoment/PineTime-apps`](https://github.com/bosmoment/PineTime-apps)...
 
 # Bosmoment-style Pinetime firmware applications
 
@@ -38,13 +40,6 @@ Highlights:
 - Built on top of [RIOT], an open source embedded operating system
 - Apache [NimBLE] as an open-source bluetooth 5.0 stack.
 - [LittlevGL] for the user interface.
-
-### Pre-build Binaries
-
-Fresh binaries from the CI:
-
-- [PineTime.elf](https://api.cirrus-ci.com/v1/artifact/github/bosmoment/PineTime-apps/build/binaries/PineTime.elf)
-- [PineTime.bin](https://api.cirrus-ci.com/v1/artifact/github/bosmoment/PineTime-apps/build/binaries/PineTime.bin)
 
 ## Features
 
