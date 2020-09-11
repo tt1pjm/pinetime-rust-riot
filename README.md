@@ -1,6 +1,6 @@
 # Rust on RIOT for PineTime Smart Watch
 
-![Rust on RIOT on PineTime Smart Watch](https://lupyuen.github.io/images/rust-on-riot.jpg)
+![Rust on RIOT on PineTime Smart Watch](https://lupyuen.github.io/images/rust-on-riot-small.jpg)
 
 Rust on RIOT for [PineTime Smart Watch](https://wiki.pine64.org/index.php/PineTime). See the presentation and article...
 
