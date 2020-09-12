@@ -12,7 +12,17 @@ Rust on RIOT for [PineTime Smart Watch](https://wiki.pine64.org/index.php/PineTi
 
 1. [_WebAssembly Simulator for Rust on RIOT_](https://github.com/AppKaki/lvgl-wasm/blob/rust/README.md)
 
+## Rust Watch Face
+
+Rust source code for the watch face: [`rust/app/src/watch_face.rs`](rust/app/src/watch_face.rs)
+
+Online WebAssembly Simulator demo: [_WebAssembly Simulator for Rust on RIOT_](https://github.com/AppKaki/lvgl-wasm/blob/rust/README.md)
+
+## Download the Binaries
+
 Download the binaries from [`Releases`](https://github.com/lupyuen/pinetime-rust-riot/releases)
+
+## Build in the Cloud
 
 The firmware is __built automatically__ in the GitHub Cloud. 
 
