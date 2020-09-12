@@ -1,4 +1,4 @@
-//! Watch Face in Rust, LittlevGL and RIOT OS for PineTime Smart Watch. Ported from https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c
+//! Watch Face in Rust, RIOT and LVGL for PineTime Smart Watch. Ported from https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c
 use core::{
     fmt::Write,
     ptr,
@@ -12,7 +12,7 @@ use lvgl::{
 use lvgl_macros::strn;
 
 /// Create the widgets for the Watch Face. Called by create_watch_face() below.
-fn create_widgets(widgets: &mut WatchFaceWidgets) -> LvglResult<()> {
+pub fn create_widgets(widgets: &mut WatchFaceWidgets) -> LvglResult<()> {
     let scr = widgets.screen;
     assert!(!scr.is_null(), "null screen");
 
@@ -63,7 +63,7 @@ fn create_widgets(widgets: &mut WatchFaceWidgets) -> LvglResult<()> {
 }
 
 /// Update the widgets in the Watch Face with the current state. Called by update_watch_face() below.
-fn update_widgets(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
+pub fn update_widgets(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
     set_time_label(widgets, state) ? ;
     set_bt_label(widgets, state) ? ;
     set_power_label(widgets, state) ? ;
@@ -71,9 +71,12 @@ fn update_widgets(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRes
 }
 
 /// Populate the Bluetooth Label with the Bluetooth status. Called by screen_time_update_screen() above.
-fn set_bt_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
+pub fn set_bt_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
     if state.ble_state == BleState::BLEMAN_BLE_STATE_DISCONNECTED {
-        label::set_text(widgets.ble_label, strn!("")) ? ;
+        label::set_text(
+            widgets.ble_label, 
+            strn!("")
+        ) ? ;
     } else {
         //  Get the color of the Bluetooth icon
         let color = 
@@ -83,23 +86,27 @@ fn set_bt_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResul
                 BleState::BLEMAN_BLE_STATE_ADVERTISING  => "#5794f2",  //  GUI_COLOR_LBL_BASIC_BLUE
                 BleState::BLEMAN_BLE_STATE_CONNECTED    => "#37872d",  //  GUI_COLOR_LBL_DARK_GREEN
             };
-        //  Create a string buffer with max size 16 to format the Bluetooth status
-        static mut BLUETOOTH_STATUS: heapless::String::<heapless::consts::U16> = heapless::String(heapless::i::String::new());
+        //  Create a string buffer to format the Bluetooth status
+        static mut BLUETOOTH_STATUS: String = new_string();
         //  Format the Bluetooth status and set the label
-        unsafe {
+        unsafe {  //  Unsafe because BLUETOOTH_STATUS is a mutable static
             BLUETOOTH_STATUS.clear();
-            write!(&mut BLUETOOTH_STATUS, 
+            write!(
+                &mut BLUETOOTH_STATUS, 
                 "{} \u{F293}#\0",  //  LV_SYMBOL_BLUETOOTH. Must terminate Rust strings with null.
-                color)
-                .expect("bt fail");
-            label::set_text(widgets.ble_label, &Strn::new(BLUETOOTH_STATUS.as_bytes())) ? ;  //  TODO: Simplify    
+                color
+            ).expect("bt fail");
+            label::set_text(
+                widgets.ble_label, 
+                &to_strn(&BLUETOOTH_STATUS)
+            ) ? ;
         }
     }
     Ok(())
 }
 
 /// Populate the Power Label with the battery status. Called by screen_time_update_screen() above.
-fn set_power_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
+pub fn set_power_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
     let percentage = unsafe { hal_battery_get_percentage(state.millivolts) };
     let color =   //  Charging color
         if percentage <= 20  //  battery_low 
@@ -111,36 +118,48 @@ fn set_power_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRe
     let symbol =  //  Charging symbol
         if state.powered { "\u{F0E7}" }  //  LV_SYMBOL_CHARGE
         else { " " };
-    //  Create a string buffer with max size 50 and format the battery status
-    static mut BATTERY_STATUS: heapless::String::<heapless::consts::U50> = heapless::String(heapless::i::String::new());
+    //  Create a string buffer to format the battery status
+    static mut BATTERY_STATUS: String = new_string();
     //  Format the battery status and set the label
-    unsafe {
+    unsafe {  //  Unsafe because BATTERY_STATUS is a mutable static
         BATTERY_STATUS.clear();
-        write!(&mut BATTERY_STATUS, 
+        write!(
+            &mut BATTERY_STATUS, 
             "{} {}%{}#\nRUST ({}mV)\0",  //  Must terminate Rust strings with null
             color,
             percentage,
             symbol,
-            state.millivolts)
-            .expect("batt fail");
-        label::set_text(widgets.power_label, &Strn::new(BATTERY_STATUS.as_bytes())) ? ;  //  TODO: Simplify    
+            state.millivolts
+        ).expect("batt fail");
+        label::set_text(
+            widgets.power_label, 
+            &to_strn(&BATTERY_STATUS)
+        ) ? ; 
     }
-    obj::align(widgets.power_label, widgets.screen, obj::LV_ALIGN_IN_TOP_RIGHT, 0, 0) ? ;
+    obj::align(
+        widgets.power_label, widgets.screen, 
+        obj::LV_ALIGN_IN_TOP_RIGHT, 0, 0
+    ) ? ;
     Ok(())
 }
 
 /// Populate the Time and Date Labels with the time and date. Called by screen_time_update_screen() above.
-fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
-    //  Create a string buffer with max size 6 to format the time
-    static mut TIME_BUF: heapless::String::<heapless::consts::U6> = heapless::String(heapless::i::String::new());
+pub fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglResult<()> {
+    //  Create a string buffer to format the time
+    static mut TIME_BUF: String = new_string();
     //  Format the time and set the label
-    unsafe {
+    unsafe {  //  Unsafe because TIME_BUF is a mutable static
         TIME_BUF.clear();
-        write!(&mut TIME_BUF, "{:02}:{:02}\0",  //  Must terminate Rust strings with null
+        write!(
+            &mut TIME_BUF, 
+            "{:02}:{:02}\0",  //  Must terminate Rust strings with null
             state.time.hour,
-            state.time.minute)
-            .expect("time fail");
-        label::set_text(widgets.time_label, &Strn::new(TIME_BUF.as_bytes())) ? ;  //  TODO: Simplify
+            state.time.minute
+        ).expect("time fail");
+        label::set_text(
+            widgets.time_label, 
+            &to_strn(&TIME_BUF)
+        ) ? ;
     }
 
     //  Get the short month name
@@ -149,17 +168,22 @@ fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> LvglRes
     let month_str = unsafe { cstr_core::CStr::from_ptr(month_cstr).to_str() }       //  Convert C string to Rust string
         .expect("month fail");
 
-    //  Create a string buffer with max size 15 to format the date
-    static mut DATE_BUF: heapless::String::<heapless::consts::U15> = heapless::String(heapless::i::String::new());
+    //  Create a string buffer to format the date
+    static mut DATE_BUF: String = new_string();
     //  Format the date and set the label
-    unsafe {
+    unsafe {  //  Unsafe because DATE_BUF is a mutable static
         DATE_BUF.clear();
-        write!(&mut DATE_BUF, "{} {} {}\n\0",  //  Must terminate Rust strings with null
+        write!(
+            &mut DATE_BUF, 
+            "{} {} {}\n\0",  //  Must terminate Rust strings with null
             state.time.dayofmonth,
             month_str,
-            state.time.year)
-        .expect("date fail");
-        label::set_text(widgets.date_label, &Strn::new(DATE_BUF.as_bytes())) ? ;  //  TODO: Simplify
+            state.time.year
+        ).expect("date fail");
+        label::set_text(
+            widgets.date_label, 
+            &to_strn(&DATE_BUF)
+        ) ? ;
     }
     Ok(())
 }
@@ -182,25 +206,38 @@ extern "C" fn update_watch_face(widgets: *const WatchFaceWidgets, state: *const 
     0  //  Return OK
 }
 
+/// Create a new String
+const fn new_string() -> String {
+    heapless::String(heapless::i::String::new())
+}
+
+/// Convert a static String to null-terminated Strn
+fn to_strn(str: &'static String) -> Strn {
+    Strn::new(str.as_bytes())
+}
+
+/// Limit Strings to 64 chars (which may include multiple color codes like "#ffffff")
+type String = heapless::String::<heapless::consts::U64>;
+
 /// State for the Watch Face, shared between GUI and control. TODO: Sync with widgets/home_time/include/home_time.h
 #[repr(C)]
-struct WatchFaceState {
-    ble_state:  BleState,  //  bleman_ble_state_t
-    time:       controller_time_spec_t,
-    millivolts: u32,
-    charging:   bool,
-    powered:    bool,
+pub struct WatchFaceState {
+    pub ble_state:  BleState,  //  bleman_ble_state_t
+    pub time:       controller_time_spec_t,
+    pub millivolts: u32,
+    pub charging:   bool,
+    pub powered:    bool,
 }
 
 /// Widgets for the Watch Face, private to Rust. TODO: Sync with widgets/home_time/include/home_time.h
 #[repr(C)]
 #[allow(non_camel_case_types)]
-struct WatchFaceWidgets {
-    screen:      *mut obj::lv_obj_t,  //  TODO: Shared with home_time_widget_t
-    time_label:  *mut obj::lv_obj_t,  //  TODO: Should be private to Rust
-    date_label:  *mut obj::lv_obj_t,  //  TODO: Should be private to Rust
-    ble_label:   *mut obj::lv_obj_t,  //  TODO: Should be private to Rust
-    power_label: *mut obj::lv_obj_t,  //  TODO: Should be private to Rust
+pub struct WatchFaceWidgets {
+    pub screen:      *mut obj::lv_obj_t,  //  TODO: Shared with home_time_widget_t
+    pub time_label:  *mut obj::lv_obj_t,  //  TODO: Should be private to Rust
+    pub date_label:  *mut obj::lv_obj_t,  //  TODO: Should be private to Rust
+    pub ble_label:   *mut obj::lv_obj_t,  //  TODO: Should be private to Rust
+    pub power_label: *mut obj::lv_obj_t,  //  TODO: Should be private to Rust
 }
 
 //  TODO: Sync with modules/bleman/include/bleman.h
@@ -208,7 +245,7 @@ struct WatchFaceWidgets {
 #[derive(PartialEq)]
 #[allow(non_camel_case_types)]
 #[allow(dead_code)]
-enum BleState {  //  bleman_ble_state_t
+pub enum BleState {  //  bleman_ble_state_t
     BLEMAN_BLE_STATE_INACTIVE = 0,
     BLEMAN_BLE_STATE_ADVERTISING = 1,
     BLEMAN_BLE_STATE_DISCONNECTED = 2,
@@ -218,14 +255,14 @@ enum BleState {  //  bleman_ble_state_t
 //  TODO: Sync with modules/controller/include/controller/time.h
 #[repr(C)]
 #[allow(non_camel_case_types)]
-struct controller_time_spec_t {
-    year:       u16,
-    month:      u8,
-    dayofmonth: u8,
-    hour:       u8,
-    minute:     u8,
-    second:     u8,
-    fracs:      u8,
+pub struct controller_time_spec_t {
+    pub year:       u16,
+    pub month:      u8,
+    pub dayofmonth: u8,
+    pub hour:       u8,
+    pub minute:     u8,
+    pub second:     u8,
+    pub fracs:      u8,
 }
 
 /// Import C APIs
