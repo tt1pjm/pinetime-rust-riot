@@ -2,7 +2,7 @@
 
 ![Rust on RIOT on PineTime Smart Watch](https://lupyuen.github.io/images/rust-on-riot-small.jpg)
 
-Rust on RIOT for [PineTime Smart Watch](https://wiki.pine64.org/index.php/PineTime). See the presentation and article...
+Rust on RIOT for [PineTime Smart Watch](https://wiki.pine64.org/index.php/PineTime) with [LVGL] and [NimBLE]. See the presentation and article...
 
 1. [_Safer, Simpler Embedded Programs with Rust on RIOT_](https://docs.google.com/presentation/d/1IgCsWJ5TYpPaHXZlaETlM2rYQrBmOpN2WeFsNjmYO_k/edit?usp=sharing)
 
@@ -51,7 +51,7 @@ Highlights:
 
 - Built on top of [RIOT], an open source embedded operating system
 - Apache [NimBLE] as an open-source bluetooth 5.0 stack.
-- [LittlevGL] for the user interface.
+- [LVGL] for the user interface.
 
 ## Features
 
@@ -59,7 +59,7 @@ Highlights:
 - *Bluetooth pairing support*
 - *Time synchronisation*: Bluetooth GATT Current Time Service client
 - *Time keeping*: nRF52832 RTC for ticks per second time/date updates
-- *Graphical user interface*: via LittleVGL.
+- *Graphical user interface*: via LVGL.
 - *Touch screen driver*: a cst816s touch screen driver with gesture support is included in the RIOT fork
 
 And the default watch face screen includes:
@@ -177,6 +177,6 @@ the time.
 [PineTIme]: https://www.pine64.org/pinetime/
 [RIOT]: https://github.com/RIOT-os/RIOT/
 [NimBLE]: https://github.com/apache/mynewt-nimble
-[LittleVGL]: https://github.com/littlevgl/lvgl
+[LVGL]: https://docs.lvgl.io/latest/en/html/index.html
 [quick start]: https://doc.riot-os.org/index.html#the-quickest-start
 [GadgetBridge]: https://codeberg.org/bergzand/Gadgetbridge/src/branch/riotwatch/initial
