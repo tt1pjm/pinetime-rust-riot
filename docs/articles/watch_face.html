@@ -72,13 +72,14 @@
 <li><a href="#heapless-strings-in-rust">20 Heapless Strings in Rust</a><ul></ul></li>
 <li><a href="#lifetime-of-rust-variables">21 Lifetime of Rust Variables</a><ul></ul></li>
 <li><a href="#static-variables-in-rust">22 Static Variables in Rust</a><ul></ul></li>
-<li><a href="#vscode-development">23 VSCode Development</a><ul></ul></li>
-<li><a href="#vscode-debugging">24 VSCode Debugging</a><ul></ul></li>
-<li><a href="#build-and-link-with-riot-os">25 Build and link with RIOT OS</a><ul></ul></li>
-<li><a href="#moving-variables-around">26 Moving Variables Around</a><ul></ul></li>
-<li><a href="#riot-os-bindings">27 RIOT OS Bindings</a><ul></ul></li></ul></nav><p><img src="https://lupyuen.github.io/images/pinetime-riot.jpg" alt="RIOT on PineTime Smart Watch" /></p>
+<li><a href="#simplify-strings">23 Simplify Strings</a><ul></ul></li>
+<li><a href="#vscode-development-and-debugging">24 VSCode Development and Debugging</a><ul></ul></li>
+<li><a href="#riot-development-on-windows">25 RIOT Development on Windows</a><ul></ul></li>
+<li><a href="#lvgl-and-riot-bindings-for-rust">26 LVGL and RIOT Bindings for Rust</a><ul></ul></li>
+<li><a href="#whats-next">27 What's Next</a><ul></ul></li>
+<li><a href="#references">28 References</a><ul></ul></li></ul></nav><p><img src="https://lupyuen.github.io/images/rust-on-riot-small.jpg" alt="Rust on RIOT on PineTime Smart Watch" /></p>
 <p><em>This article is presented in CINEMASCOPE... Rotate your phone to view the C and Rust source code side by side... Or better yet, read this article on a desktop computer</em></p>
-<p>We'll learn step by step to convert this <a href="https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c">Embedded C code</a> (based on LVGL) to <a href="https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs">Embedded Rust</a> on RIOT OS...</p>
+<p>We'll learn step by step to convert this <a href="https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c">Embedded C code</a> (based on LVGL) to <a href="https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs">Embedded Rust</a> on RIOT...</p>
 <table><thead><tr><th align="left"><strong>Original C Code</strong></th><th align="left"><strong>Converted Rust Code</strong></th></tr></thead><tbody>
 <tr><td align="left"><code>lv_obj_t *screen_time_create(home_time_widget_t *ht) {</code> <br><br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    lv_obj_t *scr = lv_obj_create(NULL, NULL);</code> <br>  <code>    lv_obj_t *label1 = lv_label_create(scr, NULL);</code> <br><br>  <code>    lv_label_set_text(label1, &quot;00:00&quot;);</code> <br>  <code>    lv_obj_set_width(label1, 240);</code> <br>  <code>    lv_obj_set_height(label1, 200);</code> <br>  <code>    ht-&gt;lv_time = label1;</code> <br>  <code>    ...</code> <br>  <code>    return scr;</code> <br><code>}</code> <br></td><td align="left"><code>fn create_widgets(widgets: &amp;mut WatchFaceWidgets) -&gt; </code> <br>  <code>    LvglResult&lt;()&gt; {</code> <br><br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    let scr = widgets.screen;</code> <br>  <code>    let label1 = label::create(scr, ptr::null()) ? ;</code> <br><br>  <code>    label::set_text(label1, strn!(&quot;00:00&quot;)) ? ;</code> <br>  <code>    obj::set_width(label1, 240) ? ;</code> <br>  <code>    obj::set_height(label1, 200) ? ;</code> <br>  <code>    widgets.time_label = label1;</code> <br>  <code>    ...</code> <br>  <code>    Ok(())</code> <br><code>}</code> <br></td></tr>
 <tr><td align="left"><em>From <a href="https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c">widgets/home_time/screen_time.c</a></em></td><td align="left"><em>From <a href="https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs">rust/app/src/watch_face.rs</a></em></td></tr>
@@ -86,13 +87,13 @@
 <p>We'll also learn how Rust handles memory safety when calling C functions...</p>
 <table><thead><tr><th align="left"><strong>Original C Code</strong></th><th align="left"><strong>Converted Rust Code</strong></th></tr></thead><tbody>
 <tr><td align="left"></td><td align="left"></td></tr>
-<tr><td align="left"><code>int set_time_label(home_time_widget_t *ht) {</code> <br><br>  <code>    //  Create a string buffer on stack</code> <br>  <code>    char time[6];</code> <br><br>  <code>    //  Format the time</code> <br>  <code>   int res = snprintf(time,</code> <br>    <code>       sizeof(time),</code> <br>    <code>       &quot;%02u:%02u&quot;,</code> <br>    <code>        ht-&gt;time.hour,</code> <br>    <code>        ht-&gt;time.minute);</code> <br><br>  <code>if (res != sizeof(time) - 1) {</code> <br>    <code>LOG_ERROR(&quot;overflow&quot;);</code> <br>    <code>return -1;</code> <br>  <code>}</code> <br><br>  <code>//  Set the label</code> <br>  <code>lv_label_set_text(ht-&gt;lv_time, time);</code> <br><br>  <code>//  Return OK</code> <br>  <code>return 0;</code> <br><code>}</code> <br></td><td align="left"><code>fn set_time_label(</code> <br>  <code>   widgets: &amp;WatchFaceWidgets,</code> <br>  <code>   state: &amp;WatchFaceState) -&gt;</code> <br>  <code>    LvglResult&lt;()&gt; {</code> <br><br>  <code>    //  Create a static string buffer</code> <br>  <code>    static mut TIME_BUF: HString::&lt;U6&gt; =</code><br>    <code> HString(IString::new());</code> <br><br>  <code>    unsafe {</code> <br>    <code>        //  Format the time</code> <br>    <code>        TIME_BUF.clear();</code> <br>    <code>       write!(&amp;mut TIME_BUF,</code> <br>      <code>            &quot;{:02}:{:02}\0&quot;,</code> <br>      <code>            state.time.hour,</code> <br>      <code>            state.time.minute)</code> <br>      <code>            .expect(&quot;overflow&quot;);</code> <br><br>    <code>        //  Set the label</code> <br>    <code>       label::set_text(widgets.time_label,</code> <br>      <code>            &amp;Strn::from_str(&amp;TIME_BUF) ? ;</code> <br>  <code>    }</code> <br><br>  <code>    //  Return OK</code> <br>  <code>    Ok(())</code> <br><code>}</code> <br></td></tr>
+<tr><td align="left"><code>int set_time_label(home_time_widget_t *ht) {</code> <br><br>  <code>    //  Create a string buffer on stack</code> <br>  <code>    char time[6];</code> <br><br>  <code>    //  Format the time</code> <br>  <code>   int res = snprintf(time,</code> <br>    <code>       sizeof(time),</code> <br>    <code>       &quot;%02u:%02u&quot;,</code> <br>    <code>        ht-&gt;time.hour,</code> <br>    <code>        ht-&gt;time.minute);</code> <br><br>  <code>if (res != sizeof(time) - 1) {</code> <br>    <code>LOG_ERROR(&quot;overflow&quot;);</code> <br>    <code>return -1;</code> <br>  <code>}</code> <br><br>  <code>//  Set the label</code> <br>  <code>lv_label_set_text(ht-&gt;lv_time, time);</code> <br><br>  <code>//  Return OK</code> <br>  <code>return 0;</code> <br><code>}</code> <br></td><td align="left"><code>fn set_time_label(</code> <br>  <code>   widgets: &amp;WatchFaceWidgets,</code> <br>  <code>   state: &amp;WatchFaceState) -&gt;</code> <br>  <code>    LvglResult&lt;()&gt; {</code> <br><br>  <code>    //  Create a static string buffer</code> <br>  <code>    static mut TIME_BUF: String =</code><br>    <code> new_string();</code> <br><br>  <code>    unsafe {</code> <br>    <code>        //  Format the time</code> <br>    <code>        TIME_BUF.clear();</code> <br>    <code>       write!(&amp;mut TIME_BUF,</code> <br>      <code>            &quot;{:02}:{:02}\0&quot;,</code> <br>      <code>            state.time.hour,</code> <br>      <code>            state.time.minute)</code> <br>      <code>            .expect(&quot;overflow&quot;);</code> <br><br>    <code>        //  Set the label</code> <br>    <code>       label::set_text(widgets.time_label,</code> <br>      <code>            &amp;to_strn(&amp;TIME_BUF) ? ;</code> <br>  <code>    }</code> <br><br>  <code>    //  Return OK</code> <br>  <code>    Ok(())</code> <br><code>}</code> <br></td></tr>
 <tr><td align="left"></td><td align="left"></td></tr>
 <tr><td align="left"><em>From <a href="https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c">widgets/home_time/screen_time.c</a></em></td><td align="left"><em>From <a href="https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs">rust/app/src/watch_face.rs</a></em></td></tr>
 </tbody></table>
 <h1 id="function-declaration" class="section-header"><a href="#function-declaration">1 Function Declaration</a></h1>
 <p>Here's a C function that calls the <a href="https://lvgl.io/">LVGL</a> library to create a Label Widget.  The Label Widget displays the time of the day (like <code>23:59</code>).  This code was taken from the <a href="https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c">bosmoment /
-PineTime-apps</a> port of <a href="https://www.riot-os.org/">RIOT OS</a> to the <a href="https://wiki.pine64.org/index.php/PineTime">PineTime Smart Watch</a>.</p>
+PineTime-apps</a> port of <a href="https://www.riot-os.org/">RIOT</a> to the <a href="https://wiki.pine64.org/index.php/PineTime">PineTime Smart Watch</a>.</p>
 <pre><code class="language-c">lv_obj_t *screen_time_create(home_time_widget_t *ht) {
     //  Create a label for time (00:00)
     lv_obj_t *scr = lv_obj_create(NULL, NULL);
@@ -106,7 +107,7 @@ PineTime-apps</a> port of <a href="https://www.riot-os.org/">RIOT OS</a> to the 
 }
 </code></pre>
 <p><em>From <a href="https://github.com/bosmoment/PineTime-apps/blob/master/widgets/home_time/screen_time.c">widgets/home_time/screen_time.c</a></em></p>
-<p>Functions whose names start with <code>lv_</code> (like <code>lv_obj_create</code>) are defined in the LVGL library. <code>lv_obj_t</code> is a C Struct exposed by the LVGL library. <code>home_time_widget_t</code> is a custom C Struct defined by the RIOT OS application.</p>
+<p>Functions whose names start with <code>lv_</code> (like <code>lv_obj_create</code>) are defined in the LVGL library. <code>lv_obj_t</code> is a C Struct exposed by the LVGL library. <code>home_time_widget_t</code> is a custom C Struct defined by the RIOT application.</p>
 <p>Let's start by converting this function declaration from C to Rust...</p>
 <pre><code class="language-c">lv_obj_t *screen_time_create(home_time_widget_t *ht) { ...
 </code></pre>
@@ -533,7 +534,7 @@ bindgen lv_obj.h -o obj.rs
     -fno-common
 </code></pre>
 <p><em>From https://github.com/lupyuen/pinetime-rust-riot/blob/master/scripts/gen-bindings.sh</em></p>
-<p>After <code>--</code>, we add the same <code>gcc</code> options we would use for compiling the Embedded C code (for RIOT OS in this case)...</p>
+<p>After <code>--</code>, we add the same <code>gcc</code> options we would use for compiling the Embedded C code (for RIOT in this case)...</p>
 <ul>
 <li>
 <p><code>-I</code> for Include Folders</p>
@@ -915,6 +916,7 @@ lv_area_t coords = screen-&gt;coords;
 <tr><td align="left"><code>lv_obj_t *screen_time_create(home_time_widget_t *ht) {</code> <br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    lv_obj_t *scr = lv_obj_create(NULL, NULL);</code></td><td align="left"><code>fn create_widgets(widgets: &amp;mut WatchFaceWidgets) -&gt; </code> <br>  <code>    LvglResult&lt;()&gt; {</code> <br>  <code>    //  Create a label for time (00:00)</code> <br>  <code>    let scr = widgets.screen;</code></td></tr>
 </tbody></table>
 <p>We'll learn in a while why this was done: To make the code easier to maintain.</p>
+<p><img src="https://lupyuen.github.io/images/rust-on-riot-rust.png" alt="Rust on RIOT" /></p>
 <h1 id="heapless-strings-in-rust" class="section-header"><a href="#heapless-strings-in-rust">20 Heapless Strings in Rust</a></h1>
 <p>Let's look at the C code for displaying the current time on PineTime Smart Watch. It calls <a href="http://www.cplusplus.com/reference/cstdio/snprintf/"><code>snprintf</code></a> to format the current time into a string buffer on the stack. Then it calls <code>lv_label_set_text</code> to set the text on the LittlebGL Label...</p>
 <pre><code class="language-c">/// In C: Populate the LVGL Time Label with the current time
@@ -1002,7 +1004,8 @@ static int set_time_label(home_time_widget_t *ht) {
     <span class="kw-2">&amp;</span><span class="ident">Strn</span>::<span class="ident">new</span>( <span class="ident">time_buf</span>.<span class="ident">as_bytes</span>() )  <span class="comment">//  Verifies that the string is null-terminated</span>
 ) <span class="question-mark">?</span> ;   <span class="comment">//  If error, return Err to caller</span></pre></div>
 <p><em>Do you see the problem?</em></p>
-<p>The problem becomes obvious when we learn next about the Lifetime of Rust variables.</p>
+<p>The problem becomes obvious when we learn in a while about the Lifetime of Rust variables.</p>
+<p><img src="https://lupyuen.github.io/images/rust-on-riot-c.png" alt="Rust on RIOT: C vs Rust" /></p>
 <h1 id="lifetime-of-rust-variables" class="section-header"><a href="#lifetime-of-rust-variables">21 Lifetime of Rust Variables</a></h1>
 <p>In the last section we attempted to display the current time on PineTime Smart Watch inside a LVGL Widget (which we have imported from C).  We allocated a Heapless String on the stack...</p>
 
@@ -1091,6 +1094,7 @@ void lv_label_set_text(lv_obj_t *label, const char *text);
 </li>
 </ol>
 <p>We'll learn about Static Variables next...</p>
+<p><img src="https://lupyuen.github.io/images/rust-on-riot-safer.png" alt="Safer Rust on RIOT" /></p>
 <h1 id="static-variables-in-rust" class="section-header"><a href="#static-variables-in-rust">22 Static Variables in Rust</a></h1>
 <p>Creating Static Variables in C is easy...</p>
 <pre><code class="language-c">/// In C: Populate the LVGL Time Label with the current time
@@ -1170,22 +1174,93 @@ static int set_time_label(home_time_widget_t *ht) {
 <p>Dear Rust Compiler: Thank you for warning us that Mutable Statics like <code>TIME_BUF</code> can be mutated by multiple threads and cause undefined behavior. We promise to take responsibility for any <code>unsafe</code> consequences. We hope you're happy now.</p>
 </blockquote>
 <p><em>But is this code really <code>unsafe</code>? Will we have multiple threads running the same code concurrently?</em></p>
-<p>Actually the code above will only be executed by a single thread... RIOT OS assures this on our PineTime Smart Watch.</p>
-<p>The Rust Compiler doesn't know anything about RIOT OS. That's why we need to flag the code as <code>unsafe</code> and tell the compiler that it's really OK.</p>
-<p>If there's a possibility that multiple threads will run the code, we will need to use the <a href="https://riot-os.org/api/group__core__sync.html">Thread Synchronisation</a> functions provided by RIOT OS.</p>
-<h1 id="vscode-development" class="section-header"><a href="#vscode-development">23 VSCode Development</a></h1>
-<p>TODO</p>
-<h1 id="vscode-debugging" class="section-header"><a href="#vscode-debugging">24 VSCode Debugging</a></h1>
-<p>TODO</p>
-<p>Here's how I debug RIOT OS on PineTime with VSCode and ST-Link. </p>
-<p>Trying to figure out why I need to restart the debugger to get it to work (as shown in the video)</p>
-<p>https://youtu.be/U2okd7C8Q2A</p>
-<h1 id="build-and-link-with-riot-os" class="section-header"><a href="#build-and-link-with-riot-os">25 Build and link with RIOT OS</a></h1>
-<p>TODO</p>
-<h1 id="moving-variables-around" class="section-header"><a href="#moving-variables-around">26 Moving Variables Around</a></h1>
-<p>TODO</p>
-<h1 id="riot-os-bindings" class="section-header"><a href="#riot-os-bindings">27 RIOT OS Bindings</a></h1>
-<p>TODO</p>
+<p>Actually the code above will only be executed by a single thread... RIOT assures this on our PineTime Smart Watch.</p>
+<p>The Rust Compiler doesn't know anything about RIOT. That's why we need to flag the code as <code>unsafe</code> and tell the compiler that it's really OK.</p>
+<p>If there's a possibility that multiple threads will run the code, we will need to use the <a href="https://riot-os.org/api/group__core__sync.html">Thread Synchronisation</a> functions provided by RIOT.</p>
+<h1 id="simplify-strings" class="section-header"><a href="#simplify-strings">23 Simplify Strings</a></h1>
+<p>In the code that we have seen, declaring and creating string buffers look cumbersome...</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="comment">//  In Rust: Initialise the string buffer</span>
+<span class="kw">static</span> <span class="kw-2">mut</span> <span class="ident">TIME_BUF</span>: <span class="ident">heapless</span>::<span class="ident">String</span>::<span class="op">&lt;</span><span class="ident">TimeBufSize</span><span class="op">&gt;</span> <span class="op">=</span> 
+    <span class="ident">heapless</span>::<span class="ident">String</span>( <span class="ident">heapless</span>::<span class="ident">i</span>::<span class="ident">String</span>::<span class="ident">new</span>() );    </pre></div>
+<p>Let's simplify this! For a watch face we probably don't need to handle strings longer than 64 characters. Let's define our own <code>String</code> type limited to 64 characters...</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="doccomment">/// Limit Strings to 64 chars (which may include multiple color codes like &quot;#ffffff&quot;)</span>
+<span class="kw">type</span> <span class="ident">String</span> <span class="op">=</span> <span class="ident">heapless</span>::<span class="ident">String</span>::<span class="op">&lt;</span><span class="ident">heapless</span>::<span class="ident">consts</span>::<span class="ident">U64</span><span class="op">&gt;</span>;</pre></div>
+<p><em>From <a href="https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs">rust/app/src/watch_face.rs</a></em></p>
+<p>Note that the Rust Standard Library already defines a <code>String</code> type that uses Heap Memory. But it should be OK for us to redefine the <code>String</code> type because...</p>
+<ol>
+<li>
+<p>We're using the Rust Core Library (<code>no_std</code>) instead of the Rust Standard Library. Rust Core Library doesn't define the <code>String</code> type.</p>
+</li>
+<li>
+<p>Our <code>String</code> type works with the same functions in the standard <code>String</code> type, thanks to <code>heapless</code></p>
+</li>
+</ol>
+<p>Let's add some helper functions...</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="doccomment">/// Create a new String</span>
+<span class="kw">const</span> <span class="kw">fn</span> <span class="ident">new_string</span>() <span class="op">-&gt;</span> <span class="ident">String</span> {
+    <span class="ident">heapless</span>::<span class="ident">String</span>(<span class="ident">heapless</span>::<span class="ident">i</span>::<span class="ident">String</span>::<span class="ident">new</span>())
+}
+
+<span class="doccomment">/// Convert a static String to null-terminated Strn</span>
+<span class="kw">fn</span> <span class="ident">to_strn</span>(<span class="ident">str</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">String</span>) <span class="op">-&gt;</span> <span class="ident">Strn</span> {
+    <span class="ident">Strn</span>::<span class="ident">new</span>(<span class="ident">str</span>.<span class="ident">as_bytes</span>())
+}</pre></div>
+<p><em>From <a href="https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs">rust/app/src/watch_face.rs</a></em></p>
+<p>Now our Rust code becomes a lot simpler...</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="doccomment">/// Populate the Time and Date Labels with the time and date. Called by screen_time_update_screen() above.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_time_label</span>(<span class="ident">widgets</span>: <span class="kw-2">&amp;</span><span class="ident">WatchFaceWidgets</span>, <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="ident">WatchFaceState</span>) <span class="op">-&gt;</span> <span class="ident">LvglResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="comment">//  Create a string buffer to format the time</span>
+    <span class="kw">static</span> <span class="kw-2">mut</span> <span class="ident">TIME_BUF</span>: <span class="ident">String</span> <span class="op">=</span> <span class="ident">new_string</span>();
+    <span class="comment">//  Format the time and set the label</span>
+    <span class="kw">unsafe</span> {  <span class="comment">//  Unsafe because TIME_BUF is a mutable static</span>
+        <span class="ident">TIME_BUF</span>.<span class="ident">clear</span>();
+        <span class="macro">write</span><span class="macro">!</span>(
+            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">TIME_BUF</span>, 
+            <span class="string">&quot;{:02}:{:02}\0&quot;</span>,  <span class="comment">//  Must terminate Rust strings with null</span>
+            <span class="ident">state</span>.<span class="ident">time</span>.<span class="ident">hour</span>,
+            <span class="ident">state</span>.<span class="ident">time</span>.<span class="ident">minute</span>
+        ).<span class="ident">expect</span>(<span class="string">&quot;time fail&quot;</span>);
+        <span class="ident">label</span>::<span class="ident">set_text</span>(
+            <span class="ident">widgets</span>.<span class="ident">time_label</span>, 
+            <span class="kw-2">&amp;</span><span class="ident">to_strn</span>(<span class="kw-2">&amp;</span><span class="ident">TIME_BUF</span>)
+        ) <span class="question-mark">?</span> ;
+    }
+    <span class="prelude-val">Ok</span>(())
+}</pre></div>
+<p><em>From <a href="https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs">rust/app/src/watch_face.rs</a></em></p>
+<h1 id="vscode-development-and-debugging" class="section-header"><a href="#vscode-development-and-debugging">24 VSCode Development and Debugging</a></h1>
+<p>The repository <a href="https://github.com/lupyuen/pinetime-rust-riot"><code>pinetime-rust-riot</code></a> has been configured to work with VSCode. Just open the VSCode Workspace <a href="https://github.com/lupyuen/pinetime-rust-riot/blob/master/workspace.code-workspace"><code>workspace.code-workspace</code></a></p>
+<p>The VSCode Workspace contains tasks for building and flashing RIOT to PineTime on macOS and Linux. Refer to the tasks <code>Build Application</code> and <code>Flash Application</code> in <a href="https://github.com/lupyuen/pinetime-rust-riot/blob/master/.vscode/tasks.json"><code>.vscode/tasks.json</code></a></p>
+<p>The VSCode Debugger (with the <a href="https://marketplace.visualstudio.com/items?itemName=marus25.cortex-debug">Cortex Debug Extension</a>) has been configured to flash and debug RIOT on PineTime with <a href="https://www.aliexpress.com/wholesale?catId=0&amp;initiative_id=SB_20180924134644&amp;SearchText=st-link+v2&amp;switch_new_app=y">ST-Link v2</a>. See the debugger configuration in <a href="https://github.com/lupyuen/pinetime-rust-riot/blob/master/.vscode/launch.json"><code>.vscode/launch.json</code></a></p>
+<p><a href="https://youtu.be/U2okd7C8Q2A">Video Demo of VSCode Debugger with RIOT on PineTime</a></p>
+<h1 id="riot-development-on-windows" class="section-header"><a href="#riot-development-on-windows">25 RIOT Development on Windows</a></h1>
+<p>Building RIOT natively on Windows (without WSL and MinGW) can be difficult. We recommend building RIOT in the GitHub Cloud with GitHub Actions.  Then download the built binary <code>Pinetime.elf</code> for flashing and debugging with VSCode.</p>
+<p>Check out the GitHub Actions Workflow for Rust on RIOT: <a href="https://github.com/lupyuen/pinetime-rust-riot/blob/master/.github/workflows/main.yml"><code>.github/workflows/main.yml</code></a></p>
+<h1 id="lvgl-and-riot-bindings-for-rust" class="section-header"><a href="#lvgl-and-riot-bindings-for-rust">26 LVGL and RIOT Bindings for Rust</a></h1>
+<p>Today our Rust code uses a custom-generated Rust Safe Wrapper for the LVGL Libray. The wrapper supports a subset of the LVGL functions. In future we should migrate the LVGL wrapper to this wrapper that is properly maintained...</p>
+<p><a href="https://github.com/rafaelcaricio/lvgl-rs"><code>github.com/rafaelcaricio/lvgl-rs</code></a></p>
+<p>It's possible to call the RIOT API from Rust. We could use one of the following Rust Wrappers for RIOT...</p>
+<p><a href="https://gitlab.com/etonomy/riot-sys"><code>gitlab.com/etonomy/riot-sys</code></a></p>
+<p><a href="https://gitlab.com/etonomy/riot-wrappers"><code>gitlab.com/etonomy/riot-wrappers</code></a></p>
+<p><img src="https://lupyuen.github.io/images/rust-on-riot-design.png" alt="Rust on RIOT Design" /></p>
+<h1 id="whats-next" class="section-header"><a href="#whats-next">27 What's Next</a></h1>
+<p>In this article I have demonstrated that it's not that hard to convert C code to Rust... Even for coding watch faces on smart watches.</p>
+<p><em>Rust on RIOT has great potential to become the safer, modern replacement for Arduino!</em></p>
+<h1 id="references" class="section-header"><a href="#references">28 References</a></h1>
+<p>For more about Rust on RIOT, check out the presentation at RIOT Summit 2020...</p>
+<p><a href="https://docs.google.com/presentation/d/1IgCsWJ5TYpPaHXZlaETlM2rYQrBmOpN2WeFsNjmYO_k/edit?usp=sharing">Safer, Simpler Embedded Programs with Rust on RIOT</a></p>
+<p><a href="https://youtu.be/rTxeXnlH-mM">Video Presentation</a></p>
+<p>Check out my articles on PineTime and IoT...</p>
+<p><a href="https://lupyuen.github.io/">My Articles</a></p>
+<p><a href="https://lupyuen.github.io/rss.xml">My RSS Feed</a></p>
 
     
 </body>

@@ -1089,6 +1089,8 @@ Note that parameter type and return type have been changed...
 
 We'll learn in a while why this was done: To make the code easier to maintain.
 
+![Rust on RIOT](https://lupyuen.github.io/images/rust-on-riot-rust.png)
+
 # Heapless Strings in Rust
 
 Let's look at the C code for displaying the current time on PineTime Smart Watch. It calls [`snprintf`](http://www.cplusplus.com/reference/cstdio/snprintf/) to format the current time into a string buffer on the stack. Then it calls `lv_label_set_text` to set the text on the LittlebGL Label...
@@ -1201,6 +1203,8 @@ _Do you see the problem?_
 
 The problem becomes obvious when we learn in a while about the Lifetime of Rust variables.
 
+![Rust on RIOT: C vs Rust](https://lupyuen.github.io/images/rust-on-riot-c.png)
+
 # Lifetime of Rust Variables
 
 In the last section we attempted to display the current time on PineTime Smart Watch inside a LVGL Widget (which we have imported from C).  We allocated a Heapless String on the stack...
@@ -1305,6 +1309,8 @@ There are two solutions to our Lifetime problem...
 1. Or make our string buffer live forever! When we turn our Stack Variable into a Static Variable, the string buffer outlives `lv_label_set_text`. And makes the Rust Compiler very happy!
 
 We'll learn about Static Variables next...
+
+![Safer Rust on RIOT](https://lupyuen.github.io/images/rust-on-riot-safer.png)
 
 # Static Variables in Rust
 
@@ -1485,9 +1491,9 @@ _From [rust/app/src/watch_face.rs](https://github.com/lupyuen/pinetime-rust-riot
 
 The repository [`pinetime-rust-riot`](https://github.com/lupyuen/pinetime-rust-riot) has been configured to work with VSCode. Just open the VSCode Workspace [`workspace.code-workspace`](https://github.com/lupyuen/pinetime-rust-riot/blob/master/workspace.code-workspace)
 
-The VSCode Workspace contains tasks for building and flashing RIOT to PineTime on macOS and Linux. See [`.vscode/tasks.json`](https://github.com/lupyuen/pinetime-rust-riot/blob/master/.vscode/tasks.json)
+The VSCode Workspace contains tasks for building and flashing RIOT to PineTime on macOS and Linux. Refer to the tasks `Build Application` and `Flash Application` in [`.vscode/tasks.json`](https://github.com/lupyuen/pinetime-rust-riot/blob/master/.vscode/tasks.json)
 
-The VSCode Debugger has been configured to flash and debug RIOT on PineTime with ST-Link. See [`.vscode/launch.json`](https://github.com/lupyuen/pinetime-rust-riot/blob/master/.vscode/launch.json)
+The VSCode Debugger (with the [Cortex Debug Extension](https://marketplace.visualstudio.com/items?itemName=marus25.cortex-debug)) has been configured to flash and debug RIOT on PineTime with [ST-Link v2](https://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20180924134644&SearchText=st-link+v2&switch_new_app=y). See the debugger configuration in [`.vscode/launch.json`](https://github.com/lupyuen/pinetime-rust-riot/blob/master/.vscode/launch.json)
 
 [Video Demo of VSCode Debugger with RIOT on PineTime](https://youtu.be/U2okd7C8Q2A)
 
@@ -1497,11 +1503,27 @@ Building RIOT natively on Windows (without WSL and MinGW) can be difficult. We r
 
 Check out the GitHub Actions Workflow for Rust on RIOT: [`.github/workflows/main.yml`](https://github.com/lupyuen/pinetime-rust-riot/blob/master/.github/workflows/main.yml)
 
-# RIOT Bindings for Rust
+# LVGL and RIOT Bindings for Rust
 
-TODO
+Today our Rust code uses a custom-generated Rust Safe Wrapper for the LVGL Libray. The wrapper supports a subset of the LVGL functions. In future we should migrate the LVGL wrapper to this wrapper that is properly maintained...
+
+[`github.com/rafaelcaricio/lvgl-rs`](https://github.com/rafaelcaricio/lvgl-rs)
+
+It's possible to call the RIOT API from Rust. We could use one of the following Rust Wrappers for RIOT...
+
+[`gitlab.com/etonomy/riot-sys`](https://gitlab.com/etonomy/riot-sys)
+
+[`gitlab.com/etonomy/riot-wrappers`](https://gitlab.com/etonomy/riot-wrappers)
+
+![Rust on RIOT Design](https://lupyuen.github.io/images/rust-on-riot-design.png)
 
 # What's Next
+
+In this article I have demonstrated that it's not that hard to convert C code to Rust... Even for coding watch faces on smart watches.
+
+_Rust on RIOT has great potential to become the safer, modern replacement for Arduino!_
+
+# References
 
 For more about Rust on RIOT, check out the presentation at RIOT Summit 2020...
 
