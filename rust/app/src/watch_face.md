@@ -1525,7 +1525,7 @@ _Rust on RIOT has great potential to become the safer, modern replacement for Ar
 
 # References
 
-For more about Rust on RIOT, check out the presentation at RIOT Summit 2020...
+For more about Rust on RIOT, check out the presentation at [RIOT Summit 2020](https://summit.riot-os.org/2020/)...
 
 [Safer, Simpler Embedded Programs with Rust on RIOT](https://docs.google.com/presentation/d/1IgCsWJ5TYpPaHXZlaETlM2rYQrBmOpN2WeFsNjmYO_k/edit?usp=sharing)
 
