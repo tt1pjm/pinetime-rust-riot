@@ -1487,6 +1487,10 @@ pub fn set_time_label(widgets: &WatchFaceWidgets, state: &WatchFaceState) -> Lvg
 ```
 _From [rust/app/src/watch_face.rs](https://github.com/lupyuen/pinetime-rust-riot/blob/master/rust/app/src/watch_face.rs)_
 
+Compare the C and Rust code...
+
+![Rust on RIOT: C vs Rust](https://lupyuen.github.io/images/rust-on-riot-c.png)
+
 # VSCode Development and Debugging
 
 The repository [`pinetime-rust-riot`](https://github.com/lupyuen/pinetime-rust-riot) has been configured to work with VSCode. Just open the VSCode Workspace [`workspace.code-workspace`](https://github.com/lupyuen/pinetime-rust-riot/blob/master/workspace.code-workspace)
