@@ -54,6 +54,8 @@ The WebAssembly Simulator is built according to the following __GitHub Actions W
 
 [`.github/workflows/simulate.yml`](.github/workflows/simulate.yml)
 
+Note that the Simulator build will update files in the `docs` folder of your fork. Before committing any files, please pull updates from your fork first.
+
 [More about WebAssembly Simulator for Rust on RIOT](https://github.com/AppKaki/lvgl-wasm/blob/rust/README.md)
 
 The RIOT Firmware for PineTime Smart Watch is based on [`github.com/bosmoment/PineTime-apps`](https://github.com/bosmoment/PineTime-apps)...
