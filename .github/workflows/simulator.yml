@@ -147,12 +147,12 @@ jobs:
 
         # Change rust/app/Cargo.toml
         # From
-        #   crate-type = ["lib"]
-        # to
         #   crate-type = ["staticlib"]
+        # to
+        #   crate-type = ["lib"]
 
         cat rust/app/Cargo.toml \
-            | sed 's/crate-type = \["lib"\]/crate-type = \["staticlib"\]/' \
+            | sed 's/crate-type = \["staticlib"\]/crate-type = \["lib"\]/' \
             >rust/app/Cargo.toml.new
         cp rust/app/Cargo.toml.new rust/app/Cargo.toml
         rm rust/app/Cargo.toml.new
