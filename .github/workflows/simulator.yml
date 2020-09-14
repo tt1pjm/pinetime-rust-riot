@@ -103,15 +103,43 @@ jobs:
         
     - name: Copy Rust Watch Face into Rust+LVGL for WebAssembly
       run:  |
-        # Copy folder rust/app
+        # Add emscripten and wabt to the PATH
+        source /tmp/emsdk/emsdk_env.sh
+        export PATH=$PATH:/tmp/wabt/build
 
-        # Change rust\app\Cargo.toml
+        # Build Rust app, allow it to fail with error
+        # error[E0432]: unresolved import `ad`
+        # --> /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/cty-0.1.5/src/lib.rs:8:9
+        # pub use ad::*;
+        # ^^ maybe a missing crate `ad`?
+        # TODO: Fix this workaround
+
+        cd /tmp/lvgl-wasm
+        cargo build || ls -l $HOME/.cargo/registry/src/github.com-*/cty-0.1.5/src/lib.rs
+
+        # Replace folder rust/app
+
+        # Change rust/app/Cargo.toml
         # From
         # crate-type = ["lib"]
         # to
         # crate-type = ["staticlib"]
 
-        echo TODO
+        cat rust/app/Cargo.toml \
+            | sed 's/crate-type = \["lib"\]/crate-type = \["staticlib"\]/' \
+            >rust/app/Cargo.toml
+        cat rust/app/Cargo.toml
+
+        # Change $HOME/.cargo/registry/src/github.com-*/cty-0.1.5/src/lib.rs
+        # From
+        # target_arch = "arm"
+        # To
+        # target_arch = "arm", target_arch = "wasm32"
+
+        cat $HOME/.cargo/registry/src/github.com-*/cty-0.1.5/src/lib.rs \
+            | sed 's/target_arch = "arm"/target_arch = "arm", target_arch = "wasm32"/' \
+            >$HOME/.cargo/registry/src/github.com-*/cty-0.1.5/src/lib.rs
+        cat $HOME/.cargo/registry/src/github.com-*/cty-0.1.5/src/lib.rs
 
     - name: Build Rust+LVGL for WebAssembly
       run:  |
@@ -119,7 +147,7 @@ jobs:
         source /tmp/emsdk/emsdk_env.sh
         export PATH=$PATH:/tmp/wabt/build
 
-        # Build LVGL app: wasm/lvgl.html, lvgl.js, lvgl.wasm
+        # Build Rust+LVGL app: wasm/lvgl.html, lvgl.js, lvgl.wasm
         cd /tmp/lvgl-wasm
         cargo build
         make -f rust/Makefile
