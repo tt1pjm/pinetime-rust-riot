@@ -2,11 +2,11 @@
 
 This is the Rust application that runs on top of RIOT OS.  
 
-TODO: The application is compiled as a Rust library `libmyapp.rlib`, which is injected into the RIOT OS build.
+TODO: The application is compiled as a Rust Static Library `libmyapp.lib`, which is injected into the RIOT OS build by `scripts/build-app.sh`
 
 [`lib.rs`](lib.rs): Main library module. Contains `rust_main()` and the panic handler. Imports the modules below via the `mod` directive. 
 
-[`watch_face.rs`](watch_face.rs): Watch Face in Rust with LittlevGL
+[`watch_face.rs`](watch_face.rs): Watch Face in Rust with LVGL
 
 [`watch_face.md`](watch_face.md): Article on porting Watch Face from C to Rust
 

@@ -140,10 +140,13 @@ jobs:
         # Add emscripten and wabt to the PATH
         source /tmp/emsdk/emsdk_env.sh
         export PATH=$PATH:/tmp/wabt/build
-        cd /tmp/lvgl-wasm
 
-        # Replace folder rust/app
-        echo TODO
+        # Replace Rust+LVGL folder rust/app by this repo
+        rm -r /tmp/lvgl-wasm/rust/app
+        cp -r rust/app /tmp/lvgl-wasm/rust
+
+        # Go to the LVGL folder
+        cd /tmp/lvgl-wasm
 
         # Change rust/app/Cargo.toml
         # From

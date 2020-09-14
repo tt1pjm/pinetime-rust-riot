@@ -24,6 +24,7 @@ pub fn create_widgets(widgets: &mut WatchFaceWidgets) -> LvglResult<()> {
     obj::set_height(label1, 200) ? ;
     label::set_align(label1, label::LV_LABEL_ALIGN_CENTER) ? ;
     obj::align(label1, scr, obj::LV_ALIGN_CENTER, 0, -30) ? ;
+    #[cfg(not(target_arch = "wasm32"))]  //  TODO: obj::set_style doesn't work for WebAssembly Simulator
     obj::set_style(label1, unsafe { &style_time }) ? ;  //  Previously: label::set_style
     widgets.time_label = label1;
 

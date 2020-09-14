@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-//!  Main Rust Application for PineTime with Apache Mynewt OS
+//!  Rust on RIOT Application for PineTime
 #![no_std]                              //  Don't link with standard Rust library, which is not compatible with embedded systems
 #![feature(trace_macros)]               //  Allow macro tracing: `trace_macros!(true)`
 #![feature(concat_idents)]              //  Allow `concat_idents!()` macro used in `coap!()` macro
@@ -25,17 +25,19 @@
 #![feature(exclusive_range_pattern)]    //  Allow ranges like `0..128` in `match` statements
 
 //  Declare the libraries that contain macros
-extern crate cortex_m;                  //  Declare the external library `cortex_m`
 extern crate lvgl;                      //  Declare the LittlevGL (LVGL) library
 extern crate macros as lvgl_macros;     //  Declare the LVGL Procedural Macros library
+#[cfg(not(target_arch = "wasm32"))]     //  `cortex_m` not needed for WebAssembly Simulator
+extern crate cortex_m;                  //  Declare the external library `cortex_m`
 
 //  Declare the modules in our application
 mod watch_face;             //  Declare `watch_face.rs` as Rust module `watch_face` for Watch Face
 
 //  Declare the system modules
 use core::panic::PanicInfo; //  Import `PanicInfo` type which is used by `panic()` below
-use cortex_m::asm::bkpt;    //  Import cortex_m assembly function to inject breakpoint
 use lvgl::console;          //  Import Semihosting Console functions
+#[cfg(not(target_arch = "wasm32"))]  //  cortex_m not needed for WebAssembly Simulator
+use cortex_m::asm::bkpt;    //  Import cortex_m assembly function to inject breakpoint
 
 ///  Main program, currently not used. TODO: Call at startup.
 #[no_mangle]                 //  Don't mangle the function name
@@ -43,6 +45,7 @@ extern "C" fn rust_main() {  //  Declare extern "C" because it will be called by
 }
 
 ///  This function is called on panic, like an assertion failure. We display the filename and line number and pause in the debugger. From https://os.phil-opp.com/freestanding-rust-binary/
+#[cfg(not(target_arch = "wasm32"))]  //  Panic Handler not needed for WebAssembly Simulator
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     //  Display the filename and line number to the Semihosting Console.
