@@ -113,7 +113,7 @@ jobs:
 
         echo TODO
 
-    - name: Build LVGL for WebAssembly
+    - name: Build Rust+LVGL for WebAssembly
       run:  |
         # Add emscripten and wabt to the PATH
         source /tmp/emsdk/emsdk_env.sh

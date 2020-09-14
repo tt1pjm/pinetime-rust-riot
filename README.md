@@ -26,7 +26,7 @@ Download the binaries from [`Releases`](https://github.com/lupyuen/pinetime-rust
 
 The firmware is __built automatically__ in the GitHub Cloud. 
 
-Just fork this repo, enable GitHub Actions, update the source code and the built firmware will be available for download under __"Actions"__.
+Just fork this repo in GitHub, click `Actions` to enable GitHub Actions, update the source code and the built firmware will be available for download under `Actions`.
 
 The Automated Build is performed according to the following __GitHub Actions Workflow__...
 
@@ -36,7 +36,27 @@ The Worklow is similar to the one described in this article...
 
 [_Build PineTime Firmware in the Cloud with GitHub Actions_](https://lupyuen.github.io/pinetime-rust-mynewt/articles/cloud)
 
-RIOT Firmware based on [`github.com/bosmoment/PineTime-apps`](https://github.com/bosmoment/PineTime-apps)...
+## WebAssembly Simulator
+
+We have a WebAssembly Simulator that will allow us to preview Rust on RIOT Watch Faces in a web browser.
+
+To use the WebAssembly Simulator for Rust on RIOT, enable __GitHub Pages__ publishing for `master` branch, `docs` folder.
+
+The WebAssembly Simulator for Rust on RIOT is accessible at
+
+```
+https://YOUR_GITHUB_ACCOUNT.github.io/pinetime-rust-riot
+```
+
+Replace `YOUR_GITHUB_ACCOUNT` by your GitHub Account name.
+
+The WebAssembly Simulator is built according to the following __GitHub Actions Workflow__...
+
+[`.github/workflows/simulate.yml`](.github/workflows/simulate.yml)
+
+[More about WebAssembly Simulator for Rust on RIOT](https://github.com/AppKaki/lvgl-wasm/blob/rust/README.md)
+
+The RIOT Firmware for PineTime Smart Watch is based on [`github.com/bosmoment/PineTime-apps`](https://github.com/bosmoment/PineTime-apps)...
 
 ![RIOT on PineTime Smart Watch](https://lupyuen.github.io/images/pinetime-riot.jpg)
 
