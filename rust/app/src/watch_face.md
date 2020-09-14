@@ -1503,6 +1503,24 @@ Building RIOT natively on Windows (without WSL and MinGW) can be difficult. We r
 
 Check out the GitHub Actions Workflow for Rust on RIOT: [`.github/workflows/main.yml`](https://github.com/lupyuen/pinetime-rust-riot/blob/master/.github/workflows/main.yml)
 
+![Rust on RIOT WebAssembly Simulator](https://lupyuen.github.io/images/rust-on-riot-simulator.png)
+
+# WebAssembly Simulator
+
+For quicker development, we have a __WebAssembly Simulator__ that will preview Rust on RIOT Watch Faces in a web browser...
+
+[Online Demo of WebAssembly Simulator](https://lupyuen.github.io/pinetime-rust-riot/lvgl.html)
+
+The repository [`pinetime-rust-riot`](https://github.com/lupyuen/pinetime-rust-riot) auto-builds the WebAssembly Simulator with GitHub Actions whenever source files are changed. 
+
+To set up the WebAssembly Simulator for Rust on RIOT, see (`pinetime-rust-riot/README.md`)[https://github.com/lupyuen/pinetime-rust-riot/blob/master/README.md]
+
+The WebAssembly Simulator is built according to the following __GitHub Actions Workflow__...
+
+[`.github/workflows/simulate.yml`](.github/workflows/simulate.yml)
+
+[More about WebAssembly Simulator for Rust on RIOT](https://github.com/AppKaki/lvgl-wasm/blob/rust/README.md)
+
 # LVGL and RIOT Bindings for Rust
 
 Today our Rust code uses a custom-generated Rust Safe Wrapper for the LVGL Libray. The wrapper supports a subset of the LVGL functions. In future we should migrate the LVGL wrapper to this wrapper that is properly maintained...
