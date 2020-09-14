@@ -1,3 +1,5 @@
-## PineTime Smart Watch Firmware with RIOT OS and Embedded Rust
+## Rust on RIOT for PineTime Smart Watch
+
+[WebAssembly Simulator](lvgl.html)
 
 [View Rust Documentation](app)
