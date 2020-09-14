@@ -40,9 +40,11 @@ The Worklow is similar to the one described in this article...
 
 We have a WebAssembly Simulator that will allow us to preview Rust on RIOT Watch Faces in a web browser.
 
-To use the WebAssembly Simulator for Rust on RIOT, enable __GitHub Pages__ publishing for `master` branch, `docs` folder.
+[Online Demo of WebAssembly Simulator](https://lupyuen.github.io/pinetime-rust-riot/lvgl.html)
 
-The WebAssembly Simulator for Rust on RIOT is accessible at
+To set up the WebAssembly Simulator for Rust on RIOT on your fork, enable __GitHub Pages__ publishing for `master` branch, `docs` folder.
+
+The WebAssembly Simulator for Rust on RIOT will be accessible at...
 
 ```
 https://YOUR_GITHUB_ACCOUNT.github.io/pinetime-rust-riot
@@ -55,8 +57,6 @@ The WebAssembly Simulator is built according to the following __GitHub Actions W
 [`.github/workflows/simulate.yml`](.github/workflows/simulate.yml)
 
 Note that the Simulator build will update files in the `docs` folder of your fork. Before committing any files, please pull updates from your fork first.
-
-[Online Demo of WebAssembly Simulator](https://lupyuen.github.io/pinetime-rust-riot/lvgl.html)
 
 [More about WebAssembly Simulator for Rust on RIOT](https://github.com/AppKaki/lvgl-wasm/blob/rust/README.md)
 
