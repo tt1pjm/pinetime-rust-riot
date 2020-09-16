@@ -338,5 +338,15 @@
 				"label": ""
 			}
 		]
+	},
+	{
+		"path": "$ROOTPATH$/modules/gui/gui.c",
+		"bookmarks": [
+			{
+				"line": 264,
+				"column": 19,
+				"label": ""
+			}
+		]
 	}
 ]
