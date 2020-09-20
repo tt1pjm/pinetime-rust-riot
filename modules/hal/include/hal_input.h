@@ -46,7 +46,7 @@ static const cst816s_params_t _cst816s_input_params = {
     .i2c_addr = 0x15,
     .irq = GPIO_PIN(0, 28),
     .irq_flank = GPIO_FALLING,
-    .reset =  GPIO_PIN(0, 10),
+    .reset =  GPIO_PIN(0, 13),
 };
 
 typedef void input_t;
