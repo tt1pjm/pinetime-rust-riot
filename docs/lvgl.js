@@ -536,7 +536,6 @@ var GLOBAL_BASE = 1024;
 
 
 
-
 // === Preamble library stuff ===
 
 // Documentation for the public APIs defined in this file must be updated in:
@@ -710,6 +709,9 @@ function cwrap(ident, returnType, argTypes, opts) {
     return ccall(ident, returnType, argTypes, arguments, opts);
   }
 }
+
+// We used to include malloc/free by default in the past. Show a helpful error in
+// builds with assertions.
 
 var ALLOC_NORMAL = 0; // Tries to use _malloc()
 var ALLOC_STACK = 1; // Lives for the duration of the current function call
@@ -1227,11 +1229,10 @@ function updateGlobalBufferAndViews(buf) {
   Module['HEAPF64'] = HEAPF64 = new Float64Array(buf);
 }
 
-var STATIC_BASE = 1024,
-    STACK_BASE = 5737312,
+var STACK_BASE = 5737280,
     STACKTOP = STACK_BASE,
-    STACK_MAX = 494432,
-    DYNAMIC_BASE = 5737312;
+    STACK_MAX = 494400,
+    DYNAMIC_BASE = 5737280;
 
 assert(STACK_BASE % 16 === 0, 'stack must start aligned');
 assert(DYNAMIC_BASE % 16 === 0, 'heap must start aligned');
@@ -1745,11 +1746,6 @@ var ASM_CONSTS = {
 
 
 
-// STATICTOP = STATIC_BASE + 493408;
-/* global initializers */  __ATINIT__.push({ func: function() { ___wasm_call_ctors() } });
-
-
-
 
 /* no memory initializer */
 // {{PRE_LIBRARY}}
@@ -1974,9 +1970,7 @@ var ASM_CONSTS = {
       if (!exceptionLast) { exceptionLast = ptr; }
       catchInfo.free();
       throw ptr + " - Exception catching is disabled, this exception cannot be caught. Compile with -s DISABLE_EXCEPTION_CATCHING=0 or DISABLE_EXCEPTION_CATCHING=2 to catch.";
-    }
-  
-  var exceptionThrowBuf=0;function ___cxa_find_matching_catch_2() {
+    }function ___cxa_find_matching_catch_2() {
       var thrown = exceptionLast;
       if (!thrown) {
         // just pass through the null ptr
@@ -1993,9 +1987,8 @@ var ASM_CONSTS = {
       var typeArray = Array.prototype.slice.call(arguments);
   
       // can_catch receives a **, add indirection
-      if (!exceptionThrowBuf) {
-        exceptionThrowBuf = _malloc(4);
-      }
+      var stackTop = stackSave();
+      var exceptionThrowBuf = stackAlloc(4);
       HEAP32[((exceptionThrowBuf)>>2)]=thrown;
       // The different catch blocks are denoted by different types.
       // Due to inheritance, those types may not precisely match the
@@ -2015,6 +2008,7 @@ var ASM_CONSTS = {
           return ((setTempRet0(caughtType),catchInfo.ptr)|0);
         }
       }
+      stackRestore(stackTop);
       return ((setTempRet0(thrownType),catchInfo.ptr)|0);
     }
 
@@ -4610,6 +4604,9 @@ function intArrayToString(array) {
 }
 
 
+
+/* global initializers */  __ATINIT__.push({ func: function() { ___wasm_call_ctors() } });
+
 var asmLibraryArg = { "__assert_fail": ___assert_fail, "__cxa_find_matching_catch_2": ___cxa_find_matching_catch_2, "__indirect_function_table": wasmTable, "__resumeException": ___resumeException, "__sys_getcwd": ___sys_getcwd, "abort": _abort, "emscripten_memcpy_big": _emscripten_memcpy_big, "emscripten_resize_heap": _emscripten_resize_heap, "environ_get": _environ_get, "environ_sizes_get": _environ_sizes_get, "fd_write": _fd_write, "getTempRet0": _getTempRet0, "invoke_ii": invoke_ii, "invoke_iii": invoke_iii, "invoke_iiii": invoke_iiii, "invoke_v": invoke_v, "invoke_vi": invoke_vi, "invoke_vii": invoke_vii, "invoke_viii": invoke_viii, "invoke_viiii": invoke_viiii, "invoke_viiiii": invoke_viiiii, "memory": wasmMemory, "pthread_condattr_destroy": _pthread_condattr_destroy, "pthread_condattr_init": _pthread_condattr_init, "pthread_condattr_setclock": _pthread_condattr_setclock, "pthread_mutexattr_destroy": _pthread_mutexattr_destroy, "pthread_mutexattr_init": _pthread_mutexattr_init, "pthread_mutexattr_settype": _pthread_mutexattr_settype, "pthread_rwlock_rdlock": _pthread_rwlock_rdlock, "pthread_rwlock_unlock": _pthread_rwlock_unlock, "setTempRet0": _setTempRet0 };
 var asm = createWasm();
 /** @type {function(...*):?} */
@@ -4799,7 +4796,6 @@ if (!Object.getOwnPropertyDescriptor(Module, "cwrap")) Module["cwrap"] = functio
 if (!Object.getOwnPropertyDescriptor(Module, "setValue")) Module["setValue"] = function() { abort("'setValue' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
 if (!Object.getOwnPropertyDescriptor(Module, "getValue")) Module["getValue"] = function() { abort("'getValue' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
 if (!Object.getOwnPropertyDescriptor(Module, "allocate")) Module["allocate"] = function() { abort("'allocate' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "getMemory")) Module["getMemory"] = function() { abort("'getMemory' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ). Alternatively, forcing filesystem support (-s FORCE_FILESYSTEM=1) can export this for you") };
 if (!Object.getOwnPropertyDescriptor(Module, "UTF8ArrayToString")) Module["UTF8ArrayToString"] = function() { abort("'UTF8ArrayToString' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
 if (!Object.getOwnPropertyDescriptor(Module, "UTF8ToString")) Module["UTF8ToString"] = function() { abort("'UTF8ToString' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
 if (!Object.getOwnPropertyDescriptor(Module, "stringToUTF8Array")) Module["stringToUTF8Array"] = function() { abort("'stringToUTF8Array' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
@@ -4824,7 +4820,6 @@ if (!Object.getOwnPropertyDescriptor(Module, "FS_createLazyFile")) Module["FS_cr
 if (!Object.getOwnPropertyDescriptor(Module, "FS_createLink")) Module["FS_createLink"] = function() { abort("'FS_createLink' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ). Alternatively, forcing filesystem support (-s FORCE_FILESYSTEM=1) can export this for you") };
 if (!Object.getOwnPropertyDescriptor(Module, "FS_createDevice")) Module["FS_createDevice"] = function() { abort("'FS_createDevice' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ). Alternatively, forcing filesystem support (-s FORCE_FILESYSTEM=1) can export this for you") };
 if (!Object.getOwnPropertyDescriptor(Module, "FS_unlink")) Module["FS_unlink"] = function() { abort("'FS_unlink' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ). Alternatively, forcing filesystem support (-s FORCE_FILESYSTEM=1) can export this for you") };
-if (!Object.getOwnPropertyDescriptor(Module, "dynamicAlloc")) Module["dynamicAlloc"] = function() { abort("'dynamicAlloc' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
 if (!Object.getOwnPropertyDescriptor(Module, "getLEB")) Module["getLEB"] = function() { abort("'getLEB' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
 if (!Object.getOwnPropertyDescriptor(Module, "getFunctionTables")) Module["getFunctionTables"] = function() { abort("'getFunctionTables' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
 if (!Object.getOwnPropertyDescriptor(Module, "alignFunctionTables")) Module["alignFunctionTables"] = function() { abort("'alignFunctionTables' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
@@ -4901,7 +4896,6 @@ if (!Object.getOwnPropertyDescriptor(Module, "convertI32PairToI53")) Module["con
 if (!Object.getOwnPropertyDescriptor(Module, "convertU32PairToI53")) Module["convertU32PairToI53"] = function() { abort("'convertU32PairToI53' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
 if (!Object.getOwnPropertyDescriptor(Module, "exceptionLast")) Module["exceptionLast"] = function() { abort("'exceptionLast' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
 if (!Object.getOwnPropertyDescriptor(Module, "exceptionCaught")) Module["exceptionCaught"] = function() { abort("'exceptionCaught' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "exceptionThrowBuf")) Module["exceptionThrowBuf"] = function() { abort("'exceptionThrowBuf' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
 if (!Object.getOwnPropertyDescriptor(Module, "ExceptionInfoAttrs")) Module["ExceptionInfoAttrs"] = function() { abort("'ExceptionInfoAttrs' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
 if (!Object.getOwnPropertyDescriptor(Module, "ExceptionInfo")) Module["ExceptionInfo"] = function() { abort("'ExceptionInfo' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
 if (!Object.getOwnPropertyDescriptor(Module, "CatchInfo")) Module["CatchInfo"] = function() { abort("'CatchInfo' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
