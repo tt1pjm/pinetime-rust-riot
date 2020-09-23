@@ -37,7 +37,23 @@ jobs:
 
     #########################################################################################
     # Download and Cache Dependencies
+    - name: Check cache for MCUBoot
+      id:   cache-mcuboot
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-mcuboot
+      with:
+        path: ${{ runner.temp }}/mcuboot
+        key:  ${{ runner.os }}-build-${{ env.cache-name }}
+        restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
 
+    - name: Install MCUBoot
+      if:   steps.cache-mcuboot.outputs.cache-hit != 'true'  # Install MCUBoot if not found in cache
+      run:  |
+        cd ${{ runner.temp }}
+        git clone --branch v1.5.0 https://github.com/JuulLabs-OSS/mcuboot
+    - name: Install imgtool dependencies
+      run:  pip3 install --user -r ${{ runner.temp }}/mcuboot/scripts/requirements.txt
     - name: Install imgtool dependencies
       run:  |
         pip3 install --user setuptools
@@ -96,7 +112,12 @@ jobs:
       with:
         name: PineTime.zip
         path: apps/pinetime/bin/pinetime/PineTime.*
-
+        
+    - name: Create firmware image
+      run:  |
+        ${{ runner.temp }}/mcuboot/scripts/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header apps/pinetime/bin/pinetime/PineTime.bin apps/pinetime/bin/pinetime/PineTime-mcuboot-img.bin
+        ${{ runner.temp }}/mcuboot/scripts/imgtool.py verify build/src/pinetime-mcuboot-img.bin
+        
     #########################################################################################
     # Build and Upload Rust+RIOT Application Firmware for MCUBoot
 
