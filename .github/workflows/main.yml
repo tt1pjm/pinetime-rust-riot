@@ -101,10 +101,16 @@ jobs:
         export PATH=$PATH:${{ runner.temp }}/arm-none-eabi/bin
         ./scripts/build-app.sh
 
-    - name: Create firmware image
+    - name: Create MCUBoot firmware image
       run:  |
         ${{ runner.temp }}/mcuboot/scripts/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header apps/pinetime/bin/pinetime/PineTime.bin apps/pinetime/bin/pinetime/PineTime-mcuboot-img.bin
         ${{ runner.temp }}/mcuboot/scripts/imgtool.py verify apps/pinetime/bin/pinetime/PineTime-mcuboot-img.bin
+        
+    - name: Upload MCUBoot Application Firmware
+      uses: actions/upload-artifact@v2
+      with:
+        name: PineTime-mcuboot-img.bin
+        path: apps/pinetime/bin/pinetime/PineTime-mcuboot-img.bin
         
     - name: Upload Standalone Application Firmware
       uses: actions/upload-artifact@v2
