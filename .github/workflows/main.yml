@@ -101,6 +101,11 @@ jobs:
         export PATH=$PATH:${{ runner.temp }}/arm-none-eabi/bin
         ./scripts/build-app.sh
 
+    - name: Create firmware image
+      run:  |
+        ${{ runner.temp }}/mcuboot/scripts/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header apps/pinetime/bin/pinetime/PineTime.bin apps/pinetime/bin/pinetime/PineTime-mcuboot-img.bin
+        ${{ runner.temp }}/mcuboot/scripts/imgtool.py verify apps/pinetime/bin/pinetime/PineTime-mcuboot-img.bin
+        
     - name: Upload Standalone Application Firmware
       uses: actions/upload-artifact@v2
       with:
@@ -112,11 +117,6 @@ jobs:
       with:
         name: PineTime.zip
         path: apps/pinetime/bin/pinetime/PineTime.*
-        
-    - name: Create firmware image
-      run:  |
-        ${{ runner.temp }}/mcuboot/scripts/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header apps/pinetime/bin/pinetime/PineTime.bin apps/pinetime/bin/pinetime/PineTime-mcuboot-img.bin
-        ${{ runner.temp }}/mcuboot/scripts/imgtool.py verify build/src/pinetime-mcuboot-img.bin
         
     #########################################################################################
     # Build and Upload Rust+RIOT Application Firmware for MCUBoot
