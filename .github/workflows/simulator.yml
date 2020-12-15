@@ -225,7 +225,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: wasm
-        path: |
+        path: | 
           /tmp/lvgl-wasm/wasm/*.html
           /tmp/lvgl-wasm/wasm/*.js
           /tmp/lvgl-wasm/wasm/*.wasm
